@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import bio from "@/data/bio.json";
 import { OrbSkeleton } from "@/components/voice-orb";
 import { ErrorBoundary } from "@/components/error-boundary";
 
@@ -28,13 +29,20 @@ export function Hero() {
           Joan Mateo Duarte Politi
         </h1>
 
-        {/* Subtitle */}
-        <p
-          className="text-[15px] md:text-[17px] text-muted-foreground text-center max-w-[480px] leading-relaxed"
+        {/* Story */}
+        <div
+          className="space-y-4 max-w-[540px]"
           style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "200ms" }}
         >
-          I build products where AI, systems, and interface design meet.
-        </p>
+          {bio.story.map((paragraph, i) => (
+            <p
+              key={i}
+              className="text-[15px] md:text-[16px] text-muted-foreground text-center leading-relaxed"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         {/* CTAs */}
         <div
@@ -46,12 +54,6 @@ export function Hero() {
             className="inline-flex items-center justify-center px-5 py-2 text-[14px] font-medium border border-border rounded-lg hover:border-border-hover active:translate-y-px transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             See my work
-          </a>
-          <a
-            href="#how-i-think"
-            className="inline-flex items-center justify-center px-5 py-2 text-[14px] font-medium border border-border rounded-lg hover:border-border-hover active:translate-y-px transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            Read my story
           </a>
         </div>
       </div>

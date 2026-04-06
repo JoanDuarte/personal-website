@@ -1,7 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import projects from "@/data/projects.json";
+
+function ProjectLogo({ project }: { project: (typeof projects)[number] }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed || !project.logo) {
+    return (
+      <span className="w-7 h-7 rounded-md bg-muted/60 flex items-center justify-center text-[13px] font-semibold text-muted-foreground shrink-0">
+        {project.name[0]}
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={project.logo}
+      alt={`${project.name} logo`}
+      width={28}
+      height={28}
+      className="rounded-md shrink-0"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 function ProjectRow({
   project,
@@ -9,30 +33,33 @@ function ProjectRow({
   project: (typeof projects)[number];
 }) {
   const [open, setOpen] = useState(false);
-  const isActive = project.status === "active";
 
   return (
     <div className="border-t border-border">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-4 text-left group"
+        className="w-full flex items-center justify-between py-4 text-left group gap-3"
       >
-        <div className="flex items-center gap-3">
-          <h3 className="text-[17px] md:text-[18px] font-medium group-hover:opacity-70 transition-opacity">
-            {project.name}
-          </h3>
-          <span
-            className={`text-[11px] font-medium uppercase tracking-[0.1em] px-2 py-0.5 rounded-full ${
-              isActive
-                ? "text-emerald-400 bg-emerald-400/10"
-                : "text-muted-foreground bg-muted/50"
-            }`}
-          >
-            {isActive ? "Active" : "Past"}
-          </span>
+        <div className="flex items-center gap-3 min-w-0">
+          <ProjectLogo project={project} />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-[16px] md:text-[17px] font-medium group-hover:opacity-70 transition-opacity">
+                {project.name}
+              </h3>
+              <span className="text-[13px] text-muted-foreground hidden md:inline truncate">
+                {project.description.length > 60
+                  ? project.description.slice(0, 60) + "..."
+                  : project.description}
+              </span>
+              <span className="text-[12px] text-muted-foreground/70">
+                ({project.date})
+              </span>
+            </div>
+          </div>
         </div>
         <svg
-          className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+          className={`w-4 h-4 text-muted-foreground transition-transform duration-200 shrink-0 ${
             open ? "rotate-180" : ""
           }`}
           fill="none"

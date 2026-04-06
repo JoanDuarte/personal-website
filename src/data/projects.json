@@ -3,13 +3,17 @@
     "name": "Flare",
     "description": "AI-native voice-first social app. Proactive AI agents observe your patterns and surface what matters. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves based on your lifestyle.",
     "status": "active",
+    "date": "2026",
+    "logo": "/logos/flare.png",
     "link": "https://github.com/JMDuarte",
     "tags": ["AI", "React Native", "Supabase", "Voice"]
   },
   {
-    "name": "Bitcoin Mining Co.",
+    "name": "Inception",
     "description": "Started at 21, still running. We host and operate Bitcoin mining rigs. Automated now, generates revenue that funds new ventures.",
     "status": "active",
+    "date": "2021\u2013present",
+    "logo": "/logos/inception.png",
     "link": null,
     "tags": ["Bitcoin", "Operations", "Hardware"]
   },
@@ -17,6 +21,8 @@
     "name": "DL3ARN",
     "description": "Blockchain-based credential traceability SaaS for education. Great team, real leads, but the crypto bear market made scaling impossible.",
     "status": "inactive",
+    "date": "2022\u20132024",
+    "logo": "/logos/dl3arn.png",
     "link": null,
     "tags": ["Blockchain", "SaaS", "Education"]
   },
@@ -24,6 +30,8 @@
     "name": "Clikan",
     "description": "Pokemon-Go-style app for collecting real-world locations. Taught me about social apps, location APIs, and mobile-first thinking.",
     "status": "inactive",
+    "date": "2025",
+    "logo": "/logos/clikan.png",
     "link": null,
     "tags": ["Mobile", "Social", "Location"]
   },
@@ -31,6 +39,8 @@
     "name": "Aequsy",
     "description": "Charity sweepstakes platform. Taught me about payments, user flows, and building for a cause.",
     "status": "inactive",
+    "date": "2025",
+    "logo": "/logos/aequsy.png",
     "link": null,
     "tags": ["Payments", "Charity", "Web"]
   },
@@ -38,6 +48,8 @@
     "name": "Bloorfy",
     "description": "Marketplace for communities. My first real coding project, built to learn web development.",
     "status": "inactive",
+    "date": "2024",
+    "logo": "/logos/bloorfy.png",
     "link": null,
     "tags": ["Marketplace", "Web", "Communities"]
   }
