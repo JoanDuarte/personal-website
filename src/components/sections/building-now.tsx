@@ -4,16 +4,16 @@ export function BuildingNow() {
   const { currentBuild } = bio;
 
   return (
-    <section className="py-24 px-4 md:px-0">
+    <section className="py-16 px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
-        <p className="text-[12px] md:text-[12px] font-medium uppercase tracking-[0.2em] text-text-secondary mb-8">
+        <p className="text-[12px] md:text-[12px] font-medium uppercase tracking-[0.2em] text-muted-foreground mb-8">
           What I&apos;m Building
         </p>
-        <div className="border-t border-border pt-6">
+        <div className="pt-6">
           <h3 className="text-[20px] md:text-[20px] font-medium mb-3">
             {currentBuild.name}
           </h3>
-          <p className="text-[16px] md:text-[17px] leading-[1.7] text-text-secondary mb-4">
+          <p className="text-[16px] md:text-[17px] leading-[1.7] text-muted-foreground mb-4">
             {currentBuild.description}
           </p>
           <a

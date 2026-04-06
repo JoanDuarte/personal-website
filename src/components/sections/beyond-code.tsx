@@ -4,7 +4,7 @@ export function BeyondCode() {
   return (
     <section className="py-16 px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
-        <p className="text-[12px] md:text-[12px] font-medium uppercase tracking-[0.2em] text-text-secondary mb-8">
+        <p className="text-[12px] md:text-[12px] font-medium uppercase tracking-[0.2em] text-muted-foreground mb-8">
           Beyond Code
         </p>
 
@@ -13,7 +13,7 @@ export function BeyondCode() {
           <h3 className="text-[20px] md:text-[20px] font-medium mb-3">
             Chess
           </h3>
-          <p className="text-[16px] md:text-[17px] leading-[1.7] text-text-secondary mb-3">
+          <p className="text-[16px] md:text-[17px] leading-[1.7] text-muted-foreground mb-3">
             {bio.chess.text}
           </p>
           <a
@@ -37,7 +37,7 @@ export function BeyondCode() {
                 <span className="text-[16px] md:text-[17px] text-foreground">
                   {book.title}
                 </span>
-                <span className="text-[14px] text-text-tertiary">
+                <span className="text-[14px] text-muted-foreground">
                   {book.author}
                 </span>
               </li>

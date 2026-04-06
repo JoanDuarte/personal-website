@@ -9,7 +9,7 @@ type OrbStatus = "idle" | "connecting" | "listening" | "speaking" | "error";
 function getStatusLabel(status: OrbStatus): string {
   switch (status) {
     case "idle":
-      return "Tap to talk";
+      return "Talk to me";
     case "connecting":
       return "Connecting...";
     case "listening":
@@ -91,7 +91,7 @@ export function VoiceOrb() {
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative w-[48px] h-[48px] md:w-[120px] md:h-[120px] rounded-full cursor-pointer",
+          "relative w-[80px] h-[80px] md:w-[160px] md:h-[160px] rounded-full cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "transition-all select-none",
           orbStatus === "idle" && "animate-[orb-breathe_4s_ease-in-out_infinite]",
@@ -102,14 +102,14 @@ export function VoiceOrb() {
         )}
         style={{
           background:
-            "radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 40%, transparent 70%)",
+            "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.12) 0%, oklch(0.837 0.128 66.29 / 0.04) 40%, transparent 70%)",
           boxShadow:
             orbStatus === "speaking" || orbStatus === "listening"
-              ? "0 0 60px 20px rgba(255,255,255,0.1)"
-              : "0 0 60px 20px rgba(255,255,255,0.06)",
+              ? "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.1)"
+              : "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.06)",
         }}
       />
-      <span className="text-[13px] text-text-tertiary select-none">
+      <span className="text-[13px] text-muted-foreground select-none">
         {getStatusLabel(orbStatus)}
       </span>
     </div>
@@ -121,15 +121,15 @@ export function OrbSkeleton() {
   return (
     <div className="flex flex-col items-center gap-3">
       <div
-        className="w-[48px] h-[48px] md:w-[120px] md:h-[120px] rounded-full animate-[orb-breathe_4s_ease-in-out_infinite]"
+        className="w-[80px] h-[80px] md:w-[160px] md:h-[160px] rounded-full animate-[orb-breathe_4s_ease-in-out_infinite]"
         style={{
           background:
-            "radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 40%, transparent 70%)",
-          boxShadow: "0 0 60px 20px rgba(255,255,255,0.06)",
+            "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.12) 0%, oklch(0.837 0.128 66.29 / 0.04) 40%, transparent 70%)",
+          boxShadow: "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.06)",
         }}
       />
-      <span className="text-[13px] text-text-tertiary select-none">
-        Tap to talk
+      <span className="text-[13px] text-muted-foreground select-none">
+        Talk to me
       </span>
     </div>
   );
