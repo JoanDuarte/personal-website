@@ -1,0 +1,8 @@
+{
+    "agents": [
+        {
+            "config": "agent_configs/Joan-Twin.json",
+            "id": "agent_9001kng6fm06fz3834bqjtb1y1zx"
+        }
+    ]
+}
