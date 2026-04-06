@@ -23,7 +23,7 @@ const avatarImageUrl =
 function getStatusLabel(status: OrbStatus): string {
   switch (status) {
     case "idle":
-      return "Talk to Joan";
+      return "";
     case "connecting":
       return "Requesting microphone...";
     case "listening":
@@ -228,13 +228,15 @@ export function VoiceOrb() {
           ) : (
             <>
               <Mic />
-              Start call
+              Get to know me
             </>
           )}
         </Button>
-        <span className="text-[13px] text-muted-foreground">
-          {getStatusLabel(status)}
-        </span>
+        {status !== "idle" ? (
+          <span className="text-[13px] text-muted-foreground">
+            {getStatusLabel(status)}
+          </span>
+        ) : null}
         {errorDetail ? (
           <p className="max-w-[320px] text-[12px] leading-relaxed text-muted-foreground/90">
             {errorDetail}

@@ -4,7 +4,7 @@
     "tagline": "AI-native voice-first social app",
     "description": "Think of it as a social app that actually knows you. Proactive AI agents observe your patterns and surface what matters before you ask. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves with your lifestyle. I designed the whole system: 16 database tables, row-level security, Edge Functions, the works.",
     "status": "active",
-    "date": "2026",
+    "date": "2026–present",
     "logo": "/logos/flare.png",
     "link": "https://github.com/JMDuarte",
     "tags": ["AI", "React Native", "Supabase", "Voice"]
