@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function BlogLayout({
   children,
 }: {
@@ -9,12 +11,12 @@ export default function BlogLayout({
         {children}
       </article>
       <div className="max-w-[640px] mx-auto mt-16 pt-6 border-t border-border">
-        <a
+        <Link
           href="/"
           className="text-[14px] text-text-secondary hover:text-foreground transition-colors"
         >
           &larr; Back home
-        </a>
+        </Link>
       </div>
     </main>
   );
