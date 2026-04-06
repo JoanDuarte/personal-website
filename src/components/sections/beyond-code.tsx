@@ -20,23 +20,30 @@ export function BeyondCode() {
         </a>
       </div>
 
-      {/* Books */}
+      {/* Reading */}
       <div>
-        <h3 className="text-[17px] md:text-[18px] font-medium mb-3">
+        <h3 className="text-[17px] md:text-[18px] font-medium mb-2">
           Reading
         </h3>
-        <ul className="space-y-2">
-          {bio.books.map((book) => (
-            <li key={book.title} className="flex flex-col">
-              <span className="text-[16px] md:text-[17px] text-foreground">
-                {book.title}
-              </span>
-              <span className="text-[14px] text-muted-foreground">
-                {book.author}
-              </span>
+        <p className="text-[16px] md:text-[17px] leading-[1.7] text-muted-foreground mb-3">
+          {bio.reading.text}
+        </p>
+        <ul className="space-y-1.5 mb-3">
+          {bio.reading.favorites.map((book) => (
+            <li key={book.title} className="text-[15px] text-foreground">
+              {book.title}
+              <span className="text-muted-foreground"> — {book.author}</span>
             </li>
           ))}
         </ul>
+        <a
+          href={bio.reading.goodreadsLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[14px] text-foreground hover:opacity-70 transition-opacity underline underline-offset-4"
+        >
+          Goodreads profile
+        </a>
       </div>
     </CollapsibleSection>
   );

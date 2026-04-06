@@ -1,7 +1,8 @@
 [
   {
     "name": "Flare",
-    "description": "AI-native voice-first social app. Proactive AI agents observe your patterns and surface what matters. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves based on your lifestyle.",
+    "tagline": "AI-native voice-first social app",
+    "description": "Think of it as a social app that actually knows you. Proactive AI agents observe your patterns and surface what matters before you ask. Your profile builds itself — AI-generated identity, an Aura Orb that evolves with your lifestyle. I designed the whole system: 16 database tables, row-level security, Edge Functions, the works.",
     "status": "active",
     "date": "2026",
     "logo": "/logos/flare.png",
@@ -10,7 +11,8 @@
   },
   {
     "name": "Inception",
-    "description": "Started at 21, still running. We host and operate Bitcoin mining rigs. Automated now, generates revenue that funds new ventures.",
+    "tagline": "Bitcoin mining farm with over 500k in ASICs",
+    "description": "Started this at 21. We host and operate our own mining rigs — built the infrastructure, automated the operations, and scaled it into a real business. Still running today, still generating revenue, and it funds everything else I build.",
     "status": "active",
     "date": "2021\u2013present",
     "logo": "/logos/inception.png",
@@ -19,7 +21,8 @@
   },
   {
     "name": "DL3ARN",
-    "description": "Blockchain-based credential traceability SaaS for education. Great team, real leads, but the crypto bear market made scaling impossible.",
+    "tagline": "Blockchain credential traceability for education",
+    "description": "We built a SaaS to make academic credentials verifiable on-chain. Great team, real leads from universities, a product that worked. But the crypto bear market hit and made fundraising impossible. I learned more from this one than from anything that succeeded.",
     "status": "inactive",
     "date": "2022\u20132024",
     "logo": "/logos/dl3arn.png",
@@ -28,7 +31,8 @@
   },
   {
     "name": "Clikan",
-    "description": "Pokemon-Go-style app for collecting real-world locations. Taught me about social apps, location APIs, and mobile-first thinking.",
+    "tagline": "Pok\u00e9mon Go for real-world locations",
+    "description": "A mobile app where you collect and share real-world spots. Taught me everything about social mechanics, location APIs, and thinking mobile-first. The product didn't survive, but the lessons did.",
     "status": "inactive",
     "date": "2025",
     "logo": "/logos/clikan.png",
@@ -37,7 +41,8 @@
   },
   {
     "name": "Aequsy",
-    "description": "Charity sweepstakes platform. Taught me about payments, user flows, and building for a cause.",
+    "tagline": "Charity sweepstakes platform",
+    "description": "A platform where you could win prizes while supporting real causes. I got deep into payments, conversion funnels, and building for a mission bigger than the product itself.",
     "status": "inactive",
     "date": "2025",
     "logo": "/logos/aequsy.png",
@@ -46,7 +51,8 @@
   },
   {
     "name": "Bloorfy",
-    "description": "Marketplace for communities. My first real coding project, built to learn web development.",
+    "tagline": "Marketplace for communities",
+    "description": "My first real coding project. I built it to learn web development and ended up learning what it actually takes to ship something. Messy code, zero users, but it changed my trajectory.",
     "status": "inactive",
     "date": "2024",
     "logo": "/logos/bloorfy.png",

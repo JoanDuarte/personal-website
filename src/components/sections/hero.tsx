@@ -31,22 +31,22 @@ export function Hero() {
 
         {/* Story */}
         <div
-          className="space-y-4 max-w-[540px]"
+          className="max-w-[520px]"
           style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "200ms" }}
         >
           {bio.story.map((paragraph, i) => (
             <p
               key={i}
-              className="text-[15px] md:text-[16px] text-muted-foreground text-center leading-relaxed"
+              className="text-[14px] md:text-[15px] text-muted-foreground text-center leading-relaxed mb-3 last:mb-0"
             >
               {paragraph}
             </p>
           ))}
         </div>
 
-        {/* CTAs */}
+        {/* CTA */}
         <div
-          className="flex flex-col md:flex-row gap-3 w-full md:w-auto mt-1"
+          className="mt-1"
           style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "300ms" }}
         >
           <a

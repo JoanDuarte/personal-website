@@ -33,6 +33,7 @@ function ProjectRow({
   project: (typeof projects)[number];
 }) {
   const [open, setOpen] = useState(false);
+  const isActive = project.status === "active";
 
   return (
     <div className="border-t border-border">
@@ -43,19 +44,26 @@ function ProjectRow({
         <div className="flex items-center gap-3 min-w-0">
           <ProjectLogo project={project} />
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-[16px] md:text-[17px] font-medium group-hover:opacity-70 transition-opacity">
+            <div className="flex items-center gap-2">
+              <h3 className="text-[16px] md:text-[17px] font-medium group-hover:opacity-70 transition-opacity whitespace-nowrap">
                 {project.name}
               </h3>
-              <span className="text-[13px] text-muted-foreground hidden md:inline truncate">
-                {project.description.length > 60
-                  ? project.description.slice(0, 60) + "..."
-                  : project.description}
-              </span>
-              <span className="text-[12px] text-muted-foreground/70">
-                ({project.date})
+              <span
+                className={`text-[11px] font-medium uppercase tracking-[0.1em] px-2 py-0.5 rounded-full shrink-0 ${
+                  isActive
+                    ? "text-emerald-400 bg-emerald-400/10"
+                    : "text-muted-foreground bg-muted/50"
+                }`}
+              >
+                {isActive ? "Active" : "Past"}
               </span>
             </div>
+            <p className="text-[13px] text-muted-foreground truncate">
+              {project.tagline}
+              <span className="text-muted-foreground/50 ml-1">
+                ({project.date})
+              </span>
+            </p>
           </div>
         </div>
         <svg
@@ -79,7 +87,7 @@ function ProjectRow({
           open ? "grid-rows-[1fr] opacity-100 pb-4" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        <div className="overflow-hidden">
+        <div className="overflow-hidden pl-10">
           <p className="text-[15px] md:text-[16px] leading-[1.7] text-muted-foreground mb-3">
             {project.description}
           </p>
