@@ -1,116 +1,110 @@
 "use client";
 
-import { useConversation } from "@elevenlabs/react";
-import { useCallback, useEffect, useState } from "react";
+import Script from "next/script";
+import { createElement, useMemo, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
-type OrbStatus = "idle" | "connecting" | "listening" | "speaking" | "error";
+type WidgetState = "loading" | "ready" | "error";
 
-function getStatusLabel(status: OrbStatus): string {
-  switch (status) {
-    case "idle":
-      return "Talk to me";
-    case "connecting":
-      return "Connecting...";
-    case "listening":
-      return "Listening...";
-    case "speaking":
-      return "Speaking...";
-    case "error":
-      return "Voice unavailable";
-  }
+const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+const defaultAvatarImageUrl = "/images/joan-avatar.jpg";
+const avatarImageUrl =
+  process.env.NEXT_PUBLIC_ELEVENLABS_AVATAR_IMAGE_URL ?? defaultAvatarImageUrl;
+
+function getStatusLabel(state: WidgetState): string {
+  if (!agentId) return "Voice not configured";
+  if (state === "loading") return "Loading voice interface...";
+  if (state === "error") return "Voice unavailable";
+  return "Talk to Joan";
 }
 
-export function VoiceOrb() {
-  const [orbStatus, setOrbStatus] = useState<OrbStatus>("idle");
-
-  const conversation = useConversation({
-    onConnect: () => setOrbStatus("listening"),
-    onDisconnect: () => setOrbStatus("idle"),
-    onError: () => setOrbStatus("error"),
-    onModeChange: ({ mode }) => {
-      if (mode === "speaking") setOrbStatus("speaking");
-      else if (mode === "listening") setOrbStatus("listening");
-    },
-  });
-
-  const handleActivate = useCallback(async () => {
-    if (orbStatus === "connecting" || orbStatus === "listening" || orbStatus === "speaking") {
-      await conversation.endSession();
-      setOrbStatus("idle");
-      return;
-    }
-
-    setOrbStatus("connecting");
-
-    try {
-      const res = await fetch("/api/conversation-token");
-      if (!res.ok) {
-        setOrbStatus("error");
-        return;
-      }
-
-      const { signedUrl } = await res.json();
-      await conversation.startSession({ signedUrl });
-    } catch {
-      setOrbStatus("error");
-    }
-  }, [orbStatus, conversation]);
-
-  // Recover from error state after 3 seconds
-  useEffect(() => {
-    if (orbStatus === "error") {
-      const timer = setTimeout(() => setOrbStatus("idle"), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [orbStatus]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleActivate();
-      } else if (e.key === "Escape" && orbStatus !== "idle") {
-        conversation.endSession();
-        setOrbStatus("idle");
-      }
-    },
-    [handleActivate, orbStatus, conversation]
-  );
+function WidgetFallback({
+  status,
+}: {
+  status: WidgetState | "unconfigured";
+}) {
+  const label =
+    status === "unconfigured"
+      ? "Set NEXT_PUBLIC_ELEVENLABS_AGENT_ID to enable voice."
+      : status === "error"
+        ? "The ElevenLabs widget failed to load."
+        : "Loading the official ElevenLabs voice UI.";
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex h-full min-h-[420px] flex-col items-center justify-center gap-4 rounded-[24px] border border-border/70 bg-background/35 px-6 py-8 text-center">
       <div
-        role="button"
-        tabIndex={0}
-        aria-label={
-          orbStatus === "idle"
-            ? "Start voice conversation"
-            : "End voice conversation"
-        }
-        onClick={handleActivate}
-        onKeyDown={handleKeyDown}
         className={cn(
-          "relative w-[80px] h-[80px] md:w-[160px] md:h-[160px] rounded-full cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "transition-all select-none",
-          orbStatus === "idle" && "animate-[orb-breathe_4s_ease-in-out_infinite]",
-          orbStatus === "connecting" && "animate-[orb-connecting_2s_ease-in-out_infinite]",
-          orbStatus === "listening" && "opacity-100",
-          orbStatus === "speaking" && "animate-[orb-active_1.5s_ease-in-out_infinite]",
-          orbStatus === "error" && "opacity-30 animate-none"
+          "relative h-[96px] w-[96px] rounded-full",
+          "animate-[orb-breathe_4s_ease-in-out_infinite]"
         )}
         style={{
           background:
-            "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.12) 0%, oklch(0.837 0.128 66.29 / 0.04) 40%, transparent 70%)",
-          boxShadow:
-            orbStatus === "speaking" || orbStatus === "listening"
-              ? "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.1)"
-              : "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.06)",
+            "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.16) 0%, oklch(0.837 0.128 66.29 / 0.06) 45%, transparent 72%)",
+          boxShadow: "0 0 60px 18px oklch(0.837 0.128 66.29 / 0.08)",
         }}
       />
+      <div className="space-y-2">
+        <p className="text-[15px] font-medium text-foreground">{label}</p>
+        <p className="text-[13px] leading-relaxed text-muted-foreground">
+          The site will fall back here until the widget script is ready.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function VoiceOrb() {
+  const [widgetState, setWidgetState] = useState<WidgetState>("loading");
+
+  const widget = useMemo(() => {
+    if (!agentId || widgetState !== "ready") return null;
+
+    const props: Record<string, string | CSSProperties> = {
+      "agent-id": agentId,
+      variant: "full",
+      dismissible: "false",
+      transcript: "false",
+      "text-input": "false",
+      "avatar-when-collapsed": "true",
+      "avatar-orb-color-1": "#c6884a",
+      "avatar-orb-color-2": "#f2c995",
+      style: {
+        display: "block",
+        width: "100%",
+        height: "100%",
+      },
+    };
+
+    if (avatarImageUrl) {
+      props["avatar-image-url"] = avatarImageUrl;
+    }
+
+    return createElement("elevenlabs-convai", props);
+  }, [widgetState]);
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Script
+        src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+        strategy="afterInteractive"
+        onReady={() => setWidgetState("ready")}
+        onError={() => setWidgetState("error")}
+      />
+      <div className="w-full max-w-[min(360px,calc(100vw-2rem))] rounded-[28px] border border-border/70 bg-surface/65 p-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+        <div className="relative min-h-[420px] overflow-hidden rounded-[22px]">
+          {agentId ? (
+            widgetState === "ready" && widget ? (
+              widget
+            ) : (
+              <WidgetFallback status={widgetState} />
+            )
+          ) : (
+            <WidgetFallback status="unconfigured" />
+          )}
+        </div>
+      </div>
       <span className="text-[13px] text-muted-foreground select-none">
-        {getStatusLabel(orbStatus)}
+        {getStatusLabel(widgetState)}
       </span>
     </div>
   );
@@ -120,16 +114,11 @@ export function VoiceOrb() {
 export function OrbSkeleton() {
   return (
     <div className="flex flex-col items-center gap-3">
-      <div
-        className="w-[80px] h-[80px] md:w-[160px] md:h-[160px] rounded-full animate-[orb-breathe_4s_ease-in-out_infinite]"
-        style={{
-          background:
-            "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.12) 0%, oklch(0.837 0.128 66.29 / 0.04) 40%, transparent 70%)",
-          boxShadow: "0 0 60px 20px oklch(0.837 0.128 66.29 / 0.06)",
-        }}
-      />
+      <div className="w-full max-w-[min(360px,calc(100vw-2rem))] rounded-[28px] border border-border/70 bg-surface/65 p-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+        <WidgetFallback status="loading" />
+      </div>
       <span className="text-[13px] text-muted-foreground select-none">
-        Talk to me
+        Loading voice interface...
       </span>
     </div>
   );
