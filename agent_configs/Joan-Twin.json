@@ -44,9 +44,9 @@
             ],
             "file_input": {
                 "enabled": false,
-                "max_files_per_conversation": 0
+                "max_files_per_conversation": 1
             },
-            "monitoring_enabled": true,
+            "monitoring_enabled": false,
             "monitoring_events": [
                 "user_transcript",
                 "agent_response",
