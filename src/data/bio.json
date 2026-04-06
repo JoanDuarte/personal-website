@@ -1,26 +1,21 @@
 {
   "name": "Joan Mateo Duarte Politi",
   "positioning": "I build products where AI, systems, and interface design meet.",
-  "currentBuild": {
-    "name": "Flare",
-    "description": "An AI-native tool that helps teams move from idea to shipped product faster. Combining real-time collaboration with intelligent automation to eliminate the busywork between thinking and building.",
-    "link": "https://github.com/JMDuarte"
-  },
   "story": [
-    "I started building because I couldn't stop asking \"what if.\" What if this process was faster? What if this interface actually understood the user? What if the system could adapt before the user even asked?",
-    "That curiosity pulled me across domains — from backend systems to frontend craft, from data pipelines to design tools, from solo side projects to teams shipping real products.",
-    "I don't specialize in one layer of the stack. I specialize in the full picture: understanding what needs to be built, why it matters, and making it real. Every project I take on is a bet that the right combination of technology and design can unlock something that didn't exist before.",
-    "The common thread across everything I build is conviction. I pick problems I believe in, go deep, and ship."
+    "I'm from Rosario, Argentina. I've been obsessed with solving problems since I was a kid. Math olympiads, not because anyone pushed me, but because I loved the challenge. The solution is never the hard part. The approach is everything.",
+    "At 21 I dropped out of university to start a Bitcoin mining company. It worked. We scaled fast, and that itch to build never went away. So I taught myself to code because I refused to keep delegating the most important part of building a company."
   ],
   "chess": {
-    "text": "I play chess to think in systems. Pattern recognition, calculated risk, knowing when to trade material for position — it all maps to building products.",
+    "text": "16 pieces, 64 squares, more possible positions than grains of sand on Earth. Pattern recognition, calculated risk, knowing when to trade material for position. It maps directly to how I build products.",
     "profileLink": "https://chess.com/member/JMDuarte"
   },
-  "books": [
-    { "title": "Zero to One", "author": "Peter Thiel" },
-    { "title": "The Hard Thing About Hard Things", "author": "Ben Horowitz" },
-    { "title": "Designing Data-Intensive Applications", "author": "Martin Kleppmann" },
-    { "title": "The Pragmatic Programmer", "author": "David Thomas & Andrew Hunt" },
-    { "title": "Thinking, Fast and Slow", "author": "Daniel Kahneman" }
-  ]
+  "reading": {
+    "text": "I read a lot. Strategy, psychology, history, fiction. Anything that changes how I think about the world. A few favorites:",
+    "favorites": [
+      { "title": "Zero to One", "author": "Peter Thiel" },
+      { "title": "The Art of War", "author": "Sun Tzu" },
+      { "title": "1984", "author": "George Orwell" }
+    ],
+    "goodreadsLink": "https://goodreads.com/JMDuarte"
+  }
 }

@@ -1,26 +1,62 @@
 [
   {
     "name": "Flare",
-    "description": "AI-native product development tool. Real-time collaboration meets intelligent automation.",
+    "tagline": "AI-native voice-first social app",
+    "description": "Think of it as a social app that actually knows you. Proactive AI agents observe your patterns and surface what matters before you ask. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves with your lifestyle. I designed the whole system: 16 database tables, row-level security, Edge Functions, the works.",
+    "status": "active",
+    "date": "2026",
+    "logo": "/logos/flare.png",
     "link": "https://github.com/JMDuarte",
-    "tags": ["AI", "Full-Stack", "React", "TypeScript"]
+    "tags": ["AI", "React Native", "Supabase", "Voice"]
   },
   {
-    "name": "Voice Interface Prototype",
-    "description": "Bi-directional voice AI system using WebRTC and ElevenLabs conversational AI.",
-    "link": "https://github.com/JMDuarte",
-    "tags": ["Voice AI", "WebRTC", "Next.js"]
+    "name": "Inception",
+    "tagline": "Bitcoin mining farm with over 500k in ASICs",
+    "description": "Started this at 21. We host and operate our own mining rigs, built the infrastructure, automated the operations, and scaled it into a real business. Still running today, still generating revenue, and it funds everything else I build.",
+    "status": "active",
+    "date": "2021\u2013present",
+    "logo": "/logos/inception.png",
+    "link": null,
+    "tags": ["Bitcoin", "Operations", "Hardware"]
   },
   {
-    "name": "Data Pipeline Framework",
-    "description": "Scalable ETL framework for real-time data processing and analytics.",
-    "link": "https://github.com/JMDuarte",
-    "tags": ["Backend", "Data", "Python"]
+    "name": "DL3ARN",
+    "tagline": "Blockchain credential traceability for education",
+    "description": "We built a SaaS to make academic credentials verifiable on-chain. Great team, real leads from universities, a product that worked. Then the crypto bear market hit and made fundraising impossible. I learned more from this one than from anything that succeeded.",
+    "status": "inactive",
+    "date": "2022\u20132024",
+    "logo": "/logos/dl3arn.png",
+    "link": null,
+    "tags": ["Blockchain", "SaaS", "Education"]
   },
   {
-    "name": "Design System Toolkit",
-    "description": "Component library and design token system for rapid UI development.",
-    "link": "https://github.com/JMDuarte",
-    "tags": ["Design Systems", "React", "CSS"]
+    "name": "Clikan",
+    "tagline": "Pok\u00e9mon Go for real-world locations",
+    "description": "A mobile app where you collect and share real-world spots. Taught me everything about social mechanics, location APIs, and thinking mobile-first. The product didn't survive, but the lessons did.",
+    "status": "inactive",
+    "date": "2025",
+    "logo": "/logos/clikan.png",
+    "link": null,
+    "tags": ["Mobile", "Social", "Location"]
+  },
+  {
+    "name": "Aequsy",
+    "tagline": "Charity sweepstakes platform",
+    "description": "A platform where you could win prizes while supporting real causes. I got deep into payments, conversion funnels, and building for a mission bigger than the product itself.",
+    "status": "inactive",
+    "date": "2025",
+    "logo": "/logos/aequsy.png",
+    "link": null,
+    "tags": ["Payments", "Charity", "Web"]
+  },
+  {
+    "name": "Bloorfy",
+    "tagline": "Marketplace for communities",
+    "description": "My first real coding project. I built it to learn web development and ended up learning what it actually takes to ship something. Messy code, zero users, but it changed my trajectory.",
+    "status": "inactive",
+    "date": "2024",
+    "logo": "/logos/bloorfy.png",
+    "link": null,
+    "tags": ["Marketplace", "Web", "Communities"]
   }
 ]
