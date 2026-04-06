@@ -2,16 +2,15 @@
   "name": "Joan Mateo Duarte Politi",
   "positioning": "I build products where AI, systems, and interface design meet.",
   "story": [
-    "I'm from Argentina. I've been obsessed with solving problems since I was a kid — math olympiads, not because anyone pushed me, but because I loved the challenge. The solution is never the hard part. The approach is everything.",
-    "At 21 I dropped out of university to start a Bitcoin mining company. It worked. We scaled fast, and that itch to build never went away. So I taught myself to code — because I refused to keep delegating the most important part of building a company.",
-    "Now I do the whole thing: product, architecture, design, shipping. Flare has 16 database tables with row-level security, 13 Edge Functions, 6 AI agents, and 12 database triggers. I built all of it. I pick problems I believe in, go deep, and ship."
+    "I'm from Argentina. I've been obsessed with solving problems since I was a kid. Math olympiads, not because anyone pushed me, but because I loved the challenge. The solution is never the hard part. The approach is everything.",
+    "At 21 I dropped out of university to start a Bitcoin mining company. It worked. We scaled fast, and that itch to build never went away. So I taught myself to code because I refused to keep delegating the most important part of building a company."
   ],
   "chess": {
-    "text": "16 pieces, 64 squares, more possible positions than grains of sand on Earth. Pattern recognition, calculated risk, knowing when to trade material for position — it maps directly to how I build products.",
+    "text": "16 pieces, 64 squares, more possible positions than grains of sand on Earth. Pattern recognition, calculated risk, knowing when to trade material for position. It maps directly to how I build products.",
     "profileLink": "https://chess.com/member/JMDuarte"
   },
   "reading": {
-    "text": "I read a lot — strategy, psychology, history, fiction. Anything that changes how I think about the world. A few favorites:",
+    "text": "I read a lot. Strategy, psychology, history, fiction. Anything that changes how I think about the world. A few favorites:",
     "favorites": [
       { "title": "Zero to One", "author": "Peter Thiel" },
       { "title": "The Art of War", "author": "Sun Tzu" },

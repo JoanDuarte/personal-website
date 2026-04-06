@@ -33,11 +33,11 @@ const links = [
 export function Footer() {
   return (
     <footer className="border-t border-border mt-8 px-4 md:px-0">
-      <div className="max-w-[640px] mx-auto py-10">
+      <div className="max-w-[640px] mx-auto py-10 text-center">
         <p className="text-[14px] text-muted-foreground mb-5">
           Want to talk? I&apos;m always down to chat about products, ideas, or chess.
         </p>
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center justify-center gap-4 mb-8">
           {links.map((link) => (
             <a
               key={link.label}
