@@ -7,12 +7,13 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Scroll-reveal animations on all content sections using IntersectionObserver
 - Copy-to-clipboard email button with mailto: fallback
-- Footer component with copyright notice
+- Footer component with dynamic copyright year
 - DESIGN.md codifying the full design system (oklch palette, typography, spacing, motion)
 - Background grain texture and warm gradient animation
 - Staggered fade-in-up entrance animations on hero elements
 - Scroll-down chevron that fades on scroll
 - TODOS.md for tracking deferred work
+- ElevenLabs voice agent configuration with hardened security defaults
 
 ### Changed
 - Migrated entire color system from hex/rgba to oklch color space
@@ -25,3 +26,8 @@ All notable changes to this project will be documented in this file.
 - Rewrote connect section with inline SVG social icons and consistent token usage
 - Added border-t dividers between all content sections
 - Reduced hero height from 100dvh to 60dvh
+
+### Fixed
+- Register `--color-border-hover` in Tailwind @theme inline (hover states were silently broken)
+- Fix timezone-dependent date rendering in writing section (off-by-one for UTC- users)
+- Remove unused Next.js boilerplate SVGs from public/
