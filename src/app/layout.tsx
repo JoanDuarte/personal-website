@@ -38,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} dark antialiased`}>
-      <body className="min-h-dvh bg-background text-foreground">
+    <html lang="en" className={`${spaceGrotesk.variable} dark antialiased bg-background`}>
+      <body className="min-h-dvh text-foreground">
         {children}
         <Analytics />
       </body>
