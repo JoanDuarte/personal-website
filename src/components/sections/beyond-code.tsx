@@ -29,7 +29,7 @@ export function BeyondCode() {
         </p>
         <div className="rounded-lg overflow-hidden border border-border">
           <Image
-            src="/images/messi.jpg"
+            src="/images/messi.png"
             alt="With Messi at Casa Amarilla, Rosario"
             width={640}
             height={400}
