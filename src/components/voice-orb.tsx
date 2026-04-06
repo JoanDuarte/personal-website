@@ -125,7 +125,7 @@ export function VoiceOrb() {
     try {
       const conversation = await Conversation.startSession({
         agentId,
-        connectionType: "webrtc",
+        connectionType: "websocket",
         onConnect: () => {
           setStatus("listening");
         },
