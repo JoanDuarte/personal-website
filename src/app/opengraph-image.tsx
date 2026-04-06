@@ -33,7 +33,7 @@ export default async function Image() {
           height: "100%",
           display: "flex",
           alignItems: "stretch",
-          justifyContent: "stretch",
+          justifyContent: "flex-start",
           fontFamily: "Space Grotesk",
           position: "relative",
           overflow: "hidden",
