@@ -6,11 +6,17 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
-  const spaceGrotesk = await fetch(
-    new URL(
-      "https://fonts.gstatic.com/s/spacegrotesk/v16/V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff"
-    )
-  ).then((res) => res.arrayBuffer());
+  let spaceGrotesk: ArrayBuffer | undefined;
+  try {
+    const res = await fetch(
+      new URL(
+        "https://fonts.gstatic.com/s/spacegrotesk/v16/V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff"
+      )
+    );
+    if (res.ok) spaceGrotesk = await res.arrayBuffer();
+  } catch {
+    // Fall through — render without custom font
+  }
 
   return new ImageResponse(
     (
@@ -87,14 +93,16 @@ export default async function Image() {
     ),
     {
       ...size,
-      fonts: [
-        {
-          name: "Space Grotesk",
-          data: spaceGrotesk,
-          style: "normal",
-          weight: 600,
-        },
-      ],
+      fonts: spaceGrotesk
+        ? [
+            {
+              name: "Space Grotesk",
+              data: spaceGrotesk,
+              style: "normal" as const,
+              weight: 600,
+            },
+          ]
+        : [],
     }
   );
 }
