@@ -30,7 +30,7 @@ export function Writing() {
                   {post.description}
                 </p>
                 <time className="text-[13px] text-muted-foreground mt-1">
-                  {new Date(post.date).toLocaleDateString("en-US", {
+                  {new Date(post.date + "T00:00:00").toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
