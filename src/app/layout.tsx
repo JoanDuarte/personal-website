@@ -10,6 +10,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://personal-website-iota-two-42.vercel.app"),
   title: "Joan Mateo Duarte Politi — Full-Stack Builder",
   description:
     "I build products where AI, systems, and interface design meet. Full-stack engineer crossing domains.",
