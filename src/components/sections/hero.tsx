@@ -44,18 +44,6 @@ export function Hero() {
           ))}
         </div>
 
-        {/* CTA */}
-        <div
-          className="mt-1"
-          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "300ms" }}
-        >
-          <a
-            href="#work"
-            className="inline-flex items-center justify-center px-5 py-2 text-[14px] font-medium border border-border rounded-lg hover:border-border-hover active:translate-y-px transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            See my work
-          </a>
-        </div>
       </div>
     </section>
   );
