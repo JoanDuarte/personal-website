@@ -1,4 +1,5 @@
 import { CopyEmailButton } from "@/components/copy-email-button";
+import { CollapsibleSection } from "./collapsible-section";
 
 const links = [
   {
@@ -32,27 +33,22 @@ const links = [
 
 export function Connect() {
   return (
-    <section className="py-16 pb-24 px-4 md:px-0">
-      <div className="max-w-[640px] mx-auto">
-        <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-muted-foreground mb-8">
-          Connect
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {links.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-[15px] font-medium border border-border rounded-full hover:border-border-hover hover:bg-muted/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              {link.icon}
-              {link.label}
-            </a>
-          ))}
-          <CopyEmailButton />
-        </div>
+    <CollapsibleSection title="Connect">
+      <div className="flex flex-wrap gap-3">
+        {links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-[15px] font-medium border border-border rounded-full hover:border-border-hover hover:bg-muted/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            {link.icon}
+            {link.label}
+          </a>
+        ))}
+        <CopyEmailButton />
       </div>
-    </section>
+    </CollapsibleSection>
   );
 }

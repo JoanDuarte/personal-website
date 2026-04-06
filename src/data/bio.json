@@ -1,26 +1,19 @@
 {
   "name": "Joan Mateo Duarte Politi",
   "positioning": "I build products where AI, systems, and interface design meet.",
-  "currentBuild": {
-    "name": "Flare",
-    "description": "An AI-native tool that helps teams move from idea to shipped product faster. Combining real-time collaboration with intelligent automation to eliminate the busywork between thinking and building.",
-    "link": "https://github.com/JMDuarte"
-  },
   "story": [
-    "I started building because I couldn't stop asking \"what if.\" What if this process was faster? What if this interface actually understood the user? What if the system could adapt before the user even asked?",
-    "That curiosity pulled me across domains — from backend systems to frontend craft, from data pipelines to design tools, from solo side projects to teams shipping real products.",
-    "I don't specialize in one layer of the stack. I specialize in the full picture: understanding what needs to be built, why it matters, and making it real. Every project I take on is a bet that the right combination of technology and design can unlock something that didn't exist before.",
+    "I'm from Argentina, and I've been solving problems since I can remember. As a kid I was the one going to math olympics, not because someone pushed me into it, but because I genuinely loved the challenge. The solution is never the hard part. The approach is everything.",
+    "At 21 I dropped out of university to build a crypto mining company. It wasn't a startup in the traditional sense, but it was a new sector, it was futuristic, and we were making money. We scaled fast. That itch to build a real startup never left, so we created DL3ARN, then I taught myself to code because I refused to keep delegating the most important part of a startup.",
+    "I don't specialize in one layer of the stack. I specialize in the full picture: understanding what needs to be built, why it matters, and making it real. Flare's architecture has 16 database tables with row-level security, 13 Edge Functions, 6 AI agents, and 12 database triggers. I built all of it.",
     "The common thread across everything I build is conviction. I pick problems I believe in, go deep, and ship."
   ],
   "chess": {
-    "text": "I play chess to think in systems. Pattern recognition, calculated risk, knowing when to trade material for position — it all maps to building products.",
+    "text": "With only 16 pieces and 64 squares, there are more possible positions than grains of sand on Earth. Pattern recognition, calculated risk, knowing when to trade material for position. It maps directly to building products.",
     "profileLink": "https://chess.com/member/JMDuarte"
   },
   "books": [
     { "title": "Zero to One", "author": "Peter Thiel" },
-    { "title": "The Hard Thing About Hard Things", "author": "Ben Horowitz" },
-    { "title": "Designing Data-Intensive Applications", "author": "Martin Kleppmann" },
-    { "title": "The Pragmatic Programmer", "author": "David Thomas & Andrew Hunt" },
-    { "title": "Thinking, Fast and Slow", "author": "Daniel Kahneman" }
+    { "title": "The Art of War", "author": "Sun Tzu" },
+    { "title": "1984", "author": "George Orwell" }
   ]
 }
