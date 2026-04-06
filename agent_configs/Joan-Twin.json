@@ -9,7 +9,7 @@
         },
         "turn": {
             "turn_timeout": 7,
-            "silence_end_call_timeout": -1,
+            "silence_end_call_timeout": 30,
             "soft_timeout_config": {
                 "timeout_seconds": -1,
                 "message": "Hhmmmm...yeah.",
@@ -43,10 +43,10 @@
                 "interruption"
             ],
             "file_input": {
-                "enabled": true,
-                "max_files_per_conversation": 10
+                "enabled": false,
+                "max_files_per_conversation": 0
             },
-            "monitoring_enabled": false,
+            "monitoring_enabled": true,
             "monitoring_events": [
                 "user_transcript",
                 "agent_response",
@@ -160,7 +160,7 @@
             "always_expanded": false,
             "dismissible": false,
             "show_agent_status": false,
-            "show_conversation_id": true,
+            "show_conversation_id": false,
             "strip_audio_tags": true,
             "syntax_highlight_theme": null,
             "text_contents": {
@@ -197,7 +197,7 @@
                     "similarity_boost": false
                 },
                 "conversation": {
-                    "text_only": true
+                    "text_only": false
                 },
                 "agent": {
                     "first_message": false,
@@ -230,28 +230,28 @@
         "guardrails": {
             "version": "1",
             "focus": {
-                "is_enabled": false
+                "is_enabled": true
             },
             "prompt_injection": {
-                "is_enabled": false
+                "is_enabled": true
             },
             "content": {
                 "execution_mode": "streaming",
                 "config": {
                     "sexual": {
-                        "is_enabled": false,
+                        "is_enabled": true,
                         "threshold": "medium"
                     },
                     "violence": {
-                        "is_enabled": false,
+                        "is_enabled": true,
                         "threshold": "medium"
                     },
                     "harassment": {
-                        "is_enabled": false,
+                        "is_enabled": true,
                         "threshold": "medium"
                     },
                     "self_harm": {
-                        "is_enabled": false,
+                        "is_enabled": true,
                         "threshold": "medium"
                     },
                     "profanity": {
@@ -282,12 +282,12 @@
         "auth": {
             "enable_auth": false,
             "allowlist": [],
-            "require_origin_header": false
+            "require_origin_header": true
         },
         "call_limits": {
-            "agent_concurrency_limit": -1,
-            "daily_limit": 100000,
-            "bursting_enabled": true
+            "agent_concurrency_limit": 5,
+            "daily_limit": 200,
+            "bursting_enabled": false
         },
         "ban": null,
         "privacy": {
