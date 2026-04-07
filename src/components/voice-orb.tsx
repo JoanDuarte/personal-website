@@ -158,10 +158,17 @@ export function VoiceOrb() {
     } catch (error) {
       conversationRef.current = null;
       setStatus("error");
+      const msg =
+        error instanceof Error ? error.message : "";
+      const isRateLimit =
+        msg.includes("limit") ||
+        msg.includes("capacity") ||
+        msg.includes("concurrent") ||
+        msg.includes("429");
       setErrorDetail(
-        error instanceof Error
-          ? error.message
-          : "The voice session could not start."
+        isRateLimit
+          ? "Joan's voice is busy right now. Try again in a moment."
+          : msg || "The voice session could not start."
       );
     }
   }, [endConversation, hasConversation]);
