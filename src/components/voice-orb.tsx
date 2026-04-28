@@ -114,6 +114,17 @@ export function VoiceOrb() {
       return;
     }
 
+    if (
+      typeof window !== "undefined" &&
+      (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia)
+    ) {
+      setStatus("error");
+      setErrorDetail(
+        "This browser does not expose microphone access for the voice session. Try the latest version of Safari, Chrome, or Firefox over HTTPS."
+      );
+      return;
+    }
+
     if (hasConversation) {
       await endConversation();
       return;
@@ -125,7 +136,7 @@ export function VoiceOrb() {
     try {
       const conversation = await Conversation.startSession({
         agentId,
-        connectionType: "websocket",
+        connectionType: "webrtc",
         onConnect: () => {
           setStatus("listening");
         },
