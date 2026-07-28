@@ -26,7 +26,7 @@ export function Writing() {
             <p className="text-[14px] md:text-[15px] leading-[1.7] text-muted-foreground mt-1">
               {post.description}
             </p>
-            <time className="text-[12px] text-muted-foreground mt-1 block">
+            <time dateTime={post.date} className="text-[12px] text-muted-foreground mt-1 block">
               {new Date(post.date + "T00:00:00").toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",

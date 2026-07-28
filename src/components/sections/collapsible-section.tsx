@@ -18,6 +18,7 @@ export function CollapsibleSection({
       <div className="max-w-[640px] mx-auto border-t border-border">
         <button
           onClick={() => setOpen(!open)}
+          aria-expanded={open}
           className="w-full flex items-center justify-between py-4 text-left group"
         >
           <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-muted-foreground group-hover:text-muted-foreground/70 transition-colors">
@@ -40,6 +41,7 @@ export function CollapsibleSection({
           </svg>
         </button>
         <div
+          inert={!open}
           className={`grid transition-all duration-200 ease-out ${
             open
               ? "grid-rows-[1fr] opacity-100 pb-6"
