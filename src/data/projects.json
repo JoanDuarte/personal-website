@@ -1,13 +1,33 @@
 [
   {
     "name": "Flare",
-    "tagline": "AI-native voice-first social app",
-    "description": "Think of it as a social app that actually knows you. Proactive AI agents observe your patterns and surface what matters before you ask. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves with your lifestyle. I designed the whole system: 16 database tables, row-level security, Edge Functions, the works.",
+    "tagline": "Your social brain, voice-first",
+    "description": "An agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. The whole product is one conversation: you open it and the Orb is already talking, your answer is your check-in, and it closes by pointing you at a real human. No likes, no comments, no feed of strangers. Live on iOS. I designed and built the system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer pipeline.",
     "status": "active",
     "date": "2026–present",
     "logo": "/logos/flare.png",
     "link": "https://heyflare.app",
     "tags": ["AI", "React Native", "Supabase", "Voice"]
+  },
+  {
+    "name": "Stevay",
+    "tagline": "AI agents for construction companies",
+    "description": "A construction company's data is scattered across ERPs, spreadsheets and WhatsApp, and none of it lines up until the year closes. Stevay sits on top and reads it as it arrives, then structures the administrative work and runs it: 75+ agents across finances, documentation, purchasing, progress, certification, management and communication. Nothing new to adopt, and a human signs off on anything that touches money. The point is knowing whether a project makes or loses money now, not in December. I co-founded it with Franco Quattroqui and own tech and product.",
+    "status": "active",
+    "date": "2026–present",
+    "logo": "/logos/stevay.png",
+    "link": "https://stevay.com",
+    "tags": ["AI Agents", "Construction", "B2B"]
+  },
+  {
+    "name": "Privé",
+    "tagline": "Telegram-native storefront for creators",
+    "description": "Creators sell digital content, video calls and VIP group access without leaving Telegram. They get paid through Mercado Pago, crypto or bank transfer, and the money lands in their account, never mine. Privé charges 0% on every plan and every method, and makes its money on the Premium subscription instead of a cut of each sale. Bot, mini app, payment rails and the fee engine are all mine.",
+    "status": "active",
+    "date": "2026–present",
+    "logo": "/logos/prive.png",
+    "link": "https://heyprive.com",
+    "tags": ["Telegram", "Payments", "SaaS"]
   },
   {
     "name": "Inception",

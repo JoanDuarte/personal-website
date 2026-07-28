@@ -1,8 +1,13 @@
 # TODOS
 
-## OG Image Generation
-**Priority:** P2 | **Effort:** S (human: ~2h / CC: ~15min)
-**What:** Generate a custom Open Graph image for social sharing previews.
-**Why:** When someone shares jmduarte.com on Twitter/LinkedIn/Slack, the link preview currently shows a generic fallback. A branded OG image with the warm amber palette, Joan's name, and the orb silhouette makes shared links look intentional.
-**Context:** Next.js supports dynamic OG image generation via `next/og` (uses Satori under the hood). Create `src/app/opengraph-image.tsx` that renders a 1200x630 image using the oklch warm amber palette from the tweakcn theme. Include name, subtitle, and orb graphic. The oklch colors may need conversion to hex/rgb for Satori compatibility (Satori doesn't support oklch as of 2026).
-**Depends on:** Design polish PR must land first (establishes the color palette and visual identity).
+Nothing open.
+
+---
+
+## Done
+
+- **Traction numbers in the voice agent.** Decided: the orb states no numbers. Registered and active account counts, the time-to-first-word baseline, and monetization price points stay out of `flare-product-kb.md`. If that ever changes, the source is `flare-ios/docs/PRODUCT.md` (Principles point 2, and Metrics); add them to "Where It Is Today" and re-run `./upload-kb.sh`.
+- **Custom domain.** Decided: stay on `joanduarte.vercel.app`. `NEXT_PUBLIC_SITE_URL` is set to match across all three environments.
+- **The "6 AI agents" claim.** It was wrong. Flare runs three — Spark, Mirror and Bond — per `flare-ios/docs/PRODUCT.md`. The whole knowledge base was rewritten against the V3 product doc, which had moved on further than the agent count: the atomic act is now a spoken check-in rather than a captured flare.
+- **Overlapping Joan documents.** `joan-context-v1.md` and `joan-founder-kb.md` were merged into `joan-kb.md`. One document per subject.
+- **OG image generation.** The routes existed but returned 500 in production: a 404'd Google Fonts URL, an unreachable `metadataBase`, and an overlay that never painted because Satori has no `inset` shorthand. Fixed; they now prerender as static.

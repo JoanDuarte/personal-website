@@ -39,6 +39,7 @@ function ProjectRow({
     <div className="border-t border-border">
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
         className="w-full flex items-center justify-between py-4 text-left group gap-3"
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -51,7 +52,7 @@ function ProjectRow({
               <span
                 className={`text-[11px] font-medium uppercase tracking-[0.1em] px-2 py-0.5 rounded-full shrink-0 ${
                   isActive
-                    ? "text-emerald-400 bg-emerald-400/10"
+                    ? "text-primary bg-primary/10"
                     : "text-muted-foreground bg-muted/50"
                 }`}
               >
@@ -83,6 +84,7 @@ function ProjectRow({
         </svg>
       </button>
       <div
+        inert={!open}
         className={`grid transition-all duration-200 ease-out ${
           open ? "grid-rows-[1fr] opacity-100 pb-4" : "grid-rows-[0fr] opacity-0"
         }`}

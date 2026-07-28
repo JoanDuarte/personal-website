@@ -1,15 +1,17 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-export const runtime = "edge";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://personal-website-iota-two-42.vercel.app";
-const avatarUrl = new URL("/images/joan-avatar.jpg", siteUrl).toString();
+export default async function Icon() {
+  // Read from disk instead of fetching the site's own origin over HTTP, which
+  // broke whenever NEXT_PUBLIC_SITE_URL was unset or pointed at a stale deploy.
+  const avatar = await readFile(
+    join(process.cwd(), "public/images/joan-avatar.jpg")
+  );
 
-export default function Icon() {
   return new ImageResponse(
     (
       <div
@@ -33,7 +35,7 @@ export default function Icon() {
           }}
         />
         <img
-          src={avatarUrl}
+          src={`data:image/jpeg;base64,${avatar.toString("base64")}`}
           alt="Joan Mateo Duarte Politi"
           style={{
             width: "100%",
