@@ -1,4 +1,4 @@
-# Design System — jmduarte.com
+# Design System — joanduarte.vercel.app
 
 Single-page personal website. Dark mode only. Warm, not cold.
 
