@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.0.0] - 2026-07-28
 
 ### Added
 - Stevay and Privé to the work list, the hero bio and the voice agent's knowledge base
