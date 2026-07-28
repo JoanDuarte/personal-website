@@ -38,7 +38,7 @@ This is a hard line, not a nice-to-have principle. Flare will never build likes,
 
 ## Technical Architecture
 
-Flare is built on a real technical foundation. The backend runs on Supabase with 16 database tables protected by row-level security. There are 17 Edge Functions handling everything from flare processing to agent orchestration. The 6 AI agents run on a two-layer data pipeline: the first layer processes individual flares in real time, the second layer synthesizes patterns across time and across friends.
+Flare is built on a real technical foundation. The backend runs on Supabase with 29 database tables protected by row-level security. There are 23 Edge Functions handling everything from flare processing to agent orchestration. The 6 AI agents run on a two-layer data pipeline: the first layer processes individual flares in real time, the second layer synthesizes patterns across time and across friends.
 
 The mobile app is built with Expo and React Native, shipping to iOS via the App Store with over-the-air updates through EAS. The AI agents use Google Gemini for intelligence. Voice briefings use ElevenLabs Conversational AI. The Aura Orb shader is built with Skia.
 

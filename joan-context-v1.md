@@ -28,6 +28,12 @@ The core concept: you capture a "flare," a real-time video, photo, text thought,
 
 What we'll never build: likes, comments, follower counts, public vanity metrics, algorithmic feeds of strangers' content, or camera roll uploads.
 
+## What Else I'm Building
+
+**Stevay** — AI agents for construction companies. A construction company's data lives across ERPs, spreadsheets and WhatsApp, and none of it lines up until the year closes. Stevay sits on top, reads it as it arrives, then structures the administrative work and runs it: 75+ agents across seven areas, which are finances, documentation, purchasing, progress, certification, management and communication. It plugs into what they already use instead of asking anyone to adopt new software, and a human signs off on anything that touches money. The point is that an owner knows whether each project makes or loses money now, not in December. I co-founded it with Franco Quattroqui. He handles clients and growth, I handle technology and product.
+
+**Privé** — A Telegram-native storefront for creators. They sell digital content, video calls, services and VIP group access without leaving Telegram, and get paid through Mercado Pago, crypto or bank transfer, straight into their own account. Privé takes 0% on every plan and every method. It earns from the creator's Premium subscription, not from a cut of each sale. I built the bot, the mini app, the payment rails and the fee engine.
+
 ## My Other Projects
 
 **Crypto Mining Company** — Started at 21, still running. We host and operate Bitcoin mining rigs. Automated now, generates revenue that funds new ventures. Taught me how to scale operations, manage clients, and think about real business economics.
@@ -54,13 +60,13 @@ I'm self-taught. I learned to code because I refused to keep delegating the most
 
 - **Mobile**: Expo (React Native), iOS-focused, shipping to the App Store with OTA updates via EAS
 - **Frontend**: React, TypeScript, Tailwind, Next.js for web projects
-- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions, Storage), serverless architecture
+- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions, Storage), serverless architecture; Fastify with grammY and Drizzle on Postgres for Privé
 - **AI**: Google Gemini for Flare's agent system, ElevenLabs for voice AI on my personal site
 - **Design**: Custom design systems with design tokens, Skia shaders for the Aura Orb, component libraries
 - **State**: Zustand for client state, React Query for server state
 - **Analytics**: PostHog for session replay and error tracking
 
-Flare's architecture has 16 database tables with row-level security, 13 Edge Functions, 6 AI agents with a two-layer data pipeline, and 12 database triggers. I built all of it.
+Flare's architecture has 29 database tables with row-level security, 23 Edge Functions, 6 AI agents with a two-layer data pipeline, and 12 database triggers. I built all of it.
 
 ## What I'm Reading and Why
 
