@@ -14,10 +14,14 @@
 set -euo pipefail
 
 # file:display name. The name is what shows up in the ElevenLabs dashboard.
+#
+# One document per subject. joan-founder-kb.md and joan-context-v1.md used to be
+# separate entries here; they told the same founder story twice and had drifted
+# apart on the details, so retrieval could land on either version. Merged into
+# joan-kb.md.
 DOCS=(
   "flare-product-kb.md:Flare Product"
-  "joan-founder-kb.md:Joan Founder"
-  "joan-context-v1.md:Joan Context"
+  "joan-kb.md:Joan"
 )
 
 for cmd in jq curl; do

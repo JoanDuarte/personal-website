@@ -1,8 +1,8 @@
 [
   {
     "name": "Flare",
-    "tagline": "AI-native voice-first social app",
-    "description": "Think of it as a social app that actually knows you. Proactive AI agents observe your patterns and surface what matters before you ask. Your profile builds itself with an AI-generated identity and an Aura Orb that evolves with your lifestyle. I designed the whole system: 29 database tables, row-level security, 23 Edge Functions, the works.",
+    "tagline": "Your social brain, voice-first",
+    "description": "An agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. The whole product is one conversation: you open it and the Orb is already talking, your answer is your check-in, and it closes by pointing you at a real human. No likes, no comments, no feed of strangers. Live on iOS. I designed and built the system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer pipeline.",
     "status": "active",
     "date": "2026–present",
     "logo": "/logos/flare.png",

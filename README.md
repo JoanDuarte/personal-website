@@ -59,9 +59,12 @@ The orb uses the public agent path over WebRTC, so the agent must allow unauthen
 
 ## Knowledge base
 
-The orb answers from three markdown files in the repo root: `flare-product-kb.md`,
-`joan-founder-kb.md` and `joan-context-v1.md`. Editing them changes nothing on its
-own — they have to be uploaded and linked to the agent:
+The orb answers from two markdown files in the repo root: `joan-kb.md` (who Joan is)
+and `flare-product-kb.md` (what Flare is). One document per subject, on purpose —
+the earlier split into `joan-founder-kb.md` and `joan-context-v1.md` told the same
+story twice and drifted apart.
+
+Editing them changes nothing on its own. They have to be uploaded and linked:
 
 ```bash
 echo "YOUR_KEY" > ~/.elevenlabs/api_key && chmod 600 ~/.elevenlabs/api_key
