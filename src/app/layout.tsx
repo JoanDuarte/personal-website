@@ -12,7 +12,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ??
-      "https://personal-website-iota-two-42.vercel.app"
+      "https://joanduarte.vercel.app"
   ),
   title: "Joan Mateo Duarte Politi — Full-Stack Builder",
   description:
