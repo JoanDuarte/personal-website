@@ -29,10 +29,18 @@ export function Hero() {
           Joan Mateo Duarte Politi
         </h1>
 
+        {/* Positioning */}
+        <p
+          className="text-[15px] md:text-[17px] text-foreground/90 text-center text-balance max-w-[480px] leading-snug"
+          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "150ms" }}
+        >
+          {bio.positioning}
+        </p>
+
         {/* Story */}
         <div
           className="max-w-[520px]"
-          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "200ms" }}
+          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "250ms" }}
         >
           {bio.story.map((paragraph, i) => (
             <p
