@@ -1,19 +1,25 @@
 #!/bin/bash
-# Upload new knowledge base documents to ElevenLabs and link them to the agent.
+# Upload the knowledge base documents to ElevenLabs and link them to the agent.
 #
-# SEQUENCING (from eng review):
-#   1. Push updated agent config (prompt, first_message, settings) via CLI
-#   2. Upload new KB docs via API
-#   3. PATCH agent to link new KB docs
-#   4. Pull updated config back to local
-#   5. Verify
+# This only touches the knowledge base. It deliberately does NOT push the agent
+# config: the previous version ran `elevenlabs agents push` first, which would
+# overwrite the live agent's prompt and settings with whatever happens to be in
+# agent_configs/ locally. Edit the agent in the ElevenLabs dashboard instead, or
+# push the config as a separate, deliberate step.
 #
-# Old KB docs (3boWShDiRhHIhIuSoNNp, Ds4PtY0IAGkNkfPyQwhI, mqqpMY5PMd5SLwRuudXM)
-# are NOT deleted here. Delete them manually 48h after acceptance tests pass.
+# Uploading creates new documents rather than updating in place, so each run
+# leaves the previous ones unreferenced. Orphans are reported at the end; they
+# are not deleted automatically.
 
 set -euo pipefail
 
-# Prerequisites check
+# file:display name. The name is what shows up in the ElevenLabs dashboard.
+DOCS=(
+  "flare-product-kb.md:Flare Product"
+  "joan-founder-kb.md:Joan Founder"
+  "joan-context-v1.md:Joan Context"
+)
+
 for cmd in jq curl; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "ERROR: $cmd is required but not installed."
@@ -21,104 +27,109 @@ for cmd in jq curl; do
   fi
 done
 
-if [ ! -f flare-product-kb.md ] || [ ! -f joan-founder-kb.md ]; then
-  echo "ERROR: KB markdown files not found. Run from the repo root."
-  exit 1
-fi
+for entry in "${DOCS[@]}"; do
+  file="${entry%%:*}"
+  if [ ! -f "$file" ]; then
+    echo "ERROR: $file not found. Run from the repo root."
+    exit 1
+  fi
+done
 
-# Export API key
-export XI_API_KEY=$(cat ~/.elevenlabs/api_key 2>/dev/null || true)
+XI_API_KEY=$(cat ~/.elevenlabs/api_key 2>/dev/null || true)
 if [ -z "$XI_API_KEY" ]; then
   echo "ERROR: No API key found at ~/.elevenlabs/api_key"
   exit 1
 fi
+export XI_API_KEY
 
-# Get current agent ID
 AGENT_ID=$(jq -r '.agents[0].id' agents.json)
 if [ -z "$AGENT_ID" ] || [ "$AGENT_ID" = "null" ]; then
   echo "ERROR: Could not read agent ID from agents.json"
   exit 1
 fi
-echo "Agent ID: $AGENT_ID"
 
-# Step 1: Push updated config (prompt, first_message, settings)
-echo ""
-echo "=== Step 1: Pushing updated agent config ==="
-elevenlabs agents push
-echo "Config pushed."
+api() {
+  # api <method> <path> [body] -> prints body, fails on non-2xx
+  local method="$1" path="$2" body="${3:-}" out code
+  out=$(mktemp)
+  if [ -n "$body" ]; then
+    code=$(curl -s -o "$out" -w "%{http_code}" -X "$method" \
+      "https://api.elevenlabs.io/v1$path" \
+      -H "xi-api-key: $XI_API_KEY" -H "Content-Type: application/json" -d "$body")
+  else
+    code=$(curl -s -o "$out" -w "%{http_code}" -X "$method" \
+      "https://api.elevenlabs.io/v1$path" -H "xi-api-key: $XI_API_KEY")
+  fi
+  if [ "${code:0:1}" != "2" ]; then
+    echo "ERROR: $method $path returned HTTP $code" >&2
+    cat "$out" >&2
+    rm -f "$out"
+    return 1
+  fi
+  cat "$out"
+  rm -f "$out"
+}
 
-# Step 2: Upload new Flare Product document
+echo "Agent: $AGENT_ID"
 echo ""
-echo "=== Step 2: Uploading Flare Product KB ==="
-DOC1_ID=$(curl -s -X POST "https://api.elevenlabs.io/v1/convai/knowledge-base/text" \
-  -H "xi-api-key: $XI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --rawfile text flare-product-kb.md '{text: $text, name: "Flare Product"}')" \
-  | jq -r '.id')
-if [ -z "$DOC1_ID" ] || [ "$DOC1_ID" = "null" ]; then
-  echo "ERROR: Flare Product upload failed"
+echo "=== Uploading ${#DOCS[@]} documents ==="
+
+KB_JSON="[]"
+for entry in "${DOCS[@]}"; do
+  file="${entry%%:*}"
+  name="${entry#*:}"
+
+  id=$(api POST /convai/knowledge-base/text \
+    "$(jq -n --rawfile text "$file" --arg name "$name" '{text: $text, name: $name}')" \
+    | jq -r '.id')
+
+  if [ -z "$id" ] || [ "$id" = "null" ]; then
+    echo "ERROR: upload failed for $file"
+    exit 1
+  fi
+
+  echo "  $name  <-  $file  ($id)"
+  KB_JSON=$(jq -c --arg id "$id" --arg name "$name" \
+    '. + [{type: "text", name: $name, id: $id, usage_mode: "auto"}]' <<<"$KB_JSON")
+done
+
+echo ""
+echo "=== Linking to agent ==="
+api PATCH "/convai/agents/$AGENT_ID" \
+  "$(jq -n --argjson kb "$KB_JSON" \
+    '{conversation_config: {agent: {prompt: {knowledge_base: $kb}}}}')" >/dev/null
+echo "Linked."
+
+echo ""
+echo "=== Verifying ==="
+LINKED=$(api GET "/convai/agents/$AGENT_ID" \
+  | jq -r '.conversation_config.agent.prompt.knowledge_base[]?.name' | sort)
+echo "$LINKED" | sed 's/^/  /'
+
+COUNT=$(printf '%s\n' "$LINKED" | grep -c . || true)
+if [ "$COUNT" != "${#DOCS[@]}" ]; then
+  echo "WARNING: expected ${#DOCS[@]} documents, agent reports $COUNT"
   exit 1
 fi
-echo "Flare Product doc ID: $DOC1_ID"
 
-# Step 3: Upload new Joan Founder document
 echo ""
-echo "=== Step 3: Uploading Joan Founder KB ==="
-DOC2_ID=$(curl -s -X POST "https://api.elevenlabs.io/v1/convai/knowledge-base/text" \
-  -H "xi-api-key: $XI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --rawfile text joan-founder-kb.md '{text: $text, name: "Joan Founder"}')" \
-  | jq -r '.id')
-if [ -z "$DOC2_ID" ] || [ "$DOC2_ID" = "null" ]; then
-  echo "ERROR: Joan Founder upload failed"
-  exit 1
+echo "=== Orphans ==="
+LINKED_IDS=$(api GET "/convai/agents/$AGENT_ID" \
+  | jq -r '.conversation_config.agent.prompt.knowledge_base[]?.id')
+ORPHANS=$(api GET "/convai/knowledge-base?page_size=100" \
+  | jq -r --arg ids "$LINKED_IDS" '
+      ($ids | split("\n")) as $linked
+      | .documents[] | select(.id as $i | $linked | index($i) | not)
+      | "\(.id)  \(.name)"')
+
+if [ -z "$ORPHANS" ]; then
+  echo "  none"
+else
+  echo "$ORPHANS" | sed 's/^/  /'
+  echo ""
+  echo "  Delete once the new docs test clean:"
+  echo "$ORPHANS" | awk '{print "    curl -X DELETE https://api.elevenlabs.io/v1/convai/knowledge-base/"$1" -H \"xi-api-key: $XI_API_KEY\""}'
 fi
-echo "Joan Founder doc ID: $DOC2_ID"
-
-# Step 4: Patch agent to reference new docs
-echo ""
-echo "=== Step 4: Linking KB docs to agent ==="
-PATCH_RESULT=$(curl -s -w "\n%{http_code}" -X PATCH "https://api.elevenlabs.io/v1/convai/agents/$AGENT_ID" \
-  -H "xi-api-key: $XI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n \
-    --arg d1 "$DOC1_ID" --arg d2 "$DOC2_ID" \
-    '{conversation_config: {agent: {prompt: {knowledge_base: [
-      {type: "text", name: "Flare Product", id: $d1, usage_mode: "auto"},
-      {type: "text", name: "Joan Founder", id: $d2, usage_mode: "auto"}
-    ]}}}}')")
-HTTP_CODE=$(echo "$PATCH_RESULT" | tail -1)
-if [ "$HTTP_CODE" != "200" ]; then
-  echo "ERROR: Agent PATCH failed with HTTP $HTTP_CODE"
-  echo "$PATCH_RESULT" | head -n -1
-  exit 1
-fi
-echo "KB docs linked to agent."
-
-# Step 5: Verify
-echo ""
-echo "=== Step 5: Verifying ==="
-KB_COUNT=$(curl -s "https://api.elevenlabs.io/v1/convai/agents/$AGENT_ID" \
-  -H "xi-api-key: $XI_API_KEY" \
-  | jq '.conversation_config.agent.prompt.knowledge_base | length')
-echo "Knowledge base documents: $KB_COUNT (expected: 2)"
-if [ "$KB_COUNT" != "2" ]; then
-  echo "WARNING: Expected 2 KB documents, got $KB_COUNT"
-fi
-
-# Step 6: Pull updated config back to local
-echo ""
-echo "=== Step 6: Pulling updated config ==="
-elevenlabs agents pull --update
-echo "Config pulled."
 
 echo ""
 echo "=== DONE ==="
-echo "New KB doc IDs: $DOC1_ID, $DOC2_ID"
-echo ""
-echo "NEXT STEPS:"
-echo "  1. Run acceptance tests (see design doc)"
-echo "  2. After 48h of successful testing, delete old KB docs:"
-echo "     curl -X DELETE 'https://api.elevenlabs.io/v1/convai/knowledge-base/3boWShDiRhHIhIuSoNNp' -H 'xi-api-key: \$XI_API_KEY'"
-echo "     curl -X DELETE 'https://api.elevenlabs.io/v1/convai/knowledge-base/Ds4PtY0IAGkNkfPyQwhI' -H 'xi-api-key: \$XI_API_KEY'"
-echo "     curl -X DELETE 'https://api.elevenlabs.io/v1/convai/knowledge-base/mqqpMY5PMd5SLwRuudXM' -H 'xi-api-key: \$XI_API_KEY'"
