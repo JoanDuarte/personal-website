@@ -1,6 +1,7 @@
 "use client";
 
-import type { GameAnalysis, Scorecard } from "@/lib/chess/analyze";
+import type { GameAnalysis } from "@/lib/chess/analyze";
+import type { Scorecard } from "@/lib/chess/scorecard";
 import { clock, pawns, percent, relativeDay, sanEs } from "@/lib/chess/format";
 
 /**
@@ -67,6 +68,7 @@ export function Review({
   error,
   onSync,
   syncedAt,
+  fresh,
 }: {
   games: GameAnalysis[];
   card: Scorecard | null;
@@ -74,6 +76,8 @@ export function Review({
   error: string | null;
   onSync: () => void;
   syncedAt: number | null;
+  /** Games the last sync brought in, null before any sync this session. */
+  fresh: number | null;
 }) {
   return (
     <div className="space-y-6">
@@ -84,11 +88,25 @@ export function Review({
           disabled={loading}
           className="min-h-11 rounded-md border border-primary px-4 text-[14px] text-primary transition-opacity hover:opacity-70 disabled:opacity-40"
         >
-          {loading ? "Analizando…" : "Sincronizar con chess.com"}
+          {loading
+            ? "Analizando…"
+            : syncedAt
+              ? "Buscar partidas nuevas"
+              : "Sincronizar con chess.com"}
         </button>
+        {loading && (
+          <span className="text-[13px] text-muted-foreground">
+            La primera vez tarda: analiza cada jugada de cada partida. Después
+            solo mira las nuevas.
+          </span>
+        )}
         {syncedAt && !loading && (
           <span className="text-[13px] text-muted-foreground">
-            {games.length} partidas rapid analizadas
+            {fresh === 0
+              ? `Sin partidas nuevas. ${games.length} en la ventana.`
+              : fresh != null
+                ? `${fresh} ${fresh === 1 ? "partida nueva" : "partidas nuevas"}. ${games.length} en la ventana.`
+                : `${games.length} partidas rapid analizadas.`}
           </span>
         )}
       </div>

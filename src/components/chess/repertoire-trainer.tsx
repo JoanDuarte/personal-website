@@ -100,7 +100,7 @@ function Drill({
   // Derived from state rather than a mutable ref, so what the panel shows
   // is always the same verdict that handleMove grades against.
   const book = useMemo(
-    () => consultBook(system, new Chess(fen), lastMove),
+    () => consultBook(system, new Chess(fen), { lastMove }),
     [system, fen, lastMove]
   );
   const progress = useMemo(
@@ -133,7 +133,7 @@ function Drill({
     const chess = game;
     if (chess.turn() !== system.color || thinking) return;
 
-    const expected = consultBook(system, chess, lastMove);
+    const expected = consultBook(system, chess, { lastMove });
     const played = chess.move({
       from: move.from,
       to: move.to,

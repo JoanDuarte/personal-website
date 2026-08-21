@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { scorecard } from "@/lib/chess/analyze";
 import {
   CHESS_USERNAME,
   fetchAnalyzedGames,
@@ -7,28 +6,33 @@ import {
 } from "@/lib/chess/chesscom";
 
 export const runtime = "nodejs";
-/** Analysis is ~0.3s per game; 40 games needs more than the default budget. */
+/** Exchange evaluation over a full backfill runs well past the default budget. */
 export const maxDuration = 60;
 
 const MAX_GAMES = 40;
 
+function positiveInt(value: string | null, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
 export async function GET(request: Request) {
-  const requested = Number(new URL(request.url).searchParams.get("limit") ?? 20);
-  const limit = Math.min(
-    Math.max(Number.isFinite(requested) ? requested : 20, 1),
-    MAX_GAMES
-  );
+  const params = new URL(request.url).searchParams;
+  const limit = Math.min(Math.max(positiveInt(params.get("limit"), 20), 1), MAX_GAMES);
+  /** Unix seconds of the newest game the caller already holds. */
+  const since = positiveInt(params.get("since"), 0);
 
   try {
     const [games, stats] = await Promise.all([
-      fetchAnalyzedGames(CHESS_USERNAME, limit),
+      fetchAnalyzedGames(CHESS_USERNAME, limit, since),
       fetchStats(CHESS_USERNAME).catch(() => null),
     ]);
 
+    // The scorecard is computed by the caller: on an incremental sync it owns
+    // the merged window, and only it knows what it already had.
     return NextResponse.json({
       games,
-      scorecard: scorecard(games),
-      puzzles: games.flatMap((g) => g.puzzles),
+      incremental: since > 0,
       ratings: {
         rapid: stats?.chess_rapid?.last?.rating ?? null,
         rapidBest: stats?.chess_rapid?.best?.rating ?? null,

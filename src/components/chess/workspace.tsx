@@ -1,17 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { GameAnalysis, Puzzle, Scorecard } from "@/lib/chess/analyze";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { GameAnalysis } from "@/lib/chess/analyze";
+import { mergeGames, scorecard } from "@/lib/chess/scorecard";
 import { RepertoireTrainer } from "./repertoire-trainer";
 import { PuzzleTrainer } from "./puzzle-trainer";
 import { Review } from "./review";
 
-const STORAGE_KEY = "chess-sync-v1";
+const STORAGE_KEY = "chess-sync-v2";
+/** Games kept for the rolling metrics. Wide enough to be stable, narrow enough to move. */
+const WINDOW = 40;
+/** Games requested when there is nothing stored yet. */
+const BACKFILL = 20;
 
 type Synced = {
   games: GameAnalysis[];
-  scorecard: Scorecard;
-  puzzles: Puzzle[];
   syncedAt: number;
 };
 
@@ -46,6 +49,17 @@ export function ChessWorkspace() {
   const [data, setData] = useState<Synced | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** How many games the last sync actually brought in. */
+  const [fresh, setFresh] = useState<number | null>(null);
+
+  const card = useMemo(
+    () => (data ? scorecard(data.games) : null),
+    [data]
+  );
+  const puzzles = useMemo(
+    () => data?.games.flatMap((g) => g.puzzles) ?? [],
+    [data]
+  );
 
   // A sync costs a chess.com round trip plus a few seconds of analysis, so the
   // last one is kept: reloading the page shouldn't mean re-earning the puzzles.
@@ -61,19 +75,27 @@ export function ChessWorkspace() {
   const sync = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setFresh(null);
     try {
-      const response = await fetch("/api/chess/games?limit=20");
+      // Only ask for what is missing. Analysis is the slow half and a finished
+      // game's analysis never changes, so a sync after a session costs one
+      // session's worth of work rather than a full re-derivation.
+      const held = data?.games ?? [];
+      const since = held.length > 0 ? Math.max(...held.map((g) => g.endTime)) : 0;
+      const limit = since > 0 ? WINDOW : BACKFILL;
+
+      const response = await fetch(
+        `/api/chess/games?limit=${limit}&since=${since}`
+      );
       const body = await response.json();
       if (!response.ok) {
         throw new Error(body?.error ?? "chess.com no respondió");
       }
-      const next: Synced = {
-        games: body.games,
-        scorecard: body.scorecard,
-        puzzles: body.puzzles,
-        syncedAt: body.syncedAt,
-      };
+
+      const merged = mergeGames(body.games as GameAnalysis[], held, WINDOW);
+      const next: Synced = { games: merged, syncedAt: body.syncedAt };
       setData(next);
+      setFresh(body.games.length);
       try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch {
@@ -88,7 +110,7 @@ export function ChessWorkspace() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [data]);
 
   const active = TABS.find((t) => t.id === tab)!;
 
@@ -107,9 +129,9 @@ export function ChessWorkspace() {
             }`}
           >
             {t.label}
-            {t.id === "entrenador" && data && data.puzzles.length > 0 && (
+            {t.id === "entrenador" && puzzles.length > 0 && (
               <span className="ml-2 text-[12px] tabular-nums text-primary">
-                {data.puzzles.length}
+                {puzzles.length}
               </span>
             )}
           </button>
@@ -129,14 +151,15 @@ export function ChessWorkspace() {
       {tab === "repaso" && (
         <Review
           games={data?.games ?? []}
-          card={data?.scorecard ?? null}
+          card={card}
           loading={loading}
           error={error}
           onSync={sync}
           syncedAt={data?.syncedAt ?? null}
+          fresh={fresh}
         />
       )}
-      {tab === "entrenador" && <PuzzleTrainer puzzles={data?.puzzles ?? []} />}
+      {tab === "entrenador" && <PuzzleTrainer puzzles={puzzles} />}
     </div>
   );
 }

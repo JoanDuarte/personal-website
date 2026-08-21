@@ -1,4 +1,5 @@
-import { analyzeGame, scorecard, type ChessComGame } from "@/lib/chess/analyze";
+import { analyzeGame, type ChessComGame } from "@/lib/chess/analyze";
+import { scorecard } from "@/lib/chess/scorecard";
 import { sanEs, clock, pawns, percent } from "@/lib/chess/format";
 
 const UA = {

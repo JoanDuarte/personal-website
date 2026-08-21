@@ -1,5 +1,11 @@
 import { Chess, type Color, type Square } from "chess.js";
-import { bestExchange, moveNetValue, pieceEs, PIECE_VALUE } from "./see";
+import {
+  bestExchange,
+  moveNetValue,
+  pieceEs,
+  PIECE_VALUE,
+  type Exchange,
+} from "./see";
 
 /**
  * A repertoire is a *setup*, not a variation tree. Each system is an ordered
@@ -279,9 +285,19 @@ export type BookAnswer =
 export function consultBook(
   system: System,
   chess: Chess,
-  /** The opponent's last move, when known. Enables the recapture rule. */
-  lastMove?: { to: Square; captured?: string } | null
+  options: {
+    /** The opponent's last move, when known. Enables the recapture rule. */
+    lastMove?: { to: Square; captured?: string } | null;
+    /**
+     * The best capture in this position, when the caller already computed it.
+     * Batch analysis evaluates the same position anyway, and the exchange search
+     * is the expensive part of a sync.
+     */
+    freeMaterial?: Exchange | null;
+  } = {}
 ): BookAnswer {
+  const { lastMove, freeMaterial } = options;
+
   if (chess.turn() !== system.color) {
     return { kind: "out", idea: "No es tu turno." };
   }
@@ -290,7 +306,8 @@ export function consultBook(
   const total = steps.length;
   const doneCount = steps.filter((s) => isResolved(chess, s, system.color)).length;
 
-  const free = bestExchange(chess.fen());
+  const free =
+    freeMaterial !== undefined ? freeMaterial : bestExchange(chess.fen());
   if (free && free.value >= 200) {
     return {
       kind: "tactic",

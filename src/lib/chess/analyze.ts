@@ -166,13 +166,22 @@ export function analyzeGame(
 
     const moveNumber = Math.floor(ply / 2) + 1;
 
+    // Free material he could have taken and didn't. Graded on what his move
+    // actually nets, not on whether it was the exact move SEE happened to pick:
+    // capturing the same piece with a different attacker is not a miss.
+    const available = bestExchange(move.before);
+
     // Did he follow his repertoire? Only worth asking while the book is live.
+    // `available` is handed over rather than recomputed: it is the same position
+    // and the exchange search dominates the cost of a sync.
     if (deviation === null && moveNumber <= 12) {
       const probe = new Chess(move.before);
       // The probe has no history, so the opponent's last move is passed in;
       // otherwise a recapture would read as leaving the repertoire.
-      const previous = ply > 0 ? history[ply - 1] : null;
-      const book = consultBook(system, probe, previous);
+      const book = consultBook(system, probe, {
+        lastMove: ply > 0 ? history[ply - 1] : null,
+        freeMaterial: available,
+      });
       if (book.kind === "move" && book.san !== move.san) {
         deviation = {
           moveNumber,
@@ -182,11 +191,6 @@ export function analyzeGame(
         };
       }
     }
-
-    // Free material he could have taken and didn't. Graded on what his move
-    // actually nets, not on whether it was the exact move SEE happened to pick:
-    // capturing the same piece with a different attacker is not a miss.
-    const available = bestExchange(move.before);
     const tookIt =
       available !== null && moveNetValue(move.before, move) >= available.value;
     if (available && available.value >= MATERIAL_THRESHOLD && !tookIt) {
@@ -304,70 +308,5 @@ export function analyzeGame(
     missed,
     deviation,
     puzzles,
-  };
-}
-
-// --- Rolling scorecard -----------------------------------------------------
-
-export type Scorecard = {
-  games: number;
-  wins: number;
-  losses: number;
-  draws: number;
-  rating: number | null;
-  /** Median seconds left on the clock in losses. Target: under 300. */
-  timeLeftInLosses: number | null;
-  /** Share of games he was up 3+ material and failed to win. Target: under 20%. */
-  threwAwayRate: number | null;
-  threwAway: number;
-  wasWinning: number;
-  hangsPerGame: number | null;
-  missedPerGame: number | null;
-  /** Share of games where he stayed in his repertoire past the book. */
-  onBookRate: number | null;
-};
-
-export function scorecard(games: GameAnalysis[]): Scorecard {
-  if (games.length === 0) {
-    return {
-      games: 0,
-      wins: 0,
-      losses: 0,
-      draws: 0,
-      rating: null,
-      timeLeftInLosses: null,
-      threwAwayRate: null,
-      threwAway: 0,
-      wasWinning: 0,
-      hangsPerGame: null,
-      missedPerGame: null,
-      onBookRate: null,
-    };
-  }
-
-  const losses = games.filter((g) => g.result === "loss");
-  const wasWinning = games.filter((g) => g.peakMaterial >= 300);
-  const threwAway = wasWinning.filter((g) => g.result !== "win");
-  const onBook = games.filter((g) => g.deviation === null);
-  const newest = [...games].sort((a, b) => b.endTime - a.endTime)[0];
-
-  return {
-    games: games.length,
-    wins: games.filter((g) => g.result === "win").length,
-    losses: losses.length,
-    draws: games.filter((g) => g.result === "draw").length,
-    rating: newest.rating,
-    timeLeftInLosses: median(
-      losses.map((g) => g.timeLeft).filter((t): t is number => t != null)
-    ),
-    threwAwayRate:
-      wasWinning.length > 0 ? threwAway.length / wasWinning.length : null,
-    threwAway: threwAway.length,
-    wasWinning: wasWinning.length,
-    hangsPerGame:
-      games.reduce((sum, g) => sum + g.hung.length, 0) / games.length,
-    missedPerGame:
-      games.reduce((sum, g) => sum + g.missed.length, 0) / games.length,
-    onBookRate: onBook.length / games.length,
   };
 }

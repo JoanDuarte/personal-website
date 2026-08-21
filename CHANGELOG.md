@@ -25,6 +25,11 @@ All notable changes to this project will be documented in this file.
 - Verification scripts under `scripts/chess/` covering SEE against hand-checked
   positions, both systems against all ten opponent plans, and the full pipeline
   against live data
+- Incremental sync. The client holds its last result and sends the newest game it
+  has as `?since=`, so only games played since then are analyzed and the merged
+  window is scored client-side. A repeat sync with nothing new went from 15-20s on
+  the preview deployment to milliseconds; archive months are also fetched in
+  parallel rather than one serial round trip each
 
 ### Notes
 - The repertoire trainer is deliberately a pre-game drill, not a live reference.

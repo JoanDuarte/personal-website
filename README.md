@@ -61,6 +61,15 @@ Two classification rules matter and are easy to get wrong:
 - A capture counts as *taken* by net value, not by matching the exact move SEE
   picked. Winning the same piece with a different attacker is not a miss.
 
+**Sync is incremental.** Analysis is the expensive half and a finished game's
+analysis never changes, so the client keeps its last result in `localStorage`,
+sends the timestamp of the newest game it holds as `?since=`, and merges what
+comes back. The scorecard is recomputed client-side over that merged window,
+which is why it lives in `scorecard.ts` rather than `analyze.ts`. A first
+backfill of 20 games takes a few seconds; a sync after a session with nothing new
+returns in milliseconds. Archive months are fetched in parallel batches, since a
+strictly sequential walk cost one round trip per month before any analysis began.
+
 **The repertoire** (`repertoire.ts`) is modelled as an ordered setup plus a short
 list of exceptions, not a variation tree — a tree collapses the moment the
 opponent leaves it, which at this level is by move 4. A step counts as resolved
