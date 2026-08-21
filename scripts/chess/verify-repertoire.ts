@@ -1,6 +1,7 @@
 import { Chess } from "chess.js";
 import { consultBook, opponentReply, SYSTEMS } from "@/lib/chess/repertoire";
 import { sanEs } from "@/lib/chess/format";
+import { PIECE_VALUE } from "@/lib/chess/see";
 
 for (const system of [SYSTEMS.london, SYSTEMS.indian]) {
   console.log(`\n=== ${system.name} (${system.color === "w" ? "blancas" : "negras"}) ===`);
@@ -20,7 +21,19 @@ for (const system of [SYSTEMS.london, SYSTEMS.indian]) {
 
       if (book.kind === "done") { outcome = "LIBRO COMPLETO"; break; }
       if (book.kind === "out") { outcome = `CORTE: ${book.idea.slice(0, 45)}…`; break; }
-      if (book.kind === "tactic") { outcome = `TACTICA en ${book.square} (+${book.value})`; break; }
+      if (book.kind === "tactic") {
+        // Taking free material is the book working, not the book stopping.
+        const take = chess.moves({ verbose: true })
+          .filter((m) => m.to === book.square && m.captured)
+          .sort((a, b) => PIECE_VALUE[a.piece] - PIECE_VALUE[b.piece])[0];
+        if (!take) { outcome = `TACTICA sin captura en ${book.square}`; break; }
+        chess.move(take.san);
+        log.push(`${sanEs(take.san)}*`);
+        const answer = opponentReply(chess, plan.moves);
+        if (!answer) { outcome = "sin respuesta"; break; }
+        log.push(answer);
+        continue;
+      }
 
       const move = chess.move(book.san);
       log.push(`${sanEs(move.san)}${book.source === "exception" ? "!" : ""}`);
