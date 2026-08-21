@@ -1,6 +1,8 @@
 import { Chess, type Color, type Square } from "chess.js";
+import { sanEs } from "./format";
 import {
   bestExchange,
+  flipTurn,
   moveNetValue,
   pieceEs,
   PIECE_VALUE,
@@ -73,6 +75,46 @@ function findLegal(chess: Chess, from: Square, to: Square) {
     .find((m) => m.from === from && m.to === to);
 }
 
+/** Net material a candidate move gives away counts as unsafe from here up. */
+const UNSAFE = 100;
+
+export type Risk = { san: string; cost: number; attacker: string; square: Square };
+
+/**
+ * What a candidate move loses, if anything.
+ *
+ * A setup is a plan, not a licence to hang pieces: 3.Bf4 is the London's whole
+ * point right up until Black has a pawn on e5, at which point it is a bishop for
+ * nothing. The threat is measured as the *increase* in what the opponent can
+ * win, so a move is not blamed for a threat that already existed before it.
+ *
+ * Mutates and restores `chess`.
+ */
+function moveRisk(chess: Chess, from: Square, to: Square): Risk | null {
+  const legal = findLegal(chess, from, to);
+  if (!legal) return null;
+
+  const flipped = flipTurn(chess.fen());
+  const before = flipped ? (bestExchange(flipped)?.value ?? 0) : 0;
+
+  chess.move({ from: from, to: to, promotion: legal.promotion });
+  const after = chess.fen();
+  const threat = bestExchange(after);
+  const attacker = threat ? new Chess(after).get(threat.move.from)?.type : null;
+  chess.undo();
+
+  const gained = legal.captured ? PIECE_VALUE[legal.captured] : 0;
+  const cost = (threat?.value ?? 0) - gained - before;
+  if (cost < UNSAFE || !threat) return null;
+
+  return {
+    san: legal.san,
+    cost,
+    attacker: attacker ? pieceEs(attacker) : "una pieza",
+    square: threat.square,
+  };
+}
+
 // --- White: the London System ---------------------------------------------
 
 const LONDON: System = {
@@ -105,7 +147,9 @@ const LONDON: System = {
       from: "e2",
       to: "e3",
       piece: "p",
-      idea: "Ahora sí. Sostiene d4 y le abre la diagonal al otro alfil, con el de f4 ya afuera.",
+      // Deliberately does not assert where the c1 bishop is: the safety check
+      // can reorder the setup, and this step may now come first.
+      idea: "Sostiene d4 y le abre la diagonal al alfil de f1. El orden importa: si e3 sale antes que el alfil de c1, ese alfil queda encerrado atrás del peón toda la partida.",
     },
     {
       from: "f1",
@@ -151,6 +195,15 @@ const LONDON: System = {
         const attackers: Square[] = ["d3", "d5", "e2", "e6", "g2", "g6", "h3", "h5"];
         if (!attackers.some((sq) => pieceAt(chess, sq, "n", "b"))) return null;
         return findLegal(chess, "f4", "g3") ? { from: "f4", to: "g3" } : null;
+      },
+    },
+    {
+      id: "bf5-trade",
+      idea: "Te plantó el alfil en f5, mirando al tuyo de d3. Cambialo vos: Axf5. Parece una jugada boba y no lo es — mientras ese alfil siga ahí, el tuyo de d3 está defendido sólo por la dama, y en cuanto el caballo vaya a d2 le tapás la defensa y te lo comen gratis.",
+      resolve: (chess) => {
+        if (!pieceAt(chess, "d3", "b", "w")) return null;
+        if (!pieceAt(chess, "f5", "b", "b")) return null;
+        return findLegal(chess, "d3", "f5") ? { from: "d3", to: "f5" } : null;
       },
     },
     {
@@ -267,6 +320,8 @@ export type BookAnswer =
       san: string;
       idea: string;
       source: "setup" | "exception";
+      /** Why the book departed from its own move order, when it did. */
+      warning?: string;
       /** 1-based index into the setup, for the progress display. */
       step: number;
       total: number;
@@ -348,6 +403,8 @@ export function consultBook(
     if (!hit) continue;
     const legal = findLegal(chess, hit.from, hit.to);
     if (!legal) continue;
+    // Even an exception has to survive the position it fires in.
+    if (moveRisk(chess, hit.from, hit.to)) continue;
     return {
       kind: "move",
       from: hit.from,
@@ -360,6 +417,11 @@ export function consultBook(
     };
   }
 
+  // Skipped steps are remembered so the reordering can be explained rather than
+  // silently happening. "Af4 pero acá no, te la come el peón de e5" is the whole
+  // lesson; quietly recommending e3 instead teaches nothing.
+  const risky: Risk[] = [];
+
   for (const [i, step] of steps.entries()) {
     if (isResolved(chess, step, system.color)) continue;
     const legal = findLegal(chess, step.from, step.to);
@@ -368,12 +430,21 @@ export function consultBook(
       // Later steps may still be playable, so keep looking.
       continue;
     }
+    const risk = moveRisk(chess, step.from, step.to);
+    if (risk) {
+      risky.push(risk);
+      continue;
+    }
     return {
       kind: "move",
       from: step.from,
       to: step.to,
       san: legal.san,
       idea: step.idea,
+      warning:
+        risky.length > 0
+          ? `Ojo: ${sanEs(risky[0].san)} es la que tocaba, pero acá te la come ${risky[0].attacker} en ${risky[0].square}. Por eso el orden cambia.`
+          : undefined,
       source: "setup",
       step: i + 1,
       total,
@@ -382,6 +453,12 @@ export function consultBook(
 
   if (doneCount === total) {
     return { kind: "done", idea: system.afterBook };
+  }
+  if (risky.length > 0) {
+    return {
+      kind: "out",
+      idea: `El esquema no sirve tal cual acá: ${sanEs(risky[0].san)} pierde material contra ${risky[0].attacker} en ${risky[0].square}, y las otras del esquema tampoco entran. Pensá vos: primero mirá qué te captura.`,
+    };
   }
   return {
     kind: "out",

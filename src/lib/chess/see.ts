@@ -96,6 +96,32 @@ export function winningCaptures(fen: string, threshold: number): Move[] {
     .filter((m) => m.captured && moveNetValue(fen, m) >= threshold);
 }
 
+/**
+ * The same position with the other side to move. Used to ask "what could the
+ * opponent win if it were their turn right now", which is the only way to tell
+ * whether a candidate move *creates* a threat or merely fails to solve one that
+ * already existed.
+ *
+ * Returns null when the flip would be illegal — that is, when the side that
+ * would stop moving is in check.
+ */
+export function flipTurn(fen: string): string | null {
+  const parts = fen.split(" ");
+  parts[1] = parts[1] === "w" ? "b" : "w";
+  parts[3] = "-"; // an en passant target does not survive the flip
+  try {
+    // If the side to move is currently in check, flipping would leave the side
+    // *not* to move in check. That position is illegal and its capture search
+    // would be meaningless.
+    if (new Chess(fen).isCheck()) return null;
+    const flipped = parts.join(" ");
+    new Chess(flipped);
+    return flipped;
+  } catch {
+    return null;
+  }
+}
+
 /** Material totals in centipawns, kings excluded. */
 export function material(fen: string): { w: number; b: number } {
   const board = fen.split(" ")[0];

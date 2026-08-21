@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.3.0] - 2026-08-21
+
+### Fixed
+- The opening book recommended moves that hang pieces. It walked its setup order
+  without ever asking whether the move survives the position in front of it, so
+  after `1.d4 d6 2.Nf3 e5` it still said `Bf4` — a bishop to a pawn. Every
+  candidate move now runs through a safety check, unsafe steps are skipped, and
+  the book explains the reordering instead of doing it silently
+- A real hole in the Slav line, found by that check: after `...Bf5`, `Nbd2`
+  interposes on the queen's defence of d3 and drops the bishop. Added the
+  standard answer, `Bxf5`, as an exception
+- The `e3` step's text asserted the c1 bishop was already on f4, which stopped
+  being true once the safety check could reorder the setup
+
+### Added
+- `scripts/chess/verify-book-safety.ts` — five positions where the naive setup
+  order hangs material, asserting the book refuses each one
+
 ## [0.3.2.0] - 2026-08-21
 
 ### Fixed
