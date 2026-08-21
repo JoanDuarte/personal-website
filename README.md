@@ -76,6 +76,20 @@ opponent leaves it, which at this level is by move 4. A step counts as resolved
 when the piece reaches its square *or* leaves its origin, so a bishop chased from
 f4 to g3 doesn't leave the book permanently unfinished.
 
+**Every book move is checked for safety before it is recommended.** A setup is a
+plan, not a licence to hang pieces: `3.Bf4` is the London's whole point right up
+until Black has a pawn on e5, at which point it is a bishop for nothing. Each
+candidate step runs through `moveRisk`, which measures the *increase* in what the
+opponent can win — comparing against a null-move flip of the position, so a move
+is never blamed for a threat that already existed. Unsafe steps are skipped, the
+book reorders itself, and it says why ("Af4 es la que tocaba, pero acá te la come
+el peón en f4"). When nothing in the setup is safe it says so rather than
+recommending a losing move.
+
+This is also how the repertoire gets debugged: the check caught a real hole in
+the Slav line, where `Nbd2` interposes on the queen's defence of d3 and drops the
+bishop to `...Bxf5`. Run `verify-book-safety.ts` after any change to the book.
+
 The trainer runs in two modes, and they differ in who the board belongs to:
 
 - **Practicar** — the opponent answers from one of five plans and wrong moves are
@@ -88,9 +102,10 @@ The trainer runs in two modes, and they differ in who the board belongs to:
 Verify any change to the analysis or the book:
 
 ```bash
-bun run scripts/chess/verify-see.ts         # SEE against hand-checked positions
-bun run scripts/chess/verify-repertoire.ts  # both systems vs all 10 opponent plans
-bun run scripts/chess/verify-analysis.ts    # full pipeline against live chess.com data
+bun run scripts/chess/verify-see.ts          # SEE against hand-checked positions
+bun run scripts/chess/verify-repertoire.ts   # both systems vs all 10 opponent plans
+bun run scripts/chess/verify-book-safety.ts  # the book never recommends a hanging move
+bun run scripts/chess/verify-analysis.ts     # full pipeline against live chess.com data
 ```
 
 The username is a constant in `src/lib/chess/chesscom.ts`. chess.com rejects

@@ -438,6 +438,14 @@ function Drill({
                       ? "Movés por el rival. Probá lo que quieras: la respuesta del libro aparece acá."
                       : "Te toca. Jugá la del esquema."}
                 </p>
+                {/* Shown before the move is revealed: it names the move that
+                    does NOT work here, which is a read on the position rather
+                    than the answer. */}
+                {book.kind === "move" && book.warning && myColorToMove && (
+                  <p className="text-[14px] leading-[1.6] text-destructive">
+                    {book.warning}
+                  </p>
+                )}
                 {myColorToMove && !revealed && !thinking && (
                   <button
                     type="button"
