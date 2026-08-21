@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2.0] - 2026-08-21
+
+### Fixed
+- The board's squares were not square. The grid declared `gridTemplateColumns`
+  but not `gridTemplateRows`, so rows sized to their content and ranks with no
+  pieces collapsed to the height of their coordinate label. `aspect-square` on
+  the container hid it by keeping the outer box square while the inside was
+  uneven, and the legal-move dots rendered as ovals
+- Black pieces disappeared into the dark squares. The lightness gap was 0.18,
+  which held up zoomed in and failed at the ~50px squares the board actually
+  renders at. Every piece-on-square pair now clears 0.25, and the palette moved
+  from grey-taupe to warm sand and walnut
+
 ## [0.3.1.0] - 2026-08-21
 
 ### Added

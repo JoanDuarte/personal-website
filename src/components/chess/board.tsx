@@ -94,7 +94,14 @@ export function Board({
   return (
     <div
       className="grid aspect-square w-full select-none overflow-hidden rounded-lg border border-border"
-      style={{ gridTemplateColumns: "repeat(8, 1fr)", touchAction: "manipulation" }}
+      style={{
+        gridTemplateColumns: "repeat(8, 1fr)",
+        // Rows must be declared too. Implicit rows size to their content, so
+        // ranks with no pieces collapse to the height of their coordinate label
+        // and the squares stop being square.
+        gridTemplateRows: "repeat(8, 1fr)",
+        touchAction: "manipulation",
+      }}
     >
       {squares.map(({ square, row, col }) => {
         const piece = chess.get(square);

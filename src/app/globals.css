@@ -69,11 +69,17 @@
   --radius: 0.625rem;
 
   /* Chess board. Warm woods rather than the usual green/beige, so the board
-     reads as part of the page instead of an embedded widget. */
-  --chess-light: oklch(0.6 0.028 78);
-  --chess-dark: oklch(0.385 0.022 68);
-  --chess-piece-light: oklch(0.93 0.018 92);
-  --chess-piece-dark: oklch(0.205 0.008 100);
+     reads as part of the page instead of an embedded widget.
+
+     The lightness gaps are the constraint, not the hue. An earlier pass sat the
+     dark square at 0.385 against a 0.205 black piece: a gap of 0.18 that held up
+     in a zoomed screenshot and collapsed at the size the board actually renders,
+     where a knight on b8 disappeared into its own square. Every piece-on-square
+     pair now clears 0.25. */
+  --chess-light: oklch(0.76 0.038 76);
+  --chess-dark: oklch(0.45 0.042 58);
+  --chess-piece-light: oklch(0.97 0.012 90);
+  --chess-piece-dark: oklch(0.19 0.01 60);
   --chess-selected: oklch(0.837 0.128 66.29 / 0.55);
   --chess-last: oklch(0.837 0.128 66.29 / 0.25);
   --chess-focus: oklch(0.837 0.128 66.29 / 0.4);
