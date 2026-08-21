@@ -169,11 +169,13 @@ function Drill({
   const over = position.isGameOver();
   // While the opponent is thinking the book has nothing to say, and that must
   // not read as "the book is over".
-  const bookOver = myColorToMove && (book.kind === "done" || book.kind === "out");
+  const bookDone = myColorToMove && book.kind === "done";
+  const bookSilent = myColorToMove && book.kind === "out";
 
-  // Exploring never locks the board: the book running out is where the
-  // interesting questions start, not where you stop being allowed to ask them.
-  const interactive = free ? !over && !thinking : !bookOver && !over && !thinking && myColorToMove;
+  // The board only locks when the game is actually over. The book running out —
+  // which includes being in check — is the end of the guidance, not the end of
+  // the position, and locking there read as "checkmate, start again".
+  const interactive = !over && !thinking && (free || myColorToMove);
   const canUndo = plies > (free ? 0 : initial.plies);
 
   const highlights = useMemo<Highlight[]>(() => {
@@ -396,20 +398,16 @@ function Drill({
           </ol>
 
           <div className="min-h-[7rem] rounded-lg border border-border bg-surface p-4">
-            {bookOver || over ? (
+            {bookDone || bookSilent || over ? (
               <div className="space-y-3">
                 <p className="text-[15px] leading-[1.7] text-foreground">
-                  {over
-                    ? "Se terminó la partida."
-                    : bookOver
-                      ? book.idea
-                      : "Se terminó la ronda."}
+                  {over ? "Se terminó la partida." : book.idea}
                 </p>
                 <p className="text-[13px] text-muted-foreground">
                   {mistakes === 0
                     ? "Sin errores hasta acá."
                     : `${mistakes} ${mistakes === 1 ? "error" : "errores"}.`}
-                  {free && !over && " Podés seguir moviendo para ver cómo sigue."}
+                  {!over && " Podés seguir moviendo desde acá."}
                 </p>
                 <button
                   type="button"

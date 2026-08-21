@@ -103,7 +103,34 @@ for (const c of cases) {
   }
 }
 
+// --- Checks -----------------------------------------------------------------
+//
+// Being in check must always produce a move. The book used to shrug at ...Qa4+
+// against the Indian — one of the most common checks at this level — and the
+// trainer rendered that shrug as "round over", which read as checkmate.
+
+const checkCases: { moves: string; system: "london" | "indian"; name: string }[] = [
+  { moves: "a3 Nf6 h3 g6 c3 Bg7 Qc2 d6 Qa4+", system: "indian", name: "Da4+ contra el indio" },
+  { moves: "c4 Nf6 d4 g6 h3 Bg7 a3 d6 Qa4+", system: "indian", name: "Da4+ con c4 y d4" },
+  { moves: "e3 Nf6 g3 g6 f3 Bg7 c3 d6 Qa4+", system: "indian", name: "Da4+ tercera variante" },
+  { moves: "d4 c5 dxc5 Qa5+", system: "london", name: "Da5+ contra el Londres" },
+  { moves: "d4 h6 Nf3 e5 dxe5 Be7 Bf4 Nf6 exf6 Bb4+", system: "london", name: "Ab4+ con peón en f6" },
+  { moves: "d4 e6 Nf3 Bb4+", system: "london", name: "Ab4+ temprano" },
+];
+
+console.log("\n--- En jaque, el libro siempre tiene que dar una jugada ---");
+for (const c of checkCases) {
+  const chess = new Chess();
+  for (const san of c.moves.split(" ")) chess.move(san);
+  const book = consultBook(SYSTEMS[c.system], chess);
+  const ok = chess.isCheck() && book.kind === "move";
+  console.log(
+    `  ${ok ? "✓" : "✗"} ${c.name.padEnd(26)} jaque=${chess.isCheck()} -> ${book.kind === "move" ? sanEs(book.san) : book.kind.toUpperCase()}`
+  );
+  if (!ok) failures += 1;
+}
+
 console.log(
-  `\n${failures === 0 ? "TODOS OK" : `${failures} FALLAS`} — ${cases.length} casos`
+  `\n${failures === 0 ? "TODOS OK" : `${failures} FALLAS`} — ${cases.length + checkCases.length} casos`
 );
 if (failures > 0) process.exit(1);
