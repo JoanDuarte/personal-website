@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.5.0] - 2026-08-21
+
+### Fixed
+- Being in check ended the round. The book had nothing to say, the trainer turned
+  that into the "round over" panel and locked the board, and it read as
+  checkmate-start-again. `...Qa4+` against the Indian setup — one of the most
+  common checks at this level — hit it every time. The board now only locks when
+  the game is genuinely over; the book running out ends the guidance, not the
+  position
+- The book now answers checks instead of shrugging at them. When no setup move
+  resolves the check it plays the reply that loses least, preferring to block
+  rather than move the king so castling survives
+
+### Added
+- Six check positions in `verify-book-safety.ts`, asserting the book always
+  returns a move when in check
+
 ## [0.3.4.0] - 2026-08-21
 
 ### Added

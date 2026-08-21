@@ -122,12 +122,13 @@ function bestSafeCapture(
  * your f4 bishop" with "play c3" — an audit against Stockfish put that at -600
  * centipawns. Rescuing has to be its own rule.
  */
-function findRescue(
+function safestMove(
   chess: Chess,
-  threatened: Square
-): { from: Square; to: Square; san: string } | null {
+  /** Tie-break among equally safe moves. Higher is better. */
+  prefer: (move: { from: Square; piece: string }) => number
+): { from: Square; to: Square; san: string; net: number } | null {
   const fen = chess.fen();
-  let best: { from: Square; to: Square; san: string; net: number; moves: boolean } | null = null;
+  let best: { from: Square; to: Square; san: string; net: number; rank: number } | null = null;
 
   for (const m of chess.moves({ verbose: true })) {
     const probe = new Chess(fen);
@@ -135,14 +136,21 @@ function findRescue(
     const after = bestExchange(probe.fen());
     const gained = m.captured ? PIECE_VALUE[m.captured] : 0;
     const net = (after?.value ?? 0) - gained;
-    // Prefer the smallest remaining threat, then moving the piece under attack:
-    // getting it out is the lesson, not shuffling something else into a defence.
-    const moves = m.from === threatened;
-    if (best === null || net < best.net || (net === best.net && moves && !best.moves)) {
-      best = { from: m.from, to: m.to, san: m.san, net, moves };
+    const rank = prefer(m);
+    if (best === null || net < best.net || (net === best.net && rank > best.rank)) {
+      best = { from: m.from, to: m.to, san: m.san, net, rank };
     }
   }
+  return best;
+}
 
+function findRescue(
+  chess: Chess,
+  threatened: Square
+): { from: Square; to: Square; san: string } | null {
+  // Prefer moving the piece under attack: getting it out is the lesson, not
+  // shuffling something else into a defence.
+  const best = safestMove(chess, (m) => (m.from === threatened ? 1 : 0));
   if (!best || best.net >= AT_RISK) return null;
   return { from: best.from, to: best.to, san: best.san };
 }
@@ -562,6 +570,27 @@ export function consultBook(
   if (doneCount === total) {
     return { kind: "done", idea: system.afterBook };
   }
+
+  // In check with nothing in the setup that answers it. Bailing here was wrong:
+  // ...Qa4+ against the Indian is one of the most common checks at this level,
+  // and the book met it with a shrug. Answer with whatever loses least,
+  // preferring not to move the king so castling survives.
+  if (chess.isCheck()) {
+    const reply = safestMove(chess, (m) => (m.piece === "k" ? 0 : 1));
+    if (reply) {
+      return {
+        kind: "move",
+        from: reply.from,
+        to: reply.to,
+        san: reply.san,
+        idea: `Te dan jaque, así que el esquema espera: primero se sale del jaque. De las respuestas posibles ésta es la que menos pierde${reply.net <= 0 ? " y no te cuesta nada" : ""}. Si podés tapar en vez de mover el rey, tapá: mover el rey te deja sin enroque.`,
+        source: "exception",
+        step: doneCount + 1,
+        total,
+      };
+    }
+  }
+
   if (risky.length > 0) {
     return {
       kind: "out",
