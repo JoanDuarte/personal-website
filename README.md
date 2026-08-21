@@ -76,6 +76,15 @@ opponent leaves it, which at this level is by move 4. A step counts as resolved
 when the piece reaches its square *or* leaves its origin, so a bishop chased from
 f4 to g3 doesn't leave the book permanently unfinished.
 
+The trainer runs in two modes, and they differ in who the board belongs to:
+
+- **Practicar** — the opponent answers from one of five plans and wrong moves are
+  taken back. For making the setup automatic.
+- **Explorar** — both sides are yours and nothing is blocked. Play the opponent's
+  try yourself and read what the book says about it; play your own idea and the
+  book comments instead of correcting. Being stopped from playing `e3` before
+  `Bf4` only asserts that the bishop gets stuck. Playing it shows you.
+
 Verify any change to the analysis or the book:
 
 ```bash

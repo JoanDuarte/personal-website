@@ -135,7 +135,7 @@ const LONDON: System = {
   exceptions: [
     {
       id: "qb6",
-      idea: "Te está pegando en b2 con la dama. Qc1 defiende el peón y de paso conecta tus torres. No entres en pánico ni juegues b3, que te debilita las casillas alrededor del rey.",
+      idea: "Te está pegando en b2 con la dama. Dc1 defiende el peón y de paso conecta tus torres. No entres en pánico ni juegues b3, que te debilita las casillas alrededor del rey.",
       resolve: (chess) => {
         if (!pieceAt(chess, "b6", "q", "b")) return null;
         if (!pieceAt(chess, "b2", "p", "w")) return null;
@@ -144,7 +144,7 @@ const LONDON: System = {
     },
     {
       id: "nh5",
-      idea: "Te atacan el alfil de f4 con el caballo. Bg3 lo salva. Si te lo cambia con Nxg3, recapturás con hxg3 y te queda la columna h abierta apuntando a su enroque: es buen negocio para vos.",
+      idea: "Te atacan el alfil de f4 con el caballo. Ag3 lo salva. Si te lo cambia con Cxg3, recapturás con hxg3 y te queda la columna h abierta apuntando a su enroque: es buen negocio para vos.",
       resolve: (chess) => {
         if (!pieceAt(chess, "f4", "b", "w")) return null;
         // The eight squares a knight attacks f4 from.
@@ -164,7 +164,7 @@ const LONDON: System = {
     },
   ],
   afterBook:
-    "Terminó el libro. El plan de acá en adelante: Ne5 para clavar el caballo en el centro, f4 para sostenerlo, y la dama a f3 o e2 mirando el enroque rival. Pero antes de cada jugada, la pregunta de siempre: ¿qué me captura?",
+    "Terminó el libro. El plan de acá en adelante: Ce5 para clavar el caballo en el centro, f4 para sostenerlo, y la dama a f3 o e2 mirando el enroque rival. Pero antes de cada jugada, la pregunta de siempre: ¿qué me captura?",
   plans: [
     { name: "Clásico", moves: ["d5", "Nf6", "e6", "Be7", "O-O", "c5", "Nc6"] },
     { name: "India de rey", moves: ["Nf6", "g6", "Bg7", "d6", "O-O", "Nbd7", "e5"] },
@@ -188,7 +188,7 @@ const INDIAN: System = {
       from: "d7",
       to: "d6",
       piece: "p",
-      idea: "Contra 1.e4 el peón va primero. Si salís con Nf6, te contesta e5 y tenés que mover el caballo de nuevo perdiendo un tiempo.",
+      idea: "Contra 1.e4 el peón va primero. Si salís con Cf6, te contesta e5 y tenés que mover el caballo de nuevo perdiendo un tiempo.",
     };
     const nf6: Step = {
       from: "g8",
