@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import bio from "@/data/bio.json";
 import { CollapsibleSection } from "./collapsible-section";
 
@@ -11,14 +12,22 @@ export function BeyondCode() {
         <p className="text-[16px] md:text-[17px] leading-[1.7] text-muted-foreground mb-2">
           {bio.chess.text}
         </p>
-        <a
-          href={bio.chess.profileLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[14px] text-foreground hover:opacity-70 transition-opacity underline underline-offset-4"
-        >
-          Chess.com profile
-        </a>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
+          <Link
+            href="/chess"
+            className="text-[14px] text-primary hover:opacity-70 transition-opacity underline underline-offset-4"
+          >
+            My training page
+          </Link>
+          <a
+            href={bio.chess.profileLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[14px] text-foreground hover:opacity-70 transition-opacity underline underline-offset-4"
+          >
+            Chess.com profile
+          </a>
+        </div>
       </div>
 
       {/* Messi */}
