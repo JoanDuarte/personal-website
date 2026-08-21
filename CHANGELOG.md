@@ -19,6 +19,13 @@ All notable changes to this project will be documented in this file.
 - Six check positions in `verify-book-safety.ts`, asserting the book always
   returns a move when in check
 
+### Changed
+- The repertoire-adherence metric only counts departures from the *setup*. The
+  reactive rules — answering a check, rescuing a piece, recapturing, taking free
+  material — are situational, and blocking a check with the bishop instead of the
+  knight is not "leaving the repertoire". It was marking a game where he followed
+  the scheme perfectly as a deviation
+
 ## [0.3.4.0] - 2026-08-21
 
 ### Added

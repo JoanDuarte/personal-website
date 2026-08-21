@@ -182,7 +182,12 @@ export function analyzeGame(
         lastMove: ply > 0 ? history[ply - 1] : null,
         freeMaterial: available,
       });
-      if (book.kind === "move" && book.san !== move.san) {
+      // Only the setup counts. The reactive rules — answering a check, rescuing
+      // a piece, recapturing, taking free material — are situational, and an
+      // equally good answer to a check is not "leaving the repertoire". Counting
+      // them made a game where he blocked with the bishop instead of the knight
+      // read as a deviation, which is not what this metric is for.
+      if (book.kind === "move" && book.source === "setup" && book.san !== move.san) {
         deviation = {
           moveNumber,
           played: move.san,
