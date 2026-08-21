@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0.0] - 2026-08-21
+
+### Added
+- `/chess`, a training page built on the public chess.com API, structured as the
+  loop it serves: drill the repertoire before playing, sync and review after, then
+  work the puzzles those games produce
+- Static exchange evaluation in `src/lib/chess/see.ts`, which finds hanging material
+  without an engine. It reproduces the Stockfish-derived clock and conversion figures
+  exactly (426s median in losses, 88% of losses with half the clock unused, over the
+  same 311 rapid games) at ~0.15s per game
+- Opening book for the London System and the Indian setup, modelled as an ordered
+  setup plus exceptions rather than a variation tree, with recapture and
+  tactics-outrank-the-book rules
+- Puzzle generation from his own blunders. Two drills — what the opponent could have
+  played, and what he could have taken — mixed with positions where nothing is
+  hanging, so the answer can't be guessed from the fact that a puzzle was posed
+- Rolling scorecard against the 2026 baseline: unused clock in losses, share of won
+  positions thrown away, hangs per game, repertoire adherence
+- Hand-drawn SVG piece set and a board using the site's own tokens
+  (`src/components/chess/pieces.tsx`, `board.tsx`)
+- Verification scripts under `scripts/chess/` covering SEE against hand-checked
+  positions, both systems against all ten opponent plans, and the full pipeline
+  against live data
+
+### Notes
+- The repertoire trainer is deliberately a pre-game drill, not a live reference.
+  chess.com's fair play policy allows opening books in Daily chess only, not in
+  live play, and these are ten-minute games
+
 ## [0.2.0.0] - 2026-07-28
 
 ### Added

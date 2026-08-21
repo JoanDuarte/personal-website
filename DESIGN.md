@@ -29,6 +29,27 @@ All colors use oklch color space. Source: tweakcn theme export.
 **Rule:** No hardcoded `rgba(255,255,255,...)` anywhere. Use tokens.
 **Rule:** Borders are opaque oklch, not semi-transparent rgba. By design.
 
+### Chess Board Tokens
+
+The `/chess` board uses warm woods rather than the usual green/beige, so it reads
+as part of the page instead of an embedded widget.
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--chess-light` | `oklch(0.6 0.028 78)` | Light square, warm taupe |
+| `--chess-dark` | `oklch(0.385 0.022 68)` | Dark square, deep warm brown |
+| `--chess-piece-light` | `oklch(0.93 0.018 92)` | White pieces, cream |
+| `--chess-piece-dark` | `oklch(0.205 0.008 100)` | Black pieces, warm near-black |
+| `--chess-selected` | `oklch(0.837 0.128 66.29 / 0.55)` | Selected square + move dots |
+| `--chess-last` | `oklch(0.837 0.128 66.29 / 0.25)` | Last move trail |
+| `--chess-focus` | `oklch(0.837 0.128 66.29 / 0.4)` | Revealed book move |
+| `--chess-danger` | `oklch(0.6368 0.2078 25.3313 / 0.45)` | Hanging piece, check |
+
+**Rule:** Pieces are filled with one token and stroked with the other, so both
+colors stay legible on both square colors. The piece set is hand-drawn SVG in
+`src/components/chess/pieces.tsx` — no chess library, no licensing question, and
+it matches the site's weight.
+
 ## Typography
 
 - **Font:** Space Grotesk (kept from MVP)
@@ -40,6 +61,9 @@ All colors use oklch color space. Source: tweakcn theme export.
 ## Spacing
 
 - **Max content width:** 640px (`max-w-[640px]`)
+- **Exception — `/chess`:** 880px, because a board beside its explanation panel
+  does not fit in 640. Prose inside that page stays at 640px, so reading measure
+  is unchanged; only the two-column tool areas use the extra width.
 - **Section padding:** Compact. `py-8` to `py-16` range, not generous `py-24`.
 - **Section dividers:** `border-t border-border` on anchor divs, not inside content wrappers.
 - **Item spacing:** `space-y-8` within sections.

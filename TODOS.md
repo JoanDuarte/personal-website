@@ -1,6 +1,14 @@
 # TODOS
 
-Nothing open.
+- **Measure the chess page against its own baseline after 50 rapid games.** The
+  targets are on `/chess`: unused clock in losses from 426s to under 300, and won
+  positions thrown away from 40% to under 20%. Rating is the consequence, not the
+  target. As of 2026-08-21 the last rapid game was 2026-08-04, so the count has not
+  started. If 50 games pass with no movement in either number, the diagnosis was
+  wrong and the page should change, not the effort.
+- **Revisit `1...e5` vs the Indian setup at that same checkpoint.** The case for
+  switching rests on 38% over 94 games; the case against is that open positions
+  teach calculation. The repertoire adherence metric on the page is what settles it.
 
 ---
 

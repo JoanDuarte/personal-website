@@ -23,6 +23,9 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/components/copy-email-button.tsx` — Clipboard copy with mailto: fallback
 - `src/app/globals.css` — oklch color tokens, background grain/gradient, animations
 - `src/app/og-card.tsx` — Shared Satori card behind `opengraph-image` and `twitter-image`
+- `src/app/chess/` — Chess training page (see [Chess trainer](#chess-trainer))
+- `src/lib/chess/` — Analysis engine, opening book, chess.com client
+- `src/components/chess/` — Board, piece set, and the three trainer panels
 
 The metadata image routes read their font and photo off disk, so anything they
 touch has to be declared in `outputFileTracingIncludes` in `next.config.ts` or it
@@ -33,6 +36,48 @@ they silently collapse to zero size.
 ## Design System
 
 See [DESIGN.md](./DESIGN.md) for the full design system specification (palette, typography, spacing, motion).
+
+## Chess trainer
+
+`/chess` is a training tool built on the public chess.com API, structured around
+the loop it is meant to serve: drill the repertoire *before* playing, sync and
+review *after*, then work the puzzles that fall out of those games.
+
+**No engine.** Instead of bundling Stockfish, `src/lib/chess/see.ts` implements
+static exchange evaluation: it plays out the capture sequence on a square with
+least-valuable-attacker ordering and reports the net material. That is enough to
+find every piece left to a one-move capture, which is the error class costing the
+rating — and it runs in ~0.15s per game instead of needing a WASM build, cross-origin
+isolation headers, or a binary in the function bundle. It reproduces the
+engine-derived clock and conversion numbers exactly (426s, 88%, 311 games).
+
+Because chess.js only generates *legal* moves, a pinned defender correctly cannot
+recapture, which makes this stricter than textbook SEE.
+
+Two classification rules matter and are easy to get wrong:
+
+- A move only *hangs* material if what the opponent wins exceeds what the move
+  just captured. Without that offset, every even trade reads as a blunder.
+- A capture counts as *taken* by net value, not by matching the exact move SEE
+  picked. Winning the same piece with a different attacker is not a miss.
+
+**The repertoire** (`repertoire.ts`) is modelled as an ordered setup plus a short
+list of exceptions, not a variation tree — a tree collapses the moment the
+opponent leaves it, which at this level is by move 4. A step counts as resolved
+when the piece reaches its square *or* leaves its origin, so a bishop chased from
+f4 to g3 doesn't leave the book permanently unfinished.
+
+Verify any change to the analysis or the book:
+
+```bash
+bun run scripts/chess/verify-see.ts         # SEE against hand-checked positions
+bun run scripts/chess/verify-repertoire.ts  # both systems vs all 10 opponent plans
+bun run scripts/chess/verify-analysis.ts    # full pipeline against live chess.com data
+```
+
+The username is a constant in `src/lib/chess/chesscom.ts`. chess.com rejects
+requests without a descriptive `User-Agent`, so the client sets one; the endpoints
+are public and take no credentials.
 
 ## Deploy
 
