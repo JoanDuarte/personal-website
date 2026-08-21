@@ -17,6 +17,27 @@ type Feedback = { tone: "good" | "bad"; text: string };
 
 type LastMove = { from: Square; to: Square; captured?: string };
 
+/**
+ * "drill" has the opponent answer from a fixed plan, which is what you want when
+ * the goal is to make the setup automatic. "libre" hands both sides over, which
+ * is what you want when the goal is to understand it: play the opponent's try
+ * yourself and read what the book says about it.
+ */
+type Mode = "drill" | "libre";
+
+const MODES: { id: Mode; label: string; hint: string }[] = [
+  {
+    id: "drill",
+    label: "Practicar",
+    hint: "El rival responde solo, con un plan distinto cada ronda.",
+  },
+  {
+    id: "libre",
+    label: "Explorar",
+    hint: "Movés las dos manos y nada te frena. El libro comenta en vez de corregir.",
+  },
+];
+
 function playOpponent(chess: Chess, plan: string[]): LastMove | null {
   if (chess.isGameOver()) return null;
   const san = opponentReply(chess, plan);
@@ -27,9 +48,17 @@ function playOpponent(chess: Chess, plan: string[]): LastMove | null {
     : null;
 }
 
+function lastMoveOf(chess: Chess): LastMove | null {
+  const last = chess.history({ verbose: true }).at(-1);
+  return last
+    ? { from: last.from, to: last.to, captured: last.captured }
+    : null;
+}
+
 export function RepertoireTrainer() {
   const [systemId, setSystemId] = useState<System["id"]>("london");
   const [planIndex, setPlanIndex] = useState(0);
+  const [mode, setMode] = useState<Mode>("drill");
   const system = SYSTEMS[systemId];
 
   return (
@@ -58,13 +87,36 @@ export function RepertoireTrainer() {
         {system.rationale}
       </p>
 
-      {/* Keyed so switching system or plan remounts a fresh round: the reset
-          lives in mount, not in an effect that would cascade renders. */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="flex gap-2">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => setMode(m.id)}
+              className={`min-h-11 rounded-md border px-3 text-[13px] transition-colors ${
+                m.id === mode
+                  ? "border-primary text-primary"
+                  : "border-border text-muted-foreground hover:border-border-hover"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          {MODES.find((m) => m.id === mode)!.hint}
+        </p>
+      </div>
+
+      {/* Keyed on system and plan so each round mounts fresh, but not on mode:
+          switching to Explorar mid-position is the point, not a reset. */}
       <Drill
         key={`${systemId}:${planIndex}`}
         system={system}
         planIndex={planIndex}
-        onNewPlan={() => setPlanIndex((n) => n + 1)}
+        mode={mode}
+        onReset={() => setPlanIndex((n) => n + 1)}
       />
     </div>
   );
@@ -73,20 +125,23 @@ export function RepertoireTrainer() {
 function Drill({
   system,
   planIndex,
-  onNewPlan,
+  mode,
+  onReset,
 }: {
   system: System;
   planIndex: number;
-  onNewPlan: () => void;
+  mode: Mode;
+  onReset: () => void;
 }) {
   const plan = system.plans[planIndex % system.plans.length];
+  const free = mode === "libre";
 
   // The Chess object is the mutable game model and lives in state, not a ref:
   // `fen` is the render-visible projection of it, updated on every mutation.
   const [initial] = useState(() => {
     const chess = new Chess();
     const opened = system.color === "b" ? playOpponent(chess, plan.moves) : null;
-    return { chess, fen: chess.fen(), opened };
+    return { chess, fen: chess.fen(), opened, plies: chess.history().length };
   });
   const game = initial.chess;
 
@@ -96,6 +151,7 @@ function Drill({
   const [revealed, setRevealed] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [mistakes, setMistakes] = useState(0);
+  const [plies, setPlies] = useState(initial.plies);
 
   // Derived from state rather than a mutable ref, so what the panel shows
   // is always the same verdict that handleMove grades against.
@@ -110,12 +166,15 @@ function Drill({
 
   const position = useMemo(() => new Chess(fen), [fen]);
   const myColorToMove = position.turn() === system.color;
+  const over = position.isGameOver();
   // While the opponent is thinking the book has nothing to say, and that must
   // not read as "the book is over".
-  const bookOver =
-    myColorToMove && (book.kind === "done" || book.kind === "out");
-  const finished = bookOver || position.isGameOver();
-  const myTurn = !thinking && !finished && myColorToMove;
+  const bookOver = myColorToMove && (book.kind === "done" || book.kind === "out");
+
+  // Exploring never locks the board: the book running out is where the
+  // interesting questions start, not where you stop being allowed to ask them.
+  const interactive = free ? !over && !thinking : !bookOver && !over && !thinking && myColorToMove;
+  const canUndo = plies > (free ? 0 : initial.plies);
 
   const highlights = useMemo<Highlight[]>(() => {
     if (!revealed) return [];
@@ -129,9 +188,30 @@ function Drill({
     return [];
   }, [revealed, book]);
 
+  function commit(chess: Chess, move: LastMove | null) {
+    setLastMove(move);
+    setFen(chess.fen());
+    setPlies(chess.history().length);
+  }
+
   function handleMove(move: BoardMove) {
     const chess = game;
-    if (chess.turn() !== system.color || thinking) return;
+    if (thinking) return;
+
+    // Playing the opponent's side: nothing to grade, the book speaks next turn.
+    if (chess.turn() !== system.color) {
+      if (!free) return;
+      const played = chess.move({
+        from: move.from,
+        to: move.to,
+        promotion: move.promotion,
+      });
+      if (!played) return;
+      setFeedback(null);
+      setRevealed(false);
+      commit(chess, lastMoveOf(chess));
+      return;
+    }
 
     const expected = consultBook(system, chess, { lastMove });
     const played = chess.move({
@@ -151,42 +231,73 @@ function Drill({
     if (!correct) {
       const exposed = bestExchange(chess.fen());
       const hangingPiece = exposed ? chess.get(exposed.square)?.type : null;
-      chess.undo();
-      setFen(chess.fen());
-      setRevealed(true);
-
-      const head =
+      const warning =
+        exposed && exposed.value >= PIECE_VALUE.n && hangingPiece
+          ? ` Y ojo con ${sanEs(played.san)}: deja ${pieceEs(hangingPiece)} sin defensa en ${exposed.square}.`
+          : "";
+      const says =
         expected.kind === "move"
           ? `El libro dice ${sanEs(expected.san)}.`
           : expected.kind === "tactic"
             ? `Antes de seguir el esquema: hay material gratis en ${expected.square}.`
-            : "Esa no.";
-      const tail =
-        exposed && exposed.value >= PIECE_VALUE.n && hangingPiece
-          ? ` Y ojo con ${sanEs(played.san)}: deja ${pieceEs(hangingPiece)} sin defensa en ${exposed.square}.`
-          : "";
+            : "Esa no está en el esquema.";
 
-      setFeedback({ tone: "bad", text: head + tail });
+      // Exploring lets the move stand. Seeing the bishop get stuck behind e3 is
+      // the lesson; being blocked from playing it only says the lesson exists.
+      if (free) {
+        setRevealed(false);
+        setFeedback({
+          tone: "bad",
+          text: `${says} Jugaste ${sanEs(played.san)} — seguimos desde acá.${warning}`,
+        });
+        commit(chess, {
+          from: played.from,
+          to: played.to,
+          captured: played.captured,
+        });
+        return;
+      }
+
+      chess.undo();
+      setFen(chess.fen());
+      setRevealed(true);
+      setFeedback({ tone: "bad", text: says + warning });
       setMistakes((n) => n + 1);
       return;
     }
 
-    setLastMove({ from: played.from, to: played.to });
-    setFen(chess.fen());
     setRevealed(false);
     setFeedback({
       tone: "good",
       text: expected.kind === "move" || expected.kind === "tactic" ? expected.idea : "",
     });
+    commit(chess, { from: played.from, to: played.to, captured: played.captured });
+
+    if (free) return;
 
     setThinking(true);
     window.setTimeout(() => {
       const reply = playOpponent(chess, plan.moves);
-      if (reply) setLastMove(reply);
-      setFen(chess.fen());
+      commit(chess, reply ?? lastMoveOf(chess));
       setThinking(false);
     }, 420);
   }
+
+  function undo() {
+    const chess = game;
+    if (!canUndo || thinking) return;
+    chess.undo();
+    // In practice mode a single ply would land on the opponent's turn with no
+    // one to answer, so it steps back to the last position that was his.
+    if (!free && chess.turn() !== system.color && chess.history().length > initial.plies - 1) {
+      chess.undo();
+    }
+    setFeedback(null);
+    setRevealed(false);
+    commit(chess, lastMoveOf(chess));
+  }
+
+  const theirTurn = free && !myColorToMove && !over;
 
   return (
     <div className="space-y-6">
@@ -195,22 +306,46 @@ function Drill({
           <Board
             fen={fen}
             orientation={system.color}
-            interactive={myTurn}
+            interactive={interactive}
             onMove={handleMove}
             lastMove={lastMove}
             highlights={highlights}
           />
-          <p className="text-[13px] text-muted-foreground">
-            El rival juega el plan{" "}
-            <span className="text-foreground">{plan.name}</span>.{" "}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
+            {free ? (
+              <span>
+                Jugada {Math.floor(plies / 2) + 1} ·{" "}
+                <span className="text-foreground">
+                  {myColorToMove
+                    ? system.color === "w"
+                      ? "movés vos (blancas)"
+                      : "movés vos (negras)"
+                    : "movés por el rival"}
+                </span>
+              </span>
+            ) : (
+              <span>
+                El rival juega el plan{" "}
+                <span className="text-foreground">{plan.name}</span>.
+              </span>
+            )}
+            {canUndo && (
+              <button
+                type="button"
+                onClick={undo}
+                className="text-primary underline underline-offset-4 hover:opacity-70"
+              >
+                Deshacer
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => onNewPlan()}
+              onClick={onReset}
               className="text-primary underline underline-offset-4 hover:opacity-70"
             >
-              Otro plan
+              {free ? "Empezar de nuevo" : "Otro plan"}
             </button>
-          </p>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -261,22 +396,27 @@ function Drill({
           </ol>
 
           <div className="min-h-[7rem] rounded-lg border border-border bg-surface p-4">
-            {finished ? (
+            {bookOver || over ? (
               <div className="space-y-3">
                 <p className="text-[15px] leading-[1.7] text-foreground">
-                  {bookOver ? book.idea : "Se terminó la ronda."}
+                  {over
+                    ? "Se terminó la partida."
+                    : bookOver
+                      ? book.idea
+                      : "Se terminó la ronda."}
                 </p>
                 <p className="text-[13px] text-muted-foreground">
                   {mistakes === 0
-                    ? "Ronda limpia, sin errores."
-                    : `${mistakes} ${mistakes === 1 ? "error" : "errores"} en esta ronda.`}
+                    ? "Sin errores hasta acá."
+                    : `${mistakes} ${mistakes === 1 ? "error" : "errores"}.`}
+                  {free && !over && " Podés seguir moviendo para ver cómo sigue."}
                 </p>
                 <button
                   type="button"
-                  onClick={() => onNewPlan()}
+                  onClick={onReset}
                   className="min-h-11 rounded-md border border-primary px-4 text-[14px] text-primary transition-opacity hover:opacity-70"
                 >
-                  Otra ronda
+                  {free ? "Empezar de nuevo" : "Otra ronda"}
                 </button>
               </div>
             ) : (
@@ -292,9 +432,13 @@ function Drill({
                       : "text-muted-foreground"
                   }`}
                 >
-                  {feedback ? feedback.text : "Te toca. Jugá la del esquema."}
+                  {feedback
+                    ? feedback.text
+                    : theirTurn
+                      ? "Movés por el rival. Probá lo que quieras: la respuesta del libro aparece acá."
+                      : "Te toca. Jugá la del esquema."}
                 </p>
-                {myTurn && !revealed && (
+                {myColorToMove && !revealed && !thinking && (
                   <button
                     type="button"
                     onClick={() => setRevealed(true)}

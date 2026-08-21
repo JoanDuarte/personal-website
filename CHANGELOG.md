@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1.0] - 2026-08-21
+
+### Added
+- Explore mode in the repertoire trainer. Both sides of the board are movable, so
+  a question like "what does the book do against ...Qb6?" gets answered by playing
+  it rather than waiting for the drill to deal that plan
+- Undo, and a move counter showing whose turn it is
+
+### Changed
+- Explore mode doesn't block wrong moves, it comments on them. Being stopped from
+  playing `e3` before `Bf4` only asserts that the bishop gets stuck behind it;
+  playing it and seeing the bishop stuck teaches the same thing better. Practice
+  mode still takes wrong moves back
+- Switching modes keeps the current position rather than resetting, since
+  switching to explore mid-drill is the reason to have it
+- Notation inside the book's prose is Spanish now (`Dc1`, `Ag3`, `Ce5`), matching
+  the notation the rest of the page and chess.com already show him
+
 ## [0.3.0.0] - 2026-08-21
 
 ### Added
