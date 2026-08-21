@@ -36,19 +36,32 @@ as part of the page instead of an embedded widget.
 
 | Token | Value | Description |
 |-------|-------|-------------|
-| `--chess-light` | `oklch(0.6 0.028 78)` | Light square, warm taupe |
-| `--chess-dark` | `oklch(0.385 0.022 68)` | Dark square, deep warm brown |
-| `--chess-piece-light` | `oklch(0.93 0.018 92)` | White pieces, cream |
-| `--chess-piece-dark` | `oklch(0.205 0.008 100)` | Black pieces, warm near-black |
+| `--chess-light` | `oklch(0.76 0.038 76)` | Light square, warm sand |
+| `--chess-dark` | `oklch(0.45 0.042 58)` | Dark square, warm walnut |
+| `--chess-piece-light` | `oklch(0.97 0.012 90)` | White pieces, cream |
+| `--chess-piece-dark` | `oklch(0.19 0.01 60)` | Black pieces, warm near-black |
 | `--chess-selected` | `oklch(0.837 0.128 66.29 / 0.55)` | Selected square + move dots |
 | `--chess-last` | `oklch(0.837 0.128 66.29 / 0.25)` | Last move trail |
 | `--chess-focus` | `oklch(0.837 0.128 66.29 / 0.4)` | Revealed book move |
 | `--chess-danger` | `oklch(0.6368 0.2078 25.3313 / 0.45)` | Hanging piece, check |
 
+**Rule:** Every piece-on-square lightness gap clears **0.25**. The first pass sat
+a 0.205 black piece on a 0.385 dark square — a gap of 0.18 that survived a zoomed
+screenshot and fell apart at the size the board actually renders, where a knight
+on b8 vanished into its own square. Judge board contrast at ~50px squares, never
+zoomed in.
+
 **Rule:** Pieces are filled with one token and stroked with the other, so both
 colors stay legible on both square colors. The piece set is hand-drawn SVG in
 `src/components/chess/pieces.tsx` — no chess library, no licensing question, and
 it matches the site's weight.
+
+**Rule:** The board grid declares **both** `gridTemplateColumns` and
+`gridTemplateRows` as `repeat(8, 1fr)`. Columns alone leaves rows implicit, so
+they size to their content and empty ranks collapse to the height of their
+coordinate label — the squares stop being square and the move dots render as
+ovals. `aspect-square` on the container hides this by keeping the outer box
+square while the inside is uneven.
 
 ## Typography
 
