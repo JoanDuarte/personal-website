@@ -55,10 +55,19 @@ export function bestExchange(fen: string): Exchange | null {
   const captures = chess.moves({ verbose: true }).filter((m) => m.captured);
   const squares = [...new Set(captures.map((m) => m.to))];
 
+  /** Distance from the middle of the board, for breaking ties. */
+  const offCentre = (square: Square) =>
+    Math.abs(3.5 - "abcdefgh".indexOf(square[0])) +
+    Math.abs(3.5 - (Number(square[1]) - 1));
+
   let best: Exchange | null = null;
   for (const square of squares) {
     const value = exchangeValue(chess, square);
-    if (value <= 0 || (best && value <= best.value)) continue;
+    if (value <= 0) continue;
+    // Two free pawns are worth the same to SEE and not to the position: taking
+    // the central one is nearly always the better half of the tie.
+    if (best && (value < best.value ||
+      (value === best.value && offCentre(square) >= offCentre(best.square)))) continue;
 
     const starters = captures.filter((m) => m.to === square);
     starters.sort((a, b) => PIECE_VALUE[a.piece] - PIECE_VALUE[b.piece]);

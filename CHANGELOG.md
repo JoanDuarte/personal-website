@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.4.0] - 2026-08-21
+
+### Added
+- `scripts/chess/audit-book.ts` — plays hundreds of games with the book on one
+  side and grades every recommendation against Stockfish. Excludes already-decided
+  positions and clamps evals at ±1000, so a position that was mate-in-4 does not
+  score the book at -9500 for developing instead of mating
+
+### Fixed
+- The book ignored material that was *already* hanging. The safety check only
+  stopped it from creating new threats, so against `...g5` attacking the f4 bishop
+  it happily answered `c3` — Stockfish put that at -600cp. Rescuing is now its own
+  rule, and it searches for the move that leaves the least on the table
+- "Take the free material" was never safety-checked. 8.2% of those recommendations
+  left something hanging two plies later; now 0.4%, and 0.0% on setup moves
+- Ties in exchange evaluation were broken arbitrarily. Two free pawns look
+  identical to SEE, so the central one now wins the tie
+
+### Notes
+- Measured over 1941 recommendations in still-open positions at depth 16: median
+  cost 18cp, blunders 0.8%, allows-mate 0%, hangs material 0.4%. The residual is
+  missed opportunities rather than losses — SEE cannot see forks, pins or mate
+  without an engine, so the book is sometimes unambitious rather than unsafe
+
 ## [0.3.3.0] - 2026-08-21
 
 ### Fixed

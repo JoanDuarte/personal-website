@@ -77,6 +77,75 @@ function findLegal(chess: Chess, from: Square, to: Square) {
 
 /** Net material a candidate move gives away counts as unsafe from here up. */
 const UNSAFE = 100;
+/** Free material worth stopping the setup to take. */
+const WORTH_TAKING = 100;
+/** Material of your own already under threat that the setup must not ignore. */
+const AT_RISK = 200;
+
+/**
+ * The most material-winning capture that does not hand anything back.
+ *
+ * `bestExchange` resolves the exchange on one square and is blind to what the
+ * capturing piece walks into. Running each candidate through `moveRisk` closes
+ * that gap.
+ */
+function bestSafeCapture(
+  chess: Chess,
+  min: number
+): { to: Square; net: number } | null {
+  const fen = chess.fen();
+  // Two free pawns are worth the same to SEE and not to the position: taking
+  // the central one is nearly always the better half of the tie.
+  const offCentre = (square: Square) =>
+    Math.abs(3.5 - "abcdefgh".indexOf(square[0])) +
+    Math.abs(3.5 - (Number(square[1]) - 1));
+
+  let best: { to: Square; net: number } | null = null;
+
+  for (const m of chess.moves({ verbose: true })) {
+    if (!m.captured) continue;
+    const net = moveNetValue(fen, m);
+    if (net < min) continue;
+    if (best && (net < best.net ||
+      (net === best.net && offCentre(m.to) >= offCentre(best.to)))) continue;
+    if (moveRisk(chess, m.from, m.to)) continue;
+    best = { to: m.to, net };
+  }
+  return best;
+}
+
+/**
+ * The least bad move available when something of yours is already hanging.
+ *
+ * `moveRisk` only stops the book from *creating* a threat. It says nothing about
+ * one that already exists, which is how the book came to answer "...g5 attacking
+ * your f4 bishop" with "play c3" — an audit against Stockfish put that at -600
+ * centipawns. Rescuing has to be its own rule.
+ */
+function findRescue(
+  chess: Chess,
+  threatened: Square
+): { from: Square; to: Square; san: string } | null {
+  const fen = chess.fen();
+  let best: { from: Square; to: Square; san: string; net: number; moves: boolean } | null = null;
+
+  for (const m of chess.moves({ verbose: true })) {
+    const probe = new Chess(fen);
+    probe.move({ from: m.from, to: m.to, promotion: m.promotion });
+    const after = bestExchange(probe.fen());
+    const gained = m.captured ? PIECE_VALUE[m.captured] : 0;
+    const net = (after?.value ?? 0) - gained;
+    // Prefer the smallest remaining threat, then moving the piece under attack:
+    // getting it out is the lesson, not shuffling something else into a defence.
+    const moves = m.from === threatened;
+    if (best === null || net < best.net || (net === best.net && moves && !best.moves)) {
+      best = { from: m.from, to: m.to, san: m.san, net, moves };
+    }
+  }
+
+  if (!best || best.net >= AT_RISK) return null;
+  return { from: best.from, to: best.to, san: best.san };
+}
 
 export type Risk = { san: string; cost: number; attacker: string; square: Square };
 
@@ -361,17 +430,26 @@ export function consultBook(
   const total = steps.length;
   const doneCount = steps.filter((s) => isResolved(chess, s, system.color)).length;
 
+  // Free material is only free if taking it doesn't hand something back. An
+  // audit against Stockfish found "take the pawn on f5" recommendations that
+  // dropped a bishop two plies later: the capture was safety-checked on its own
+  // square and nowhere else.
   const free =
     freeMaterial !== undefined ? freeMaterial : bestExchange(chess.fen());
-  if (free && free.value >= 200) {
-    return {
-      kind: "tactic",
-      square: free.square,
-      value: free.value,
-      idea: `Pará. Hay material gratis en ${free.square}: se gana ${pieceEs(
-        chess.get(free.square)?.type ?? "p"
-      )} sin compensación. El libro se corta cuando hay táctica — la apertura no manda sobre el material.`,
-    };
+  if (free && free.value >= WORTH_TAKING) {
+    const safe = bestSafeCapture(chess, WORTH_TAKING);
+    if (safe) {
+      return {
+        kind: "tactic",
+        square: safe.to,
+        value: safe.net,
+        idea: `Pará. Hay material gratis en ${safe.to}: se gana ${pieceEs(
+          chess.get(safe.to)?.type ?? "p"
+        )} sin compensación. El libro se corta cuando hay táctica — la apertura no manda sobre el material.`,
+      };
+    }
+    // Everything that wins material also gives some back; fall through to the
+    // setup rather than recommending a trap.
   }
 
   // Recapture before anything else in the setup. "They took, take back" is the
@@ -396,6 +474,36 @@ export function consultBook(
         total,
       };
     }
+  }
+
+  // Something of yours is already hanging. The setup does not get to ignore it:
+  // this is the "¿qué me captura?" check the whole page is about, applied to the
+  // book itself.
+  const flipped = flipTurn(chess.fen());
+  const exposed = flipped ? bestExchange(flipped) : null;
+  if (exposed && exposed.value >= AT_RISK) {
+    const mine = chess.get(exposed.square);
+    const attacker = chess.get(exposed.move.from);
+    const what = mine ? pieceEs(mine.type) : "material";
+    const who = attacker ? pieceEs(attacker.type) : "una pieza";
+    const rescue = findRescue(chess, exposed.square);
+
+    if (rescue) {
+      return {
+        kind: "move",
+        from: rescue.from,
+        to: rescue.to,
+        san: rescue.san,
+        idea: `Pará el esquema: tenés ${what} colgado en ${exposed.square} y ${who} se lo come. Primero se salva el material, después se desarrolla.`,
+        source: "exception",
+        step: doneCount + 1,
+        total,
+      };
+    }
+    return {
+      kind: "out",
+      idea: `Tenés ${what} colgado en ${exposed.square}: ${who} se lo come y no hay jugada que lo salve del todo. Esto ya no lo resuelve el esquema — buscá la que menos pierda.`,
+    };
   }
 
   for (const exception of system.exceptions) {

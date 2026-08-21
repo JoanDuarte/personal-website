@@ -90,6 +90,39 @@ This is also how the repertoire gets debugged: the check caught a real hole in
 the Slav line, where `Nbd2` interposes on the queen's defence of d3 and drops the
 bishop to `...Bxf5`. Run `verify-book-safety.ts` after any change to the book.
 
+### How good the book actually is
+
+`audit-book.ts` plays hundreds of games with the book on one side and a random
+or plausible opponent on the other, then asks Stockfish what every single
+recommendation cost. Positions already decided (|eval| ≥ 900cp) are excluded and
+scores clamped at ±1000, the same rule the original study used — otherwise a
+position that was already mate-in-4 scores the book at -9500 for developing
+instead of mating.
+
+Latest run — 2241 recommendations, 1941 in still-open positions, depth 16:
+
+| | Result |
+|---|---|
+| Median cost of a recommendation | **18 cp** |
+| Inaccuracy (≥150 cp) | 3.1% |
+| Blunder (≥300 cp) | **0.8%** |
+| Allows mate / misses a forced mate | **0%** / **0%** |
+| Leaves material hanging | 0.4% overall, **0.0%** on setup moves |
+
+For scale, his own play blunders on 7.4% of moves.
+
+**What the remaining 0.8% is.** Almost entirely *missed opportunities*, not
+losses: a solid developing move where the engine had a fork or a pin. SEE
+resolves capture sequences on one square and is blind to forks, pins, discovered
+attacks, skewers and mate. It cannot be otherwise without shipping an engine. The
+failure mode is therefore "the book was unambitious", not "the book hung your
+queen" — which is the right way round for a beginner repertoire, and the reason
+the hanging-material number is the one to watch on any change.
+
+Both audit findings that mattered were invisible to the unit tests: the book
+ignoring a piece *already* hanging (-600cp), and "take the free material" not
+being safety-checked at all (8.2% of those left something hanging, now 0.4%).
+
 The trainer runs in two modes, and they differ in who the board belongs to:
 
 - **Practicar** — the opponent answers from one of five plans and wrong moves are
@@ -106,6 +139,9 @@ bun run scripts/chess/verify-see.ts          # SEE against hand-checked position
 bun run scripts/chess/verify-repertoire.ts   # both systems vs all 10 opponent plans
 bun run scripts/chess/verify-book-safety.ts  # the book never recommends a hanging move
 bun run scripts/chess/verify-analysis.ts     # full pipeline against live chess.com data
+
+# Grade every book recommendation against a real engine (needs a Stockfish binary)
+STOCKFISH=/path/to/stockfish bun run scripts/chess/audit-book.ts 60 16
 ```
 
 The username is a constant in `src/lib/chess/chesscom.ts`. chess.com rejects
