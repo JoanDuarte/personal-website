@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.7.0] - 2026-08-22
+
+### Fixed
+- Explore mode wouldn't let you pick White's first move against the Indian setup.
+  Playing Black means the opponent opens, and that move was auto-played from the
+  bot's plan at mount regardless of mode — so exploring started from a position
+  with a move on it you never chose, and always the same one. The bot only opens
+  in practice mode now, and switching modes before playing anything starts the
+  round fresh so Explore hands over the whole board from move one. Switching
+  mid-position still keeps the position, which is the reason the toggle exists
+
 ## [0.3.5.0] - 2026-08-21
 
 ### Fixed

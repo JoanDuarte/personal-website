@@ -58,8 +58,27 @@ function lastMoveOf(chess: Chess): LastMove | null {
 export function RepertoireTrainer() {
   const [systemId, setSystemId] = useState<System["id"]>("london");
   const [planIndex, setPlanIndex] = useState(0);
+  const [round, setRound] = useState(0);
   const [mode, setMode] = useState<Mode>("drill");
+  /** Has anything been played in the current round? */
+  const [touched, setTouched] = useState(false);
   const system = SYSTEMS[systemId];
+
+  function startFresh(change: () => void) {
+    change();
+    setRound((n) => n + 1);
+    setTouched(false);
+  }
+
+  function switchMode(next: Mode) {
+    if (next === mode) return;
+    setMode(next);
+    // Switching mid-position is the point of Explorar, so the position is kept.
+    // But before a single move it is not "mid-position" — and as Black the
+    // opponent's first move has already been auto-played, which meant Explorar
+    // handed you a board with a move on it you never chose.
+    if (!touched) startFresh(() => {});
+  }
 
   return (
     <div className="space-y-6">
@@ -68,7 +87,7 @@ export function RepertoireTrainer() {
           <button
             key={id}
             type="button"
-            onClick={() => setSystemId(id)}
+            onClick={() => startFresh(() => setSystemId(id))}
             className={`min-h-11 rounded-md border px-4 text-[14px] transition-colors ${
               id === systemId
                 ? "border-primary text-primary"
@@ -93,7 +112,7 @@ export function RepertoireTrainer() {
             <button
               key={m.id}
               type="button"
-              onClick={() => setMode(m.id)}
+              onClick={() => switchMode(m.id)}
               className={`min-h-11 rounded-md border px-3 text-[13px] transition-colors ${
                 m.id === mode
                   ? "border-primary text-primary"
@@ -109,14 +128,15 @@ export function RepertoireTrainer() {
         </p>
       </div>
 
-      {/* Keyed on system and plan so each round mounts fresh, but not on mode:
-          switching to Explorar mid-position is the point, not a reset. */}
+      {/* `round` is bumped by startFresh, never by the mode toggle on its own,
+          so switching to Explorar mid-position keeps the position. */}
       <Drill
-        key={`${systemId}:${planIndex}`}
+        key={`${systemId}:${planIndex}:${round}`}
         system={system}
         planIndex={planIndex}
         mode={mode}
-        onReset={() => setPlanIndex((n) => n + 1)}
+        onReset={() => startFresh(() => setPlanIndex((n) => n + 1))}
+        onPlay={() => setTouched(true)}
       />
     </div>
   );
@@ -127,11 +147,13 @@ function Drill({
   planIndex,
   mode,
   onReset,
+  onPlay,
 }: {
   system: System;
   planIndex: number;
   mode: Mode;
   onReset: () => void;
+  onPlay: () => void;
 }) {
   const plan = system.plans[planIndex % system.plans.length];
   const free = mode === "libre";
@@ -140,7 +162,12 @@ function Drill({
   // `fen` is the render-visible projection of it, updated on every mutation.
   const [initial] = useState(() => {
     const chess = new Chess();
-    const opened = system.color === "b" ? playOpponent(chess, plan.moves) : null;
+    // Playing Black means the opponent opens — but only the bot does that. In
+    // Explorar both sides are yours, including move one.
+    const opened =
+      system.color === "b" && mode === "drill"
+        ? playOpponent(chess, plan.moves)
+        : null;
     return { chess, fen: chess.fen(), opened, plies: chess.history().length };
   });
   const game = initial.chess;
@@ -191,6 +218,7 @@ function Drill({
   }, [revealed, book]);
 
   function commit(chess: Chess, move: LastMove | null) {
+    onPlay();
     setLastMove(move);
     setFen(chess.fen());
     setPlies(chess.history().length);
