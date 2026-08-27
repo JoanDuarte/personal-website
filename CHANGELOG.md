@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0.0] - 2026-08-26
+
+### Added
+- A live Stockfish engine (`stockfish-18-lite-single`, ~7MB, no COOP/COEP
+  headers needed) running in the browser via a Web Worker, layered on top of the
+  existing SEE safety net. It picks up exactly where the fixed book used to say
+  "pensá vos" and stop — once the book is exhausted or the opponent deviates, the
+  trainer now shows the engine's own best move and evaluation, continuously,
+  through the middlegame and endgame instead of going silent. It's a strict
+  progressive enhancement: if it fails to load, the trainer works exactly as it
+  did before this existed
+- A phase indicator (Apertura / Medio juego / Final) on the trainer, independent
+  of book status — apertura by move count, final once both queens are off the
+  board — so the transition Joan asked to see is visible
+- `src/lib/chess/phase.ts`: `gamePhase()`, plus `moveQuality()`/`winPercent()`/
+  `accuracy()` implementing Lichess's public win%-based accuracy formula, so a
+  move's cost is graded by the change in win probability rather than raw
+  centipawns lost — losing 300cp in an equal position and losing 300cp in a
+  position already won by a rook aren't the same mistake
+
+### Changed
+- White's primary repertoire is now the Italian Game (Giuoco Pianissimo) instead
+  of the London System. Unlike the London, it isn't a universal "system" — it only
+  applies once Black actually plays `1...e5` — so when they don't, the book falls
+  back to the London setup automatically, kept around internally exactly for that:
+  a generic, already-audited "develop with sense" plan, not a dedicated answer to
+  the Sicilian or French
+- The trainer dropped the Practicar/Explorar toggle. It's a single free-play
+  sandbox now — both sides always yours, nothing blocked — since the scripted
+  opponent mode wasn't adding anything and the toggle machinery it needed is gone
+  with it
+- Move quality/phase grading aside, the repertoire's own safety mechanics are
+  unchanged: `moveRisk`, the "something is already hanging" rescue, the recapture
+  rule. One exception was removed as genuinely dead code once written for the
+  Italian (`b5` attacking the c4 bishop) — the generic rescue always fires first
+  and already finds a safe retreat, so the hand-written one never ran
+- Being in check now overrides every other branch in `consultBook`, checked
+  immediately rather than as a late fallback. A check that's also resolved by a
+  capture used to get framed as "hay material gratis" instead of "te dan jaque" —
+  true, but not the point, and worse coaching than naming the actual situation
+
+### Notes
+- Re-running the full Stockfish audit after the swap: blunder rate moved from
+  0.8% to 1.4% (still ~5× cleaner than his own 7.4%). This is a real, measured,
+  and understood trade-off, not a regression to chase down — an open e4/e5
+  structure produces sharper middlegame branches than a closed one, even from a
+  "plausible" opponent, and SEE's blind spot to forks and deeper tactics shows up
+  more often as a result. Full numbers and the follow-up this points to
+  (extending live engine commentary to `tactic`/`move` recommendations, not just
+  `done`/`out`) are in README.md and TODOS.md
+
 ## [0.3.7.0] - 2026-08-22
 
 ### Fixed

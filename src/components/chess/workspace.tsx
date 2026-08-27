@@ -24,7 +24,7 @@ const TABS = [
     step: "Antes de jugar",
     label: "Repertorio",
     blurb:
-      "Dos minutos de repaso y jugás sin la pantalla abierta. Tener el esquema en la cabeza en vez de en el monitor es lo que te deja el reloj entero para las jugadas 11 a 25, que es donde se te van las partidas.",
+      "Un sandbox: movés las dos manos, nada te frena. Jugá el esquema, jugá lo que haría un rival agresivo, y mirá qué dice el libro — y, pasada la apertura, qué dice el motor. Repasalo antes de jugar y jugá sin la pantalla abierta: tener esto en la cabeza es lo que te deja el reloj entero para el medio juego.",
   },
   {
     id: "repaso",

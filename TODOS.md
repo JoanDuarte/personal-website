@@ -6,9 +6,22 @@
   target. As of 2026-08-21 the last rapid game was 2026-08-04, so the count has not
   started. If 50 games pass with no movement in either number, the diagnosis was
   wrong and the page should change, not the effort.
-- **Revisit `1...e5` vs the Indian setup at that same checkpoint.** The case for
-  switching rests on 38% over 94 games; the case against is that open positions
-  teach calculation. The repertoire adherence metric on the page is what settles it.
+- **Decided, not deferred: keep the Indian/Pirc setup for Black.** The earlier
+  version of this item asked whether to switch away from it. Researched instead —
+  coaching sources are consistent that this setup needs more judgment than most
+  beginner defenses specifically because it's hypermodern (you have to know *when*
+  to strike back with `...e5`/`...c5`; played passively it "breaks quickly"). That's
+  exactly the skill the live engine layer added in 0.4.0 is for, so the fix for the
+  setup's known weak point is the coaching, not a different opening. Still worth
+  re-checking the repertoire-adherence number at the 50-game mark above.
+- **Extend live engine commentary to `tactic` and `move` recommendations, not just
+  `done`/`out`.** The post-Italian audit (see README, "How good the book actually
+  is") found the worst blunders (-1165cp, -678cp) hiding inside `tactic` picks
+  (`bestSafeCapture` choosing a capture that's safe but not best) and even plain
+  `move` recommendations (`c3`, `Ad3` losing hundreds of cp to a pawn break SEE
+  can't see). The engine layer currently stays silent whenever the book has an
+  opinion at all, by design — extending it to grade those too is the concrete next
+  step, now that the audit has located exactly where it would help most.
 
 ---
 

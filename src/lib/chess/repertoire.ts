@@ -35,7 +35,8 @@ export type Exception = {
 };
 
 export type System = {
-  id: "london" | "indian";
+  /** Internal label. Not used for lookup — `SYSTEMS` below owns that. */
+  id: string;
   color: Color;
   name: string;
   tagline: string;
@@ -62,8 +63,8 @@ function isPlaced(chess: Chess, step: Step, color: Color) {
 /**
  * The step is settled, one way or another: the piece is where it belongs, or it
  * has left its starting square — traded off, or sent elsewhere by an exception.
- * Without this, a London bishop chased from f4 to g3 would leave step 3 pending
- * forever and the book would report itself unfinished after castling.
+ * Without this, a bishop chased off its book square would leave that step
+ * pending forever and the book would report itself unfinished after castling.
  */
 function isResolved(chess: Chess, step: Step, color: Color) {
   return isPlaced(chess, step, color) || !pieceAt(chess, step.from, step.piece, color);
@@ -160,10 +161,11 @@ export type Risk = { san: string; cost: number; attacker: string; square: Square
 /**
  * What a candidate move loses, if anything.
  *
- * A setup is a plan, not a licence to hang pieces: 3.Bf4 is the London's whole
- * point right up until Black has a pawn on e5, at which point it is a bishop for
- * nothing. The threat is measured as the *increase* in what the opponent can
- * win, so a move is not blamed for a threat that already existed before it.
+ * A setup is a plan, not a licence to hang pieces: developing a piece to its
+ * book square only makes sense while nothing hangs once it gets there — a
+ * bishop sent to a square a pawn now attacks is a bishop for nothing. The
+ * threat is measured as the *increase* in what the opponent can win, so a move
+ * is not blamed for a threat that already existed before it.
  *
  * Mutates and restores `chess`.
  */
@@ -192,7 +194,14 @@ function moveRisk(chess: Chess, from: Square, to: Square): Risk | null {
   };
 }
 
-// --- White: the London System ---------------------------------------------
+// --- White: the London System (internal fallback) --------------------------
+//
+// No longer the primary book for White — that's the Italian below. This stays
+// as Plan B for when Black declines the Italian's ...e5: not a dedicated
+// answer to the Sicilian, French, or anything else, just the same
+// already-audited "develop with sense" setup it always was, reused as-is.
+// It is never shown as a selectable system on its own; only ITALIAN.setup
+// delegates into it.
 
 const LONDON: System = {
   id: "london",
@@ -200,7 +209,7 @@ const LONDON: System = {
   name: "Sistema Londres",
   tagline: "Blancas · 8 jugadas, siempre las mismas",
   rationale:
-    "Con blancas venís jugando 1.e4 en 116 partidas con 53%. El Londres te saca las decisiones de encima en la apertura, que es exactamente lo que necesitás para llegar a la jugada 11 con el reloj entero.",
+    "El plan de reserva cuando el rival no juega ...e5 contra la Italiana: el mismo desarrollo con d4 de siempre, sin apostar nada nuevo en la posición menos preparada.",
   setup: () => [
     {
       from: "d2",
@@ -304,6 +313,79 @@ const LONDON: System = {
   ],
 };
 
+// --- White: the Italian Game (Giuoco Pianissimo) ----------------------------
+
+const ITALIAN: System = {
+  id: "italian",
+  color: "w",
+  name: "Apertura Italiana",
+  tagline: "Blancas · Giuoco Pianissimo, 6 jugadas fijas",
+  rationale:
+    "Con blancas venís jugando 1.e4 en 116 partidas con 53% — la Italiana no te pide cambiar de primera jugada, canaliza la que ya jugás. Solo se aplica si el rival contesta 1...e5, que es la respuesta más común a tu nivel; si no coopera, el plan pasa solo al mismo desarrollo con d4 del Londres que ya conocías, con la misma red de seguridad de siempre.",
+  setup: (chess) => {
+    // Once Black has actually replied, check whether they played along. Before
+    // that (right after White's own 1.e4) there's nothing to branch on yet.
+    const blackFirst = chess.history()[1];
+    if (chess.history().length >= 2 && blackFirst !== "e5") {
+      return LONDON.setup(chess);
+    }
+    return [
+      {
+        from: "e2",
+        to: "e4",
+        piece: "p",
+        idea: "Abrís con el peón de rey. La Italiana necesita que el rival conteste ...e5 — si no, el plan pasa solo al del Londres que ya conocías.",
+      },
+      {
+        from: "g1",
+        to: "f3",
+        piece: "n",
+        idea: "Atacás el peón de e5 y desarrollás el caballo natural.",
+      },
+      {
+        from: "f1",
+        to: "c4",
+        piece: "b",
+        idea: "El alfil apunta a f7, el punto más flojo del rival. Esto es lo que hace a esta apertura 'italiana'.",
+      },
+      {
+        from: "d2",
+        to: "d3",
+        piece: "p",
+        idea: "Sostenés e4 sin abrir el centro todavía. Ésta es la versión tranquila (Giuoco Pianissimo): nunca jugás Cg5, así que toda la teoría afilada de líneas como el Fried Liver queda afuera sin que tengas que evitarla vos. Responde igual si el rival contestó ...Ac5 o ...Cf6.",
+      },
+      {
+        from: "e1",
+        to: "g1",
+        piece: "k",
+        idea: "Enrocás. Con el rey seguro, no hay apuro.",
+      },
+      {
+        from: "c2",
+        to: "c3",
+        piece: "p",
+        idea: "Preparás d4 para cuando el centro esté listo para abrirse. Todavía no lo jugás — ese 'cuándo' ya es criterio de medio juego.",
+      },
+    ];
+  },
+  // No hand-written exceptions: a pawn attacking the c4 bishop always exposes
+  // ≥300cp (a bishop is worth 320), which the generic "something of yours is
+  // already hanging" rescue above already catches and answers — a hand-coded
+  // "retreat to b3" exception here was provably unreachable, since that generic
+  // check runs first and picks whatever legal move loses the least (a real
+  // retreat, if one exists), before this list is ever consulted.
+  exceptions: [],
+  afterBook:
+    "Terminó el libro. El plan de acá en adelante: buscás el momento para el quiebre con d4, sacás el caballo de b1 (a d2, y después reagrupa hacia f1-g3) y mirás dónde le pesa más al rival. Pero antes de cada jugada, la pregunta de siempre: ¿qué me captura?",
+  plans: [
+    { name: "Giuoco Piano clásico", moves: ["e5", "Nc6", "Bc5", "Nf6", "d6", "O-O"] },
+    { name: "Dos Caballos", moves: ["e5", "Nc6", "Nf6", "Bc5", "d6", "O-O"] },
+    { name: "Ataca el alfil con b5", moves: ["e5", "Nc6", "Bc5", "b5", "Nf6", "d6", "O-O"] },
+    { name: "Siciliana (no coopera)", moves: ["c5", "Nc6", "d6", "g6", "Bg7", "Nf6", "O-O"] },
+    { name: "Francesa (no coopera)", moves: ["e6", "d5", "Nf6", "Be7", "c5", "Nc6", "O-O"] },
+  ],
+};
+
 // --- Black: the Indian setup ----------------------------------------------
 
 const INDIAN: System = {
@@ -382,10 +464,10 @@ const INDIAN: System = {
   ],
 };
 
-export const SYSTEMS: Record<System["id"], System> = {
-  london: LONDON,
+export const SYSTEMS = {
+  italian: ITALIAN,
   indian: INDIAN,
-};
+} as const satisfies Record<string, System>;
 
 // --- Book lookup -----------------------------------------------------------
 
@@ -437,6 +519,32 @@ export function consultBook(
   const steps = system.setup(chess);
   const total = steps.length;
   const doneCount = steps.filter((s) => isResolved(chess, s, system.color)).length;
+
+  // In check overrides everything below. Only check-resolving moves are legal
+  // right now, so material sitting elsewhere on the board isn't actionable —
+  // and when the resolving move also happens to win material (recapturing the
+  // checking piece, say), it used to fall through to the "free material" branch
+  // below and get framed as a tactic instead of a check. Same move, worse
+  // framing: "hay material gratis" when the real fact is "te dieron jaque".
+  // ...Qa4+ against the Indian is one of the most common checks at this level,
+  // and the book used to meet it with a shrug when nothing tapped it directly.
+  if (chess.isCheck()) {
+    const reply = safestMove(chess, (m) => (m.piece === "k" ? 0 : 1));
+    if (reply) {
+      return {
+        kind: "move",
+        from: reply.from,
+        to: reply.to,
+        san: reply.san,
+        idea: `Te dan jaque, así que el esquema espera: primero se sale del jaque. De las respuestas posibles ésta es la que menos pierde${reply.net <= 0 ? " y no te cuesta nada" : ""}. Si podés tapar en vez de mover el rey, tapá: mover el rey te deja sin enroque.`,
+        source: "exception",
+        step: doneCount + 1,
+        total,
+      };
+    }
+    // No legal reply would mean checkmate, which the caller already screens
+    // for via chess.isGameOver() — fall through defensively rather than throw.
+  }
 
   // Free material is only free if taking it doesn't hand something back. An
   // audit against Stockfish found "take the pawn on f5" recommendations that
@@ -571,26 +679,6 @@ export function consultBook(
     return { kind: "done", idea: system.afterBook };
   }
 
-  // In check with nothing in the setup that answers it. Bailing here was wrong:
-  // ...Qa4+ against the Indian is one of the most common checks at this level,
-  // and the book met it with a shrug. Answer with whatever loses least,
-  // preferring not to move the king so castling survives.
-  if (chess.isCheck()) {
-    const reply = safestMove(chess, (m) => (m.piece === "k" ? 0 : 1));
-    if (reply) {
-      return {
-        kind: "move",
-        from: reply.from,
-        to: reply.to,
-        san: reply.san,
-        idea: `Te dan jaque, así que el esquema espera: primero se sale del jaque. De las respuestas posibles ésta es la que menos pierde${reply.net <= 0 ? " y no te cuesta nada" : ""}. Si podés tapar en vez de mover el rey, tapá: mover el rey te deja sin enroque.`,
-        source: "exception",
-        step: doneCount + 1,
-        total,
-      };
-    }
-  }
-
   if (risky.length > 0) {
     return {
       kind: "out",
@@ -599,9 +687,7 @@ export function consultBook(
   }
   return {
     kind: "out",
-    idea: chess.isCheck()
-      ? "Estás en jaque, así que el esquema se suspende: primero resolvés el jaque. Eso ya lo pensás vos."
-      : "El rival hizo algo que saca al esquema de su curso. De acá en adelante pensás vos — que es justamente para lo que el libro te dejó tiempo en el reloj.",
+    idea: "El rival hizo algo que saca al esquema de su curso. De acá en adelante pensás vos — que es justamente para lo que el libro te dejó tiempo en el reloj.",
   };
 }
 

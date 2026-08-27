@@ -183,7 +183,7 @@ function playout(
 
 const samples: Sample[] = [];
 for (let i = 0; i < GAMES; i++) {
-  for (const system of [SYSTEMS.london, SYSTEMS.indian]) {
+  for (const system of [SYSTEMS.italian, SYSTEMS.indian]) {
     samples.push(...playout(system, i * 2654435761 + 7, "plausible"));
     samples.push(...playout(system, i * 40503 + 991, "aleatorio"));
   }
@@ -270,7 +270,7 @@ function report(label: string, all: Verdict[]) {
 }
 
 report("TODO", verdicts);
-report("Londres", verdicts.filter((v) => v.system === "london"));
+report("Italiana", verdicts.filter((v) => v.system === "italian"));
 report("Indio", verdicts.filter((v) => v.system === "indian"));
 report("rival plausible", verdicts.filter((v) => v.pool === "plausible"));
 report("rival aleatorio", verdicts.filter((v) => v.pool === "aleatorio"));
