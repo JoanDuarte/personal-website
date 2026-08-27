@@ -337,13 +337,20 @@ function Sandbox({ system }: { system: System }) {
                   Podés seguir moviendo desde acá.
                 </p>
               )}
-              <button
-                type="button"
-                onClick={reset}
-                className="min-h-11 rounded-md border border-primary px-4 text-[14px] text-primary transition-opacity hover:opacity-70"
-              >
-                Empezar de nuevo
-              </button>
+              {/* Only when the game actually ended: while just off-book, a
+                  prominent "empezar de nuevo" button reads as a dead end —
+                  "se acabó, reiniciá" — when nothing is stopping play from
+                  continuing. Restarting on purpose is still one click away,
+                  in the small link next to the board. */}
+              {over && (
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="min-h-11 rounded-md border border-primary px-4 text-[14px] text-primary transition-opacity hover:opacity-70"
+                >
+                  Empezar de nuevo
+                </button>
+              )}
             </div>
           ) : (
             // The hint stays available every move, not just the first: the

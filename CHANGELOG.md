@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1.0] - 2026-08-26
+
+### Fixed
+- The trainer showed a prominent "Empezar de nuevo" button the moment the book
+  ran out, even mid-game with nothing stopping play from continuing. It read as
+  a dead end — "se acabó, reiniciá" — when the actual message right above it was
+  "podés seguir moviendo desde acá". That button now only appears once the game
+  has genuinely ended (checkmate, stalemate, draw); the small link next to the
+  board still resets on purpose any time
+
 ## [0.4.0.0] - 2026-08-26
 
 ### Added
