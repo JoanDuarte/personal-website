@@ -28,7 +28,7 @@ const RULES = [
   {
     n: "03",
     title: "Un repertorio y nada más",
-    body: "Londres con blancas, esquema indio con negras. No para saber más aperturas, sino para no tener que decidir nada antes de la jugada 10 y llegar entero a donde se decide.",
+    body: "Italiana con blancas, esquema indio con negras. No para saber más aperturas, sino para no tener que decidir nada antes de la jugada 10 y llegar entero a donde se decide — y de ahí en más, que el motor te acompañe en vez de dejarte solo.",
   },
 ];
 
@@ -90,12 +90,17 @@ export default function ChessPage() {
           la partida. La política de juego limpio de chess.com permite libros de
           apertura solo en ajedrez por días, no en partidas en vivo, y las mías
           son de diez minutos. Un esquema que necesitás leer de una pantalla
-          tampoco lo sabés todavía.
+          tampoco lo sabés todavía — y con un motor de verdad de este lado, esto
+          importa más, no menos: es un entrenador de antes y después, nunca de
+          durante.
         </p>
         <p className="text-[13px] leading-[1.7] text-muted-foreground">
-          Los datos salen de la API pública de chess.com. El análisis no usa
-          motor: encuentra material colgado con evaluación estática de
-          intercambios, que cubre la clase de error que me está costando el elo.
+          Los datos salen de la API pública de chess.com. Colgar material se
+          detecta sin motor, con evaluación estática de intercambios — corre
+          instantáneo y ya cubre el 48% de mis errores graves. Stockfish corre
+          en tu propio navegador (nunca en un servidor) para lo que esa técnica
+          no puede ver: si una jugada es simplemente mejor que otra, y para
+          seguir acompañando una vez que el repertorio fijo se termina.
         </p>
       </footer>
     </main>

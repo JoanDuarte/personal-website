@@ -4,14 +4,14 @@ import { bestExchange } from "@/lib/chess/see";
 import { sanEs } from "@/lib/chess/format";
 
 /**
- * The book must never recommend a move that hangs material. A setup is a plan,
- * not a licence: 3.Bf4 is the London's whole point right up until Black has a
- * pawn on e5, at which point it is a bishop for nothing.
+ * The book must never recommend a move that hangs material. A setup is a
+ * plan, not a licence: developing a piece to its book square only makes sense
+ * while nothing hangs once it gets there.
  */
 
 type Case = {
   name: string;
-  system: "london" | "indian";
+  system: "italian" | "indian";
   moves: string[];
   /** The move the plain setup order would have produced. */
   naive: string;
@@ -20,32 +20,38 @@ type Case = {
 
 const cases: Case[] = [
   {
-    name: "Peón en e5 ataca f4: el alfil no puede ir",
-    system: "london",
-    moves: ["d4", "d6", "Nf3", "e5"],
-    naive: "Bf4",
-    expect: "cualquier cosa menos Af4",
+    // No hand-coded exception for this — the generic "something is already
+    // hanging" rescue handles it, and picks whatever legal retreat loses
+    // least (not necessarily b3 specifically). The pawn needs a defender
+    // (here, ...a6), or "take the free pawn" would correctly outrank any
+    // retreat: there'd be nothing wrong with just winning it instead.
+    name: "b5 ataca el alfil de c4, defendido por a6: se retira, no ignora el ataque",
+    system: "italian",
+    moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "d3", "a6", "O-O", "b5"],
+    naive: "c3",
+    expect: "un retiro del alfil, no c3 ignorando el ataque",
   },
   {
-    name: "Peón en e5 con el caballo ya en f3 y d4 cambiado",
-    system: "london",
-    moves: ["d4", "e5", "dxe5", "Nc6"],
+    // Turns out White has a real extra shot here (dxe5 dxe5 Nxe5 nets a clean
+    // pawn — two attackers on e5 against one defender), so tactics correctly
+    // outrank the fallback's own Bf4 step before it's even reached. Confirms
+    // the fallback runs through the same tactics-first gate as everything
+    // else, not that Bf4 specifically gets skipped — see the next case for that.
+    name: "Fallback (rival no juega e5): la táctica sigue mandando sobre el Londres interno",
+    system: "italian",
+    moves: ["e4", "c6", "d4", "d6", "Nf3", "e5"],
     naive: "Bf4",
-    expect: "no debe colgar nada",
+    expect: "no una jugada colgada, sea táctica o desarrollo",
   },
   {
-    name: "Peón negro en c4 ataca d3: el alfil no puede ir",
-    system: "london",
-    moves: ["d4", "d5", "Nf3", "Nf6", "Bf4", "c5", "e3", "c4"],
+    // White's own e2-e4 already vacates e2, so the fallback's e3 step resolves
+    // for free — the next real decision is Bd3, which needs to arrive before
+    // Black's own c-pawn does, or it hangs to it.
+    name: "Fallback: peón negro en c4 ataca d3 antes de que el alfil llegue",
+    system: "italian",
+    moves: ["e4", "c6", "d4", "d5", "Nf3", "c5", "Bf4", "c4"],
     naive: "Bd3",
     expect: "cualquier cosa menos Ad3",
-  },
-  {
-    name: "Peón negro en g4 ataca f3: el caballo no puede ir",
-    system: "london",
-    moves: ["d4", "h5", "e3", "g5", "c3", "g4"],
-    naive: "Nf3",
-    expect: "cualquier cosa menos Cf3",
   },
   {
     name: "Indio: peón blanco en h6 ataca g7, y enrocar tampoco entra",
@@ -109,13 +115,18 @@ for (const c of cases) {
 // against the Indian — one of the most common checks at this level — and the
 // trainer rendered that shrug as "round over", which read as checkmate.
 
-const checkCases: { moves: string; system: "london" | "indian"; name: string }[] = [
+// Check-handling doesn't care which system.setup() is active — these three
+// Indian cases already proved the mechanism works; this one just confirms it
+// generalises to a system that was never specifically written with it in mind.
+const checkCases: { moves: string; system: "italian" | "indian"; name: string }[] = [
   { moves: "a3 Nf6 h3 g6 c3 Bg7 Qc2 d6 Qa4+", system: "indian", name: "Da4+ contra el indio" },
   { moves: "c4 Nf6 d4 g6 h3 Bg7 a3 d6 Qa4+", system: "indian", name: "Da4+ con c4 y d4" },
   { moves: "e3 Nf6 g3 g6 f3 Bg7 c3 d6 Qa4+", system: "indian", name: "Da4+ tercera variante" },
-  { moves: "d4 c5 dxc5 Qa5+", system: "london", name: "Da5+ contra el Londres" },
-  { moves: "d4 h6 Nf3 e5 dxe5 Be7 Bf4 Nf6 exf6 Bb4+", system: "london", name: "Ab4+ con peón en f6" },
-  { moves: "d4 e6 Nf3 Bb4+", system: "london", name: "Ab4+ temprano" },
+  {
+    moves: "e4 e5 Nf3 Nc6 Bc4 Bc5 d3 Bxf2+",
+    system: "italian",
+    name: "Axf2+ (sacrificio) contra la Italiana",
+  },
 ];
 
 console.log("\n--- En jaque, el libro siempre tiene que dar una jugada ---");
@@ -125,7 +136,7 @@ for (const c of checkCases) {
   const book = consultBook(SYSTEMS[c.system], chess);
   const ok = chess.isCheck() && book.kind === "move";
   console.log(
-    `  ${ok ? "✓" : "✗"} ${c.name.padEnd(26)} jaque=${chess.isCheck()} -> ${book.kind === "move" ? sanEs(book.san) : book.kind.toUpperCase()}`
+    `  ${ok ? "✓" : "✗"} ${c.name.padEnd(30)} jaque=${chess.isCheck()} -> ${book.kind === "move" ? sanEs(book.san) : book.kind.toUpperCase()}`
   );
   if (!ok) failures += 1;
 }

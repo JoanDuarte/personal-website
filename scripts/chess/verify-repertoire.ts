@@ -3,7 +3,7 @@ import { consultBook, opponentReply, SYSTEMS } from "@/lib/chess/repertoire";
 import { sanEs } from "@/lib/chess/format";
 import { PIECE_VALUE } from "@/lib/chess/see";
 
-for (const system of [SYSTEMS.london, SYSTEMS.indian]) {
+for (const system of [SYSTEMS.italian, SYSTEMS.indian]) {
   console.log(`\n=== ${system.name} (${system.color === "w" ? "blancas" : "negras"}) ===`);
 
   for (const plan of system.plans) {

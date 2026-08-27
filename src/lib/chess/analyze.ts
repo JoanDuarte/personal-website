@@ -141,7 +141,7 @@ export function analyzeGame(
   const history = chess.history({ verbose: true });
   const clocks = parseClocks(game.pgn);
   const totalSeconds = Number.parseInt(game.time_control, 10) || 0;
-  const system = SYSTEMS[me === "w" ? "london" : "indian"];
+  const system = SYSTEMS[me === "w" ? "italian" : "indian"];
 
   const myClocks: number[] = [];
   const thinkTimes: number[] = [];
