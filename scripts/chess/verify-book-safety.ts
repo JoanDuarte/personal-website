@@ -141,7 +141,60 @@ for (const c of checkCases) {
   if (!ok) failures += 1;
 }
 
+// --- Mate ------------------------------------------------------------------
+//
+// The material safety net is blind to mate by construction: static exchange
+// evaluation prices ...Dxf2# at "wins a pawn, loses the queen to the recapture",
+// which nets zero and reads as perfectly safe. The book followed that reading
+// straight into 1.e4 e5 2.Cf3 Ac5 3.Cxe5 Dh4 4.Ac4 Dxf2#. These cases pin the
+// two halves of the fix: never recommend a move that allows mate next, and
+// treat a mate threat as outranking the setup, the free pawn and the recapture.
+
+const mateCases: { name: string; system: "italian" | "indian"; moves: string }[] = [
+  { name: "Dh4 amenaza Dxf2#", system: "italian", moves: "e4 e5 Nf3 Bc5 Nxe5 Qh4" },
+  { name: "Dh4 con el caballo ya en e5", system: "italian", moves: "e4 e5 Nf3 Bc5 Nc3 Qh4" },
+  // Found by playing the book against random-but-sharp opponents until one of
+  // them threatened mate: 4.Cg5 hits f7, which is defended only by the king.
+  { name: "Cg5 amenaza Dxf7# contra el indio", system: "indian", moves: "Nh3 Nf6 c3 g6 Qb3 Bg7 Ng5" },
+];
+
+console.log("\n--- El libro nunca puede permitir mate en una ---");
+for (const c of mateCases) {
+  const chess = new Chess();
+  for (const san of c.moves.split(" ")) chess.move(san);
+  const system = SYSTEMS[c.system];
+  const threat = (() => {
+    const parts = chess.fen().split(" ");
+    parts[1] = parts[1] === "w" ? "b" : "w";
+    parts[3] = "-";
+    try {
+      return new Chess(parts.join(" ")).moves().find((m) => m.endsWith("#")) ?? null;
+    } catch {
+      return null;
+    }
+  })();
+  const book = consultBook(system, chess);
+  let allows: string | null = null;
+  if (book.kind === "move" || book.kind === "tactic") {
+    const probe = new Chess(chess.fen());
+    const move = probe
+      .moves({ verbose: true })
+      .find((m) => m.from === book.from && m.to === book.to);
+    if (move) {
+      probe.move({ from: move.from, to: move.to, promotion: move.promotion });
+      allows = probe.moves().find((m) => m.endsWith("#")) ?? null;
+    }
+  }
+  const ok = allows === null;
+  console.log(
+    `  ${ok ? "✓" : "✗"} ${c.name.padEnd(32)} amenaza=${threat ?? "—"} -> ${
+      book.kind === "move" || book.kind === "tactic" ? sanEs(book.san) : book.kind.toUpperCase()
+    }${allows ? `  PERMITE ${allows}` : ""}`
+  );
+  if (!ok) failures += 1;
+}
+
 console.log(
-  `\n${failures === 0 ? "TODOS OK" : `${failures} FALLAS`} — ${cases.length + checkCases.length} casos`
+  `\n${failures === 0 ? "TODOS OK" : `${failures} FALLAS`} — ${cases.length + checkCases.length + mateCases.length} casos`
 );
 if (failures > 0) process.exit(1);
