@@ -1,5 +1,15 @@
 [
   {
+    "name": "Verelyn",
+    "tagline": "Journalist agents that write your morning briefing",
+    "description": "The newsletters you pay for are good, and they were written for thousands of people at once, which is why most of them sit unopened. Verelyn is a newsroom built around one reader. Its journalist agents read your sources every morning, fold four reports of the same thing into a single event with its sources attached, weigh each one against what you actually have riding on this week, and send one briefing at 07:00. Every item is signed by the agent who wrote it and carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. Live since August 2026, and the first reader paid twelve days after the first commit.",
+    "status": "active",
+    "date": "2026–present",
+    "logo": "/logos/verelyn.png",
+    "link": "https://verelyn.com",
+    "tags": ["AI Agents", "Newsroom", "SaaS"]
+  },
+  {
     "name": "Flare",
     "tagline": "Your social brain, voice-first",
     "description": "An agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. The whole product is one conversation: you open it and the Orb is already talking, your answer is your check-in, and it closes by pointing you at a real human. No likes, no comments, no feed of strangers. Live on iOS. I designed and built the system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer pipeline.",
@@ -8,16 +18,6 @@
     "logo": "/logos/flare.png",
     "link": "https://heyflare.app",
     "tags": ["AI", "React Native", "Supabase", "Voice"]
-  },
-  {
-    "name": "Stevay",
-    "tagline": "AI agents for construction companies",
-    "description": "A construction company's data is scattered across ERPs, spreadsheets and WhatsApp, and none of it lines up until the year closes. Stevay sits on top and reads it as it arrives, then structures the administrative work and runs it: 75+ agents across finances, documentation, purchasing, progress, certification, management and communication. Nothing new to adopt, and a human signs off on anything that touches money. The point is knowing whether a project makes or loses money now, not in December. I co-founded it with Franco Quattroqui and own tech and product.",
-    "status": "active",
-    "date": "2026–present",
-    "logo": "/logos/stevay.png",
-    "link": "https://stevay.com",
-    "tags": ["AI Agents", "Construction", "B2B"]
   },
   {
     "name": "Privé",
@@ -38,6 +38,16 @@
     "logo": "/logos/inception.png",
     "link": "https://drive.google.com/drive/folders/1C9j19EwBmfc_4xsPhYcYeh_1DuVyi2Nm?usp=sharing",
     "tags": ["Bitcoin", "Operations", "Hardware"]
+  },
+  {
+    "name": "Stevay",
+    "tagline": "AI agents for construction companies",
+    "description": "A construction company's data is scattered across ERPs, spreadsheets and WhatsApp, and none of it lines up until the year closes. Stevay sat on top and read it as it arrived, then structured the administrative work and ran it: 75+ agents across finances, documentation, purchasing, progress, certification, management and communication. Nothing new to adopt, and a human signed off on anything that touched money. I co-founded it with Franco Quattroqui and owned tech and product. We shipped it, then stopped taking it forward.",
+    "status": "inactive",
+    "date": "2026",
+    "logo": "/logos/stevay.png",
+    "link": "https://stevay.com",
+    "tags": ["AI Agents", "Construction", "B2B"]
   },
   {
     "name": "DL3ARN",

@@ -24,13 +24,15 @@ After DL3ARN I confronted something that had bothered me since day one. I wasn't
 
 ## What I'm Building Now
 
-**Flare** is my main thing. It's your social brain: an agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. Voice-first, proactive, never performative. The whole product is one conversation with an agent that connects you to humans, and nobody has built that for close friendships. It's live on iOS with real users. I designed and built the entire system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer data pipeline. Full detail lives in `flare-product-kb.md`.
+**Verelyn** is where most of my time goes. It's a personal newsroom built around one reader. The newsletters you pay for are good, but they were written for thousands of people at once, so they can't know what you have riding on this week. Verelyn's journalist agents read your sources every morning, fold four reports of the same thing into one event with its sources attached, weigh each one against your world, and send a single briefing at 07:00. Every item is signed by the agent who wrote it and carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. I started it in August 2026 and had the first paying reader twelve days later.
 
-**Stevay** puts AI agents inside the back office of construction companies. A construction company's data lives across ERPs, spreadsheets and WhatsApp, and none of it lines up until the year closes. Stevay sits on top and reads it as it arrives, then structures the administrative work and runs it: 75+ agents across seven areas — finances, documentation, purchasing, progress, certification, management and communication. It plugs into what companies already use instead of asking them to adopt new software, and a human signs off on anything that touches money. The point is that an owner knows whether each project makes or loses money now, not in December. I co-founded it with Franco Quattroqui. He handles clients and growth, I handle technology and product.
+**Flare** is live on iOS. It's your social brain: an agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. Voice-first, proactive, never performative. The whole product is one conversation with an agent that connects you to humans, and nobody has built that for close friendships. It has real users. I designed and built the entire system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer data pipeline. Full detail lives in `flare-product-kb.md`.
 
 **Privé** is a Telegram-native storefront for creators. They sell digital content, video calls, services and VIP group access without leaving Telegram, and get paid through Mercado Pago, crypto or bank transfer, straight into their own account. Privé takes 0% on every plan and every method — it earns from the creator's Premium subscription, not from a cut of each sale. I built the bot, the mini app, the payment rails and the fee engine.
 
 ## My Other Projects
+
+**Stevay** — AI agents inside the back office of construction companies. 75+ agents across finances, documentation, purchasing, progress, certification, management and communication, sitting on top of the ERPs, spreadsheets and WhatsApp the company already uses. I co-founded it with Franco Quattroqui and owned tech and product. We shipped it, then stopped taking it forward.
 
 **Inception** — The Bitcoin mining company. Started at 21, still running, automated, generating revenue that funds new ventures. Taught me how to scale operations, manage clients, and think about real business economics.
 
@@ -56,8 +58,9 @@ I'm self-taught. I learned to code because I refused to keep delegating the most
 
 - **Mobile**: Expo and React Native, iOS-focused, shipping to the App Store with OTA updates via EAS
 - **Frontend**: React, TypeScript, Tailwind, Next.js for web
-- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions, Storage) for Flare; Fastify with grammY and Drizzle on Postgres for Privé
-- **AI**: Google Gemini for Flare's agent system, ElevenLabs for voice
+- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions, Storage) for Flare and Verelyn; Next.js 16 and React 19 on Vercel for Verelyn's site and product; Fastify with grammY and Drizzle on Postgres for Privé
+- **AI**: Google Gemini for Flare's agent system, ElevenLabs for voice, the Vercel AI Gateway for Verelyn so each task goes to the model that fits it — cheap ones to rank in bulk, better ones to explain
+- **Ingestion and delivery**: Firecrawl to read the web for Verelyn, Resend for the 07:00 email, Stripe for billing
 - **Design**: Custom design systems with design tokens, Skia shaders for the Aura Orb, component libraries
 - **State**: Zustand for client state, React Query for server state
 - **Observability**: PostHog for product analytics and session replay, Sentry for errors
