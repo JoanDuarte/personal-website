@@ -37,7 +37,7 @@ export function Footer() {
     <footer className="px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
         <Separator />
-        <div className="py-20 text-center">
+        <div className="py-16 text-center">
           <p className="text-[22px] md:text-[26px] font-medium tracking-[-0.02em] text-balance">
             Open to conversations with accelerators and investors.
           </p>

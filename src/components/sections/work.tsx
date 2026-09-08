@@ -123,7 +123,7 @@ export function Work() {
   const wide = new Set(["Verelyn", "Inception"]);
 
   return (
-    <section className="py-20 md:py-28 px-4 md:px-0">
+    <section className="py-12 md:py-16 px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
         <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-8">
           Work

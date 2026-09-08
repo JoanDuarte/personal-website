@@ -116,9 +116,11 @@ its heading are enough.
   prose column by the same amount on both sides. Nothing else breaks out.
 - **Exception — `/chess`:** 880px, because a board beside its explanation panel
   does not fit in 640. Prose inside that page stays at 640px.
-- **Section padding:** `py-20 md:py-28`. The story directly under the hero is
-  `py-12 md:py-16` so the first screen flows into it. This replaced "compact,
-  py-8 to py-16": generous, disciplined space is most of what premium is made of.
+- **Section padding:** `py-12 md:py-16`, so two neighbours sit 128px apart on
+  desktop. The story directly under the hero is `py-8 md:py-10` so the first
+  screen flows into it. It was `py-20 md:py-28` for one afternoon: with the
+  sections that arrived in the intensity pass the 224px gaps read as empty, and
+  Joan said so. Air comes from the hero and the bento, not from the gutters.
 - **Dividers:** one `Separator` between Active and Past; accordion items carry
   `border-t`. Lists do not get a hairline under every row.
 

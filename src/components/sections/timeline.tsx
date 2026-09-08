@@ -18,7 +18,7 @@ const items = [...projects].sort((a, b) => startYear(a.date) - startYear(b.date)
 
 export function Timeline() {
   return (
-    <section className="px-4 md:px-0 py-20 md:py-28">
+    <section className="px-4 md:px-0 py-12 md:py-16">
       <div className="max-w-[640px] mx-auto">
         <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-10">
           How I got here

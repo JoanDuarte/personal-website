@@ -4,7 +4,7 @@ import bio from "@/data/bio.json";
 // the first thing after it than as the fourth thing inside it.
 export function Story() {
   return (
-    <section className="px-4 md:px-0 py-12 md:py-16">
+    <section className="px-4 md:px-0 py-8 md:py-10">
       <div className="max-w-[640px] mx-auto space-y-4">
         {bio.story.map((paragraph) => (
           <p

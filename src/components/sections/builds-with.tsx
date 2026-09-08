@@ -4,7 +4,7 @@ import { StackMarquee } from "@/components/sections/stack-marquee";
 export function BuildsWith() {
   const { buildsWithIntro, buildsWith } = getKbSections();
   return (
-    <section className="px-4 md:px-0 py-20 md:py-28">
+    <section className="px-4 md:px-0 py-12 md:py-16">
       <div className="max-w-[640px] mx-auto">
         <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-4">
           What I build with
