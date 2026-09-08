@@ -7,3 +7,6 @@ feature.json
 
 # Per-machine extension config overrides.
 extensions/*/local-config.yml
+
+# Downloaded integration/extension catalogs. Regenerated on demand, per machine.
+integrations/.cache/

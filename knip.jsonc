@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // Manual verification scripts, run by hand (see README and package.json).
+  // Nothing imports them, so knip needs to be told they are roots.
+  "entry": ["scripts/chess/*.ts"],
+  // Vendored Stockfish build. The Web Worker fetches it by URL at runtime, so no
+  // import ever points at it. Same reason it is in the ESLint ignore list.
+  "ignore": ["public/engine/**"],
+  // A constant or type that a module exports and also uses itself is API surface,
+  // not dead code. Without this, knip asks to strip `export` from thirteen symbols
+  // in the chess library that scripts and future code are meant to reach.
+  "ignoreExportsUsedInFile": true,
+  // Installed on purpose, not imported yet. Remove this line the first time
+  // something imports from "motion/react".
+  "ignoreDependencies": ["motion"]
+}

@@ -1,20 +1,26 @@
+@AGENTS.md
 
-## Skill routing
+## Claude Code
 
-When the user's request matches an available skill, ALWAYS invoke it using the Skill
-tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
-The skill has specialized workflows that produce better results than ad-hoc answers.
+Everything that matters is in `AGENTS.md`, imported above. This file only adds what
+is specific to Claude Code.
 
-Key routing rules:
-- Product ideas, "is this worth building", brainstorming → invoke office-hours
-- Bugs, errors, "why is this broken", 500 errors → invoke investigate
-- Ship, deploy, push, create PR → invoke ship
-- QA, test the site, find bugs → invoke qa
-- Code review, check my diff → invoke review
-- Update docs after shipping → invoke document-release
-- Weekly retro → invoke retro
-- Design system, brand → invoke design-consultation
-- Visual audit, design polish → invoke design-review
-- Architecture review → invoke plan-eng-review
-- Save progress, checkpoint, resume → invoke checkpoint
-- Code quality, health check → invoke health
+**Skill routing.** When a request matches one of these, invoke the skill first
+rather than answering ad hoc:
+
+- A feature to build → `/speckit-specify` (it creates the branch). Ambiguous shape →
+  `/speckit-clarify` before `/speckit-plan`.
+- A bug report, a 500, "why is this broken" → `/speckit-bug-assess`, then
+  `/speckit-bug-fix` and `/speckit-bug-test`.
+- An idea, "is this worth building" → `/speckit-assess-intake` and the rest of the
+  assess pipeline, ending in `/speckit-assess-decide`.
+- A change to how the project is governed → `/speckit-constitution`.
+- Visual or UI work → the `design-taste-frontend` skill, with `DESIGN.md` winning any
+  disagreement.
+
+**Skills on disk.** `.claude/skills/` holds spec-kit's Claude copies of its skills and
+symlinks into `.agents/skills/` for everything else. Do not edit either by hand;
+reinstall instead (`specify extension add <id> --force`, `npx skills add <repo>`).
+
+**Local state.** `.claude/settings.local.json` is gitignored. Nothing else under
+`.claude/` should hold credentials.

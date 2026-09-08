@@ -19,7 +19,6 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/components/sections/` — Server components for each content section
 - `src/components/voice-orb.tsx` — Official ElevenLabs Orb driven by a live voice session
 - `src/components/ui/orb.tsx` — ElevenLabs UI Orb component code
-- `src/components/reveal-on-scroll.tsx` — IntersectionObserver scroll-reveal wrapper
 - `src/components/copy-email-button.tsx` — Clipboard copy with mailto: fallback
 - `src/app/globals.css` — oklch color tokens, background grain/gradient, animations
 - `src/app/og-card.tsx` — Shared Satori card behind `opengraph-image` and `twitter-image`

@@ -161,18 +161,14 @@ body::after {
   }
 }
 
-/* Section reveal */
+/* Plain fade-in. The trainer's closing line uses it; scroll-reveal, which
+   this was written for, went with the collapsible layout in #7. */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* Scroll-reveal: reduced motion users always see content */
 @media (prefers-reduced-motion: reduce) {
-  .reveal-section {
-    opacity: 1 !important;
-  }
-
   html {
     scroll-behavior: auto;
   }

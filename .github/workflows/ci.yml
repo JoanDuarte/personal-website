@@ -1,0 +1,22 @@
+# The gates from .specify/memory/constitution.md, run on every push and PR.
+# Vercel builds and deploys on its own; this only runs what Vercel does not:
+# lint, types, dead code, and the fast chess checks. The exhaustive chess
+# checks take ~5 minutes and are run by hand (bun run chess:verify:exhaustive).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run chess:verify

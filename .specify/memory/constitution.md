@@ -1,6 +1,21 @@
 <!--
 Sync Impact Report
 ==================
+Version change: 1.0.0 → 1.1.0
+Bump rationale: MINOR — materially expanded guidance, no principle removed or
+redefined. The quality gates in "Development Workflow and Quality Gates" now name
+`bun run check` (lint + typecheck + knip) as the single CI gate, add knip with the
+rule that exceptions live in knip.jsonc with reasons, and split the chess checks
+into `chess:verify` / `chess:verify:exhaustive` / `chess:audit` by cost. Governance
+now points at AGENTS.md as the agent guidance file, with CLAUDE.md importing it, so
+Codex and Claude Code read one document.
+
+Modified principles: none.
+Added sections: none.
+Removed sections: none.
+Templates reviewed: no change needed; they read the constitution at runtime.
+
+Previous entry (1.0.0, same day):
 Version change: (unversioned template) → 1.0.0
 Bump rationale: MAJOR — initial ratification. The scaffold shipped by `specify init`
 contained only placeholder tokens; this is the first constitution with real content,
@@ -149,20 +164,29 @@ landed yet. The repertoire plan annotates; it does not vote.
 
 **Before any change is done:**
 
-1. `bun run build` MUST pass. It runs TypeScript as part of the build.
-2. `bun run lint` MUST exit clean — zero errors, zero warnings. `public/engine/**` is
-   in the ESLint ignore list because the vendored, minified Stockfish build was the
-   only thing in the project producing problems (8 errors, 54 warnings) and it is
-   third-party compiled output, not ours to fix. Nothing else is ignored, so a new
-   warning anywhere in `src/` fails this gate. Do not widen that ignore list to
-   silence a real finding.
+1. `bun run check` MUST exit clean. It runs `lint`, `typecheck` and `knip` in
+   sequence, and it is exactly what CI runs on every push and pull request
+   (`.github/workflows/ci.yml`).
+   - `lint` — zero errors, zero warnings. `public/engine/**` is ignored because the
+     vendored, minified Stockfish build was the only thing in the project producing
+     problems, and it is third-party output, not ours to fix. Nothing else is ignored.
+   - `typecheck` — `tsc --noEmit`, strict.
+   - `knip` — no unused files, exports, or dependencies. Every exception lives in
+     `knip.jsonc` with its reason beside it. An exception MUST NOT be added to
+     silence a real finding; the code gets deleted instead. That is what happened to
+     the scroll-reveal wrapper, `PIECE_LETTER_ES` and `accuracy()`, each of which sat
+     in the tree for months after its last caller left.
+2. `bun run build` MUST pass. Vercel runs it on every deploy; run it locally for
+   anything touching `next.config.ts`, the metadata image routes, or MDX.
 3. If a rendered page changed, it MUST be opened in a browser and exercised
    (Principle II).
-4. If the opening book, SEE, or the analysis pipeline changed, the verification
-   scripts in `scripts/chess/` MUST be run — the exhaustive ones first, the sampled
-   audit after (Principle I).
+4. If `src/lib/chess/` changed: `bun run chess:verify` (seconds) always, and
+   `bun run chess:verify:exhaustive` (about five minutes; every position, no engine)
+   for any change to the book, SEE, or move safety. `bun run chess:audit` — sampled,
+   needs a Stockfish binary — runs after those, never instead of them (Principle I).
 
-**Feature work** goes through the Spec Kit flow: `/speckit-specify` →
+**Feature work** goes through the Spec Kit flow (slash commands in Claude Code,
+`$speckit-…` skills in Codex): `/speckit-specify` →
 `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`, with `/speckit-clarify`
 before planning when the shape is ambiguous. Bugs go through the `bug` extension
 (`/speckit-bug-assess` → `/speckit-bug-fix` → `/speckit-bug-test`). An idea that is
@@ -196,6 +220,7 @@ replaced it.
 principles before implementation begins, and `/speckit-analyze` reports drift across
 spec, plan, and tasks. Complexity MUST be justified against Principle III and
 Principle IV; "it was easier" is not a justification. Runtime development guidance
-for coding agents lives in `CLAUDE.md`.
+for coding agents lives in `AGENTS.md`; `CLAUDE.md` imports it and adds only what is
+specific to Claude Code.
 
-**Version**: 1.0.0 | **Ratified**: 2026-04-05 | **Last Amended**: 2026-09-08
+**Version**: 1.1.0 | **Ratified**: 2026-04-05 | **Last Amended**: 2026-09-08
