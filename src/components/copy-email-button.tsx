@@ -26,7 +26,7 @@ export function CopyEmailButton() {
   return (
     <button
       onClick={handleClick}
-      className="text-muted-foreground hover:text-foreground transition-colors relative"
+      className="relative inline-flex size-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={copied ? "Email copied!" : "Copy email"}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

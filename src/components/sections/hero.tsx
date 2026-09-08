@@ -4,55 +4,37 @@ import dynamic from "next/dynamic";
 import bio from "@/data/bio.json";
 import { OrbSkeleton } from "@/components/voice-orb";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { Stagger, StaggerItem } from "@/components/motion/stagger";
 
 const VoiceOrb = dynamic(
   () => import("@/components/voice-orb").then((mod) => mod.VoiceOrb),
   { ssr: false, loading: () => <OrbSkeleton /> }
 );
 
+// Three things and nothing else: the orb, the name, the line. The story moved
+// to its own section directly below so the first screen stays a single moment.
 export function Hero() {
   return (
-    <section className="min-h-[50dvh] flex flex-col items-center justify-center px-4 md:px-0 pt-12 pb-6">
-      <div className="flex flex-col items-center gap-4 w-full max-w-[640px]">
-        {/* Orb */}
-        <div style={{ animation: "fade-in-up 400ms ease-out both" }}>
+    <section className="min-h-[70dvh] flex flex-col items-center justify-center px-4 md:px-0 pt-24 pb-12">
+      <Stagger className="flex flex-col items-center gap-5 w-full max-w-[640px]">
+        <StaggerItem>
           <ErrorBoundary fallback={<OrbSkeleton />}>
             <VoiceOrb />
           </ErrorBoundary>
-        </div>
+        </StaggerItem>
 
-        {/* Name */}
-        <h1
-          className="text-[28px] md:text-[42px] font-semibold tracking-[-0.02em] text-center leading-tight"
-          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "100ms" }}
-        >
-          Joan Mateo Duarte Politi
-        </h1>
+        <StaggerItem>
+          <h1 className="font-display font-semibold text-[34px] md:text-[48px] tracking-[-0.03em] leading-[1.05] text-center">
+            {bio.name}
+          </h1>
+        </StaggerItem>
 
-        {/* Positioning */}
-        <p
-          className="text-[15px] md:text-[17px] text-foreground/90 text-center text-balance max-w-[480px] leading-snug"
-          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "150ms" }}
-        >
-          {bio.positioning}
-        </p>
-
-        {/* Story */}
-        <div
-          className="max-w-[520px]"
-          style={{ animation: "fade-in-up 400ms ease-out both", animationDelay: "250ms" }}
-        >
-          {bio.story.map((paragraph, i) => (
-            <p
-              key={i}
-              className="text-[14px] md:text-[15px] text-muted-foreground text-center leading-relaxed mb-3 last:mb-0"
-            >
-              {paragraph}
-            </p>
-          ))}
-        </div>
-
-      </div>
+        <StaggerItem>
+          <p className="text-[17px] md:text-[20px] text-foreground/90 text-center text-balance max-w-[520px] leading-snug">
+            {bio.positioning}
+          </p>
+        </StaggerItem>
+      </Stagger>
     </section>
   );
 }

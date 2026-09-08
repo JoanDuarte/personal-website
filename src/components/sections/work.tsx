@@ -3,13 +3,33 @@
 import { useState } from "react";
 import Image from "next/image";
 import projects from "@/data/projects.json";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-function ProjectLogo({ project }: { project: (typeof projects)[number] }) {
+type Project = (typeof projects)[number];
+
+function ProjectLogo({ project, size = 28 }: { project: Project; size?: number }) {
   const [failed, setFailed] = useState(false);
 
   if (failed || !project.logo) {
     return (
-      <span className="w-7 h-7 rounded-md bg-muted/60 flex items-center justify-center text-[13px] font-semibold text-muted-foreground shrink-0">
+      <span
+        className="rounded-md bg-muted flex items-center justify-center text-[13px] font-medium text-muted-foreground shrink-0"
+        style={{ width: size, height: size }}
+      >
         {project.name[0]}
       </span>
     );
@@ -19,117 +39,132 @@ function ProjectLogo({ project }: { project: (typeof projects)[number] }) {
     <Image
       src={project.logo}
       alt={`${project.name} logo`}
-      width={28}
-      height={28}
+      width={size}
+      height={size}
       className="rounded-md shrink-0"
       onError={() => setFailed(true)}
     />
   );
 }
 
-function ProjectRow({
-  project,
-}: {
-  project: (typeof projects)[number];
-}) {
-  const [open, setOpen] = useState(false);
-  const isActive = project.status === "active";
-
+function Meta({ project }: { project: Project }) {
   return (
-    <div className="border-t border-border">
-      <button
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between py-4 text-left group gap-3"
-      >
-        <div className="flex items-center gap-3 min-w-0">
+    <p className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[12px] text-text-tertiary">
+      <span>{project.date}</span>
+      {project.tags.map((tag) => (
+        <span key={tag}>{tag}</span>
+      ))}
+    </p>
+  );
+}
+
+function ProjectLink({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex min-h-11 items-center text-[14px] text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      View project
+    </a>
+  );
+}
+
+// The four active projects are the point of the page, so they get panels and
+// their full description. Past ones are a compact list that opens on demand.
+function ActiveCard({ project }: { project: Project }) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-3">
           <ProjectLogo project={project} />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-[16px] md:text-[17px] font-medium group-hover:opacity-70 transition-opacity whitespace-nowrap">
-                {project.name}
-              </h3>
-              <span
-                className={`text-[11px] font-medium uppercase tracking-[0.1em] px-2 py-0.5 rounded-full shrink-0 ${
-                  isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground bg-muted/50"
-                }`}
-              >
-                {isActive ? "Active" : "Past"}
-              </span>
-            </div>
-            <p className="text-[13px] text-muted-foreground truncate">
-              {project.tagline}
-              <span className="text-muted-foreground/50 ml-1">
-                ({project.date})
-              </span>
-            </p>
-          </div>
+          <CardTitle className="text-[17px]">{project.name}</CardTitle>
+          <Badge variant="active">Active</Badge>
         </div>
-        <svg
-          className={`w-4 h-4 text-muted-foreground transition-transform duration-200 shrink-0 ${
-            open ? "rotate-180" : ""
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-      <div
-        inert={!open}
-        className={`grid transition-all duration-200 ease-out ${
-          open ? "grid-rows-[1fr] opacity-100 pb-4" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
-        <div className="overflow-hidden pl-10">
-          <p className="text-[15px] md:text-[16px] leading-[1.7] text-muted-foreground mb-3">
-            {project.description}
-          </p>
-          <div className="flex items-center gap-4">
-            {project.link && (
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] text-foreground hover:opacity-70 transition-opacity underline underline-offset-4"
-              >
-                View project
-              </a>
-            )}
-            <div className="flex gap-2">
-              {project.tags.map((tag) => (
-                <span key={tag} className="text-[12px] text-muted-foreground">
-                  {tag}
-                </span>
-              ))}
-            </div>
+        <CardDescription className="text-[14px] text-muted-foreground">
+          {project.tagline}
+        </CardDescription>
+        <Meta project={project} />
+      </CardHeader>
+      <CardContent className="flex flex-1 flex-col gap-3">
+        <p className="text-[14px] leading-[1.65] text-muted-foreground">
+          {project.description}
+        </p>
+        {project.link && (
+          <div className="mt-auto">
+            <ProjectLink href={project.link} />
           </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PastRow({ project }: { project: Project }) {
+  return (
+    <AccordionItem value={project.name} className="border-0">
+      <AccordionTrigger className="py-3 text-[15px] text-foreground hover:text-foreground">
+        <span className="flex min-w-0 flex-1 items-center gap-3">
+          <ProjectLogo project={project} size={24} />
+          <span className="font-medium">{project.name}</span>
+          <span className="hidden truncate text-[14px] text-muted-foreground sm:inline">
+            {project.tagline}
+          </span>
+          <span className="ml-auto shrink-0 font-mono text-[12px] text-text-tertiary">
+            {project.date}
+          </span>
+        </span>
+      </AccordionTrigger>
+      <AccordionContent className="pl-9 pb-5">
+        <p className="text-[14px] leading-[1.65] text-muted-foreground sm:hidden mb-2">
+          {project.tagline}
+        </p>
+        <p className="text-[15px] leading-[1.65] text-muted-foreground mb-2">
+          {project.description}
+        </p>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
+          {project.link && <ProjectLink href={project.link} />}
+          <Meta project={project} />
         </div>
-      </div>
-    </div>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 
 export function Work() {
+  const active = projects.filter((p) => p.status === "active");
+  const past = projects.filter((p) => p.status !== "active");
+
   return (
-    <section className="pt-12 pb-6 px-4 md:px-0">
+    <section className="py-20 md:py-28 px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
-        <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+        <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-2">
           Work
-        </p>
-        <div>
-          {projects.map((project) => (
-            <ProjectRow key={project.name} project={project} />
+        </h2>
+        <h3 className="text-[13px] font-medium text-text-tertiary mb-5">
+          Active
+        </h3>
+      </div>
+
+      {/* The grid breaks out to 960px, centered, so it is wider than the prose
+          column by the same amount on both sides. */}
+      <div className="max-w-[960px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        {active.map((project) => (
+          <ActiveCard key={project.name} project={project} />
+        ))}
+      </div>
+
+      <div className="max-w-[640px] mx-auto">
+        <Separator className="my-12" />
+        <h3 className="text-[13px] font-medium text-text-tertiary mb-2">
+          Past
+        </h3>
+        <Accordion>
+          {past.map((project) => (
+            <PastRow key={project.name} project={project} />
           ))}
-        </div>
+        </Accordion>
       </div>
     </section>
   );

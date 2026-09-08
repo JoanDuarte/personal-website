@@ -16,11 +16,14 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Architecture
 
 - `src/app/page.tsx` — Single-page layout with section components
-- `src/components/sections/` — Server components for each content section
+- `src/components/sections/` — One component per section: hero, story, work, how-i-think, builds-with, beyond-code, writing, footer
+- `src/components/motion/` — The only client-side animation code: a `MotionConfig` provider, a once-only scroll reveal, and the hero stagger. Every wrapper carries `data-reveal` so the reduced-motion CSS and the `<noscript>` rule in `layout.tsx` can force it visible
+- `src/lib/kb.ts` — Reads two sections of `joan-kb.md` at build time ("How I Think", "Technical Identity") so the page and the voice agent share one source. A missing heading fails the build with the heading's name; that is on purpose, because `bio.json` once drifted from the KB and nobody noticed
+- `src/components/ui/` — shadcn (base-nova) components, customized through the tokens: button, card, badge, accordion, separator, and the ElevenLabs orb
 - `src/components/voice-orb.tsx` — Official ElevenLabs Orb driven by a live voice session
-- `src/components/ui/orb.tsx` — ElevenLabs UI Orb component code
 - `src/components/copy-email-button.tsx` — Clipboard copy with mailto: fallback
-- `src/app/globals.css` — oklch color tokens, background grain/gradient, animations
+- `src/app/globals.css` — oklch color tokens, background grain and the faint amber radial, animations
+- `scripts/design/check-contrast.ts` — Measures the WCAG ratio of every text/background token pair (`bun run design:contrast`); the gate for any palette change
 - `src/app/og-card.tsx` — Shared Satori card behind `opengraph-image` and `twitter-image`
 - `src/app/chess/` — Chess training page (see [Chess trainer](#chess-trainer))
 - `src/lib/chess/` — Analysis engine, opening book, chess.com client

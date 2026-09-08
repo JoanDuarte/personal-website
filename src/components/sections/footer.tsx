@@ -37,14 +37,14 @@ export function Footer() {
         <p className="text-[14px] text-muted-foreground mb-5">
           Open to conversations with accelerators and investors. Also always down to chat about products, ideas, or chess.
         </p>
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="flex items-center justify-center gap-1 mb-8">
           {links.map((link) => (
             <a
               key={link.label}
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={link.label}
             >
               {link.icon}
@@ -52,7 +52,7 @@ export function Footer() {
           ))}
           <CopyEmailButton />
         </div>
-        <p className="text-[12px] text-muted-foreground/50">
+        <p className="text-[12px] text-text-tertiary">
           &copy; {new Date().getFullYear()} Joan Mateo Duarte Politi
         </p>
       </div>
