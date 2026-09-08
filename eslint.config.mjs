@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored Stockfish build. Minified Emscripten output, not ours to fix —
+    // it was the only source of lint problems in the whole project.
+    "public/engine/**",
   ]),
 ]);
 
