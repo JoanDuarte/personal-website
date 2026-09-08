@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { consultBook, SYSTEMS, type System } from "@/lib/chess/repertoire";
+import { bookMoveOf, consultBook, SYSTEMS, type System } from "@/lib/chess/repertoire";
 import { bestExchange, PIECE_VALUE } from "@/lib/chess/see";
 import { sanEs } from "@/lib/chess/format";
 
@@ -133,19 +133,14 @@ function playout(
 
       // "Take the free material" is a recommendation too, and was going
       // unaudited: the first version of this script stopped the playout here.
-      let legal;
-      if (book.kind === "tactic") {
-        legal = chess
-          .moves({ verbose: true })
-          .filter((m) => m.to === book.square && m.captured)
-          .sort((a, b) => PIECE_VALUE[a.piece] - PIECE_VALUE[b.piece])[0];
-      } else if (book.kind === "move") {
-        legal = chess
-          .moves({ verbose: true })
-          .find((m) => m.from === book.from && m.to === book.to);
-      } else {
-        break;
-      }
+      //
+      // It has to be the move the book actually picked. Replaying "the least
+      // valuable attacker on that square" instead was measuring a move the book
+      // never named, and it flattered nothing — it invented the two worst
+      // findings of the previous run: the book says `Qxe5+` (hangs nothing) and
+      // this replayed `Nxe5` (hangs 600), then scored the book -1148cp for it.
+      if (book.kind !== "move" && book.kind !== "tactic") break;
+      const legal = bookMoveOf(book, chess);
       if (!legal) break;
 
       samples.push({

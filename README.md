@@ -54,8 +54,10 @@ It reproduces the original engine-derived clock and conversion numbers exactly
 The live trainer additionally runs real Stockfish (`stockfish-18-lite-single`,
 ~7MB) in the browser via a Web Worker (`src/lib/chess/engine.ts`), for the one
 thing SEE structurally cannot do: say whether a move is simply *better* than
-another, not just whether it hangs material. It was picked specifically because
-it needs no COOP/COEP cross-origin-isolation headers — the multi-threaded build
+another, not just whether it hangs material. It names the move in the trainer —
+see [Who decides](#who-decides-the-engine-always).
+It was picked specifically because it needs
+no COOP/COEP cross-origin-isolation headers — the multi-threaded build
 does, and those headers would break the ElevenLabs voice widget elsewhere on
 this site, which loads cross-origin resources the isolation policy blocks. The
 engine is a progressive enhancement, never a requirement: if it fails to load or
@@ -111,6 +113,33 @@ the board — a resolving move that also happens to win material used to get
 framed as "free material" instead of "you're in check", which was true but beside
 the point.
 
+**Mate is checked separately, because SEE structurally cannot see it.** Static
+exchange evaluation prices `...Qxf2#` as "wins a pawn, loses the queen to the
+recapture" — net zero, perfectly safe — so a material safety net, however
+careful, is blind to the one reply that ends the game. It missed
+`1.e4 e5 2.Nf3 Bc5 3.Nxe5 Qh4 4.Bc4?? Qxf2#`: a mate threat answered with a
+developing move. Two rules close it, and neither needs the engine. No branch may
+recommend a move that allows mate in one — not a setup step, not an exception,
+not a "free material" capture, not a way out of check, not a rescue. And a mate
+threat (found by the same null-move flip used for material: hand them the move,
+see if mate appears) ranks directly below check itself, above free material,
+above the recapture rule, above a hanging piece — it is the only item on that
+list that ends the game. Both cost one move generation each, about 0.08ms,
+because chess.js already marks mate in the SAN it generates. When more than one
+move stops the mate, a step of the setup wins the tie: against `Ng5` threatening
+`Qxf7#` that turns "put the rook on f8" into "castle".
+
+**Grabbing material is a separate question from making a safe move.** `moveRisk`
+measures the *increase* in what the opponent can win, so a move is never blamed
+for a threat that predates it. That is right for ordering the setup and wrong
+for deciding to capture: taking a free pawn while your queen hangs is still
+losing a queen, and the pawn was never free. `captureBalance` asks the other
+question — what does this capture net once they answer, anywhere on the board —
+and both greedy branches, "free material" and the recapture rule, fall through to
+the rescue when the answer comes back negative. The recapture rule also runs
+through `moveRisk` now, which it never did: "take back with your least valuable
+piece" was picking a knight pinned to the queen.
+
 This is also how the repertoire gets debugged, not by anticipating problems by
 hand. The safety check itself found a real hole in the Slav line before the
 Italian existed (`Nbd2` interposing on the queen's defence of d3, dropping the
@@ -129,39 +158,36 @@ scores clamped at ±1000, the same rule the original study used — otherwise a
 position that was already mate-in-4 scores the book at -9500 for developing
 instead of mating.
 
-Latest run (Italian + Indian) — 2286 recommendations, 1979 in still-open
+Latest run (Italian + Indian) — 2268 recommendations, 1934 in still-open
 positions, depth 16:
 
-| | Result |
-|---|---|
-| Median cost of a recommendation | **16 cp** |
-| Inaccuracy (≥150 cp) | 6.5% |
-| Blunder (≥300 cp) | **1.4%** |
-| Allows mate / misses a forced mate | **0%** / **0%** |
-| Leaves material hanging | 0.9% overall, **0.0%** on setup moves |
+| | 0.4.0 | Now |
+|---|---|---|
+| Median cost of a recommendation | 16 cp | **14 cp** |
+| Inaccuracy (≥150 cp) | 6.5% | 6.2% |
+| Blunder (≥300 cp) | 1.4% | **1.0%** |
+| Allows mate / misses a forced mate | 0% / 0% | 0% / 0% |
+| Leaves material hanging | 0.9% | **0.0%** |
 
-For scale, his own play blunders on 7.4% of moves — the book is still roughly
-5× cleaner, just not as clean as the closed London/Indian pairing it replaced
-(0.8% blunder, measured before this change). That gap is real and explained: an
-open e4/e5 structure produces sharper middlegame branches than a closed one does,
-even from a "plausible" opponent, and SEE's blind spot to forks and deeper
-tactics shows up more often as a result — the worst cases found (`Cxe5` losing
-1165cp to a shot only a real search sees, `c3` losing 534cp to a pawn break)
-aren't code bugs, they're the honest cost of a livelier opening. `TODOS.md`
-tracks the follow-up this points to: the live engine layer described below
-currently only speaks once the book runs out, and extending it to grade `tactic`
-and `move` recommendations too — not just `done`/`out` — is exactly what would
-close this gap, now that the audit has located it precisely.
+**Read those two columns carefully.** The 0.4.0 numbers were produced by an audit
+that replayed a `tactic` answer as "the least valuable attacker on that square"
+rather than the move the book actually named — so the blunder figures are only
+roughly comparable, and the old one was, if anything, pessimistic. The hanging
+figure is the solid one: it is now 0.0% here *and* 0 of 2268 under
+`verify-no-hanging.ts`, which is an independent, engine-free measurement using
+the book's own move. That is the number this repertoire exists to move, since
+48% of his own serious errors are material given to a one-move capture.
 
-**What the remaining 1.4% is, mechanically.** Almost entirely *missed
+**What the remaining 1.0% is, mechanically.** Almost entirely *missed
 opportunities*, not losses: a solid, sound move where the engine had something
-sharper. SEE resolves capture sequences on one square and is blind to forks,
-pins, discovered attacks, skewers and mate — it cannot be otherwise without
-actual search, which is what the live engine adds on top (see below). The
-failure mode is "the book was unambitious", not "the book hung your queen" —
-still the right way round for a beginner repertoire, and still why the
-hanging-material number, not the blunder number, is the one to watch on any
-future change to the book itself.
+sharper. Every survivor in the worst-twelve list is one of two shapes — a
+fallback developing move (`c3`, `Bd3`, `Bf4`) that misses a pawn break or an
+`Ng5` shot, or the mate-parry branch picking the least material-losing defence
+where Stockfish had a much better one. SEE resolves capture sequences on one
+square and is blind to forks, pins, discovered attacks and skewers; it cannot be
+otherwise without actual search. The failure mode is "the book was unambitious",
+not "the book hung your queen" — and in the trainer the engine now overrules
+exactly that class before he ever sees it (see [Who decides](#who-decides-the-engine-always)).
 
 The trainer is a single free-play sandbox: both sides are yours, nothing is
 blocked. Play the opponent's try yourself and read what the book says about it;
@@ -174,21 +200,70 @@ off the board — independent of whether the book itself still has anything to
 say, since those are different questions: a position can be off-book by move 6
 and still structurally an opening.
 
-Once the book is exhausted or the opponent deviates, the live Stockfish engine
-(`use-engine.ts`) takes over the coaching, showing its own best move and
-evaluation in plain terms — this is what replaces the old dead end where the
-trainer just said "pensá vos" and stopped. It's deliberately quiet while the book
-still has something to say: the common case (the book is fine) doesn't change a
-letter, and the audit above is what actually tells you when that stops being
-true and this scope should widen.
+The live Stockfish engine (`use-engine.ts`) runs from move one and names the move
+in every position, including past the point where the book runs out — which is
+what replaced the old dead end where the trainer said "pensá vos" and stopped.
+
+### Who decides: the engine, always
+
+`useEngine` takes a list of positions, and the trainer hands it two on every move
+of his: the one on the board, and the one the setup's own move would produce.
+Stockfish is consulted from move one, not only once the book runs out, and **its
+move is the recommendation as soon as its own search resolves.** It does not wait
+on the second evaluation.
+
+That "does not wait" is load-bearing, and was got wrong once. An earlier version
+let the engine take over only past a cost threshold — which required the plan's
+move to have been searched too. The second search lands well after the first, and
+until it does there is no cost to compare, so the plan kept the panel by default
+and the engine's answer sat there unused. If a future change reintroduces a
+threshold, it has to survive that: the engine's move must never be gated on a
+search that hasn't happened yet.
+
+The plan's cost is an *annotation*. Once the second evaluation lands, the panel
+names what the setup wanted and how far off it was, so staying in the repertoire
+is a choice he makes with a number in front of him. That matters because at
+depth 12 Stockfish prefers `d4` to `Bc4` by 28cp on move 3 of the Italian and
+`1...e5` to `1...d6` by 30cp against the Indian — and `1...e5` is his
+worst-scoring move in his own 94-game sample. The page shows the gap; it does not
+decide for him.
+
+**The reason has to be about the move on screen.** This is the other thing that
+went wrong, and was only visible by driving the real page: the panel paired the
+engine's move with the setup's prose, so it read "jugá d4" over "ésta lo para" —
+which described `Cg4`. `explainMove` in `repertoire.ts` now derives a reason for
+whatever move is being shown, from the position alone: what it captures, what
+mate it stops, what it threatens next, what it rescues, whether it develops or
+castles, and whether it is a step of the setup (further down the order — saying
+"es la que pedía el esquema" contradicted the line naming the step that was
+actually due). Two clauses maximum. When there is nothing concrete it says so
+rather than inventing strategy; Stockfish supplies a number and no words, and a
+fabricated plan is the exact failure this replaced.
+
+Nothing is blocked and nothing is called wrong on the spot. The move he plays is
+graded a beat later by the engine, in win-probability terms (`moveQuality` in
+`phase.ts`) — most non-best moves are perfectly fine, and a binary
+correct/incorrect against a 3000-elo search would mark almost everything wrong.
+
+A move is only blamed for walking into mate when the mate wasn't already there:
+otherwise every move of an already-lost game collects a red correction for a
+position it didn't cause.
+
+**Why the book still exists**, given the engine outranks it everywhere: it is the
+instant answer before a 7MB engine has downloaded and compiled, the only answer
+if it never does (the mate and hanging rules above need no engine), the source of
+the plan the page is organised around, and — through `explainMove` and the step
+ideas — the only source of a *reason*. "Cf3 (+0.2)" teaches a 600 nothing.
 
 Verify any change to the analysis or the book:
 
 ```bash
-bun run scripts/chess/verify-see.ts          # SEE against hand-checked positions
-bun run scripts/chess/verify-repertoire.ts   # both systems vs all 10 opponent plans
-bun run scripts/chess/verify-book-safety.ts  # the book never recommends a hanging move
-bun run scripts/chess/verify-analysis.ts     # full pipeline against live chess.com data
+bun run scripts/chess/verify-see.ts             # SEE against hand-checked positions
+bun run scripts/chess/verify-repertoire.ts      # both systems vs all 10 opponent plans
+bun run scripts/chess/verify-book-safety.ts     # the book never recommends a hanging move
+bun run scripts/chess/verify-no-forced-mate.ts  # nobody can force mate against the book
+bun run scripts/chess/verify-no-hanging.ts      # no recommendation leaves material hanging
+bun run scripts/chess/verify-analysis.ts        # full pipeline against live chess.com data
 
 # Grade every book recommendation against a real engine (needs a Stockfish binary)
 STOCKFISH=/path/to/stockfish bun run scripts/chess/audit-book.ts 60 16

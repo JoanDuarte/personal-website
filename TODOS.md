@@ -14,19 +14,26 @@
   exactly the skill the live engine layer added in 0.4.0 is for, so the fix for the
   setup's known weak point is the coaching, not a different opening. Still worth
   re-checking the repertoire-adherence number at the 50-game mark above.
-- **Extend live engine commentary to `tactic` and `move` recommendations, not just
-  `done`/`out`.** The post-Italian audit (see README, "How good the book actually
-  is") found the worst blunders (-1165cp, -678cp) hiding inside `tactic` picks
-  (`bestSafeCapture` choosing a capture that's safe but not best) and even plain
-  `move` recommendations (`c3`, `Ad3` losing hundreds of cp to a pawn break SEE
-  can't see). The engine layer currently stays silent whenever the book has an
-  opinion at all, by design — extending it to grade those too is the concrete next
-  step, now that the audit has located exactly where it would help most.
 
 ---
 
 ## Done
 
+- **Live engine commentary on `tactic` and `move` recommendations.** Done in
+  0.4.2.0, and it turned out to matter more than the audit suggested: the same
+  blind spot that hid those blunders (`bestSafeCapture` picking a capture that's
+  safe on its square and nowhere else) also let the book get mated —
+  `1.e4 e5 2.Cf3 Ac5 3.Cxe5 Dh4 4.Ac4?? Dxf2#`. Two fixes, deliberately in that
+  order: the book itself now sees mate in one without any engine (one move
+  generation, works offline, works if Stockfish never loads), and on top of that
+  Stockfish became the authority outright — it runs from move one and names the
+  move in every position. The plan no longer votes; it annotates, showing what it
+  wanted and how far off it was so leaving the repertoire stays his call.
+  `verify-no-forced-mate.ts` and `verify-no-hanging.ts` are the regression tests,
+  and driving the real page in a browser is what caught the last two bugs — the
+  explanation describing a different move than the one recommended, and the
+  closing paragraph reprinting on every move of the middlegame. Neither was
+  visible from tests or types.
 - **Traction numbers in the voice agent.** Decided: the orb states no numbers. Registered and active account counts, the time-to-first-word baseline, and monetization price points stay out of `flare-product-kb.md`. If that ever changes, the source is `flare-ios/docs/PRODUCT.md` (Principles point 2, and Metrics); add them to "Where It Is Today" and re-run `./upload-kb.sh`.
 - **Custom domain.** Decided: stay on `joanduarte.vercel.app`. `NEXT_PUBLIC_SITE_URL` is set to match across all three environments.
 - **The "6 AI agents" claim.** It was wrong. Flare runs three — Spark, Mirror and Bond — per `flare-ios/docs/PRODUCT.md`. The whole knowledge base was rewritten against the V3 product doc, which had moved on further than the agent count: the atomic act is now a spoken check-in rather than a captured flare.

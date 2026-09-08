@@ -24,7 +24,7 @@ const TABS = [
     step: "Antes de jugar",
     label: "Repertorio",
     blurb:
-      "Un sandbox: movés las dos manos, nada te frena. Jugá el esquema, jugá lo que haría un rival agresivo, y mirá qué dice el libro — y, pasada la apertura, qué dice el motor. Repasalo antes de jugar y jugá sin la pantalla abierta: tener esto en la cabeza es lo que te deja el reloj entero para el medio juego.",
+      "Un sandbox: movés las dos manos, nada te frena. Stockfish corre en tu navegador y te dice qué jugar en cada posición, de la primera jugada al final; el esquema al costado te dice por qué, y en qué momento deja de ser la mejor idea. Repasalo antes de jugar y jugá sin la pantalla abierta: tener esto en la cabeza es lo que te deja el reloj entero para el medio juego.",
   },
   {
     id: "repaso",

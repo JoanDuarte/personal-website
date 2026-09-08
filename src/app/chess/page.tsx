@@ -28,7 +28,7 @@ const RULES = [
   {
     n: "03",
     title: "Un repertorio y nada más",
-    body: "Italiana con blancas, esquema indio con negras. No para saber más aperturas, sino para no tener que decidir nada antes de la jugada 10 y llegar entero a donde se decide — y de ahí en más, que el motor te acompañe en vez de dejarte solo.",
+    body: "Italiana con blancas, esquema indio con negras. No para saber más aperturas, sino para no tener que decidir nada antes de la jugada 10 y llegar entero a donde se decide. El esquema no manda: manda el motor, y el esquema explica — hasta la jugada en que hay algo mejor, que también te la muestra.",
   },
 ];
 
@@ -97,10 +97,12 @@ export default function ChessPage() {
         <p className="text-[13px] leading-[1.7] text-muted-foreground">
           Los datos salen de la API pública de chess.com. Colgar material se
           detecta sin motor, con evaluación estática de intercambios — corre
-          instantáneo y ya cubre el 48% de mis errores graves. Stockfish corre
-          en tu propio navegador (nunca en un servidor) para lo que esa técnica
-          no puede ver: si una jugada es simplemente mejor que otra, y para
-          seguir acompañando una vez que el repertorio fijo se termina.
+          instantáneo y ya cubre el 48% de mis errores graves, y es lo que
+          sostiene el repaso de partidas viejas. En el entrenador manda
+          Stockfish, corriendo en tu propio navegador y nunca en un servidor:
+          nombra la jugada en cada posición y el esquema queda para lo que un
+          motor no da, que es una razón en castellano y un plan que se puede
+          seguir sin pantalla.
         </p>
       </footer>
     </main>

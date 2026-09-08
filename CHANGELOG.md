@@ -2,6 +2,141 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.2.0] - 2026-09-03
+
+### Fixed
+- **The book could walk you into checkmate.** Reproduced exactly:
+  `1.e4 e5 2.Nf3 Bc5 3.Nxe5 Qh4 4.Bc4?? Qxf2#`. The repertoire's safety net is
+  static exchange evaluation, and SEE is blind to mate by construction: it
+  prices `...Qxf2#` as "wins a pawn, loses the queen to the recapture", which
+  nets zero and reads as perfectly safe. So the book answered a mate threat
+  with the developing move that happened to be next in the setup. `consultBook`
+  now (a) never recommends a move that allows mate in one, in any of its
+  branches — setup step, exception, "free material" capture, getting out of
+  check, or rescuing a hanging piece — and (b) treats a mate threat as the
+  highest-priority branch after check itself, above free material, above the
+  recapture rule and above a hanging piece, because it is the only thing on
+  that list that ends the game. Detecting it costs one move generation
+  (~0.08ms): chess.js already marks mate in the SAN it generates, so no search
+  of its own is needed
+- When several moves stop the mate, the one that is also a step of the setup
+  wins the tie. Against `4.Ng5` threatening `Qxf7#` that turns "put the rook on
+  f8" into "castle" — same defence, and it's the move the plan wanted anyway
+- **The recapture rule was never safety-checked.** "They took, take back with
+  your least valuable piece" ran on `moveNetValue`, which resolves the exchange
+  on the captured square and is blind to what the recapturing piece leaves
+  behind. The audit caught it recommending `Nxd4` with the knight pinned to the
+  queen by a bishop on g4: -629cp, and a queen. Recaptures now go through
+  `moveRisk` like every other candidate
+- **The recapture rule never ran in the page at all.** The panel rebuilds the
+  position from a FEN, which carries no history, so `consultBook` could not see
+  that the opponent had just captured — the whole "te capturó en X, tomá de
+  vuelta" branch has been dead in the UI since it was written, and only ever
+  fired in the verification scripts, which pass a live game object. The trainer
+  already tracked the last move for the board highlight; it now hands it over
+- **"Free material" outranked "your queen is hanging".** By design `moveRisk`
+  subtracts the threat that already existed, so a move is never blamed for a
+  problem it did not create — the right rule for ordering the setup, the wrong
+  one for deciding to grab material. The book took a pawn with `Bxe5` while the
+  queen hung to `fxg4`, and the safety check passed it, correctly, because the
+  queen was already hanging before. New `captureBalance` asks the question that
+  actually matters — what does this capture net once they answer, anywhere on
+  the board — and both greedy branches (free material, recapture) now fall
+  through to the rescue when the answer is negative. **Measured across 2268
+  recommendations in played-out games, recommendations that leave material
+  hanging went from 29 to 0**
+
+### Changed
+- **The engine is the authority now, not the book.** This was the open follow-up
+  the post-Italian audit left in `TODOS.md`, taken further than it asked.
+  Stockfish runs from move one and names the move in every position; it
+  evaluates two per move — the one on the board and the one the setup's move
+  would produce — and the difference is what following the plan costs, shown to
+  him rather than acted on
+- **The plan does not get a vote.** A middle version let the engine take over
+  only once the *plan's* move had also been searched, so its cost could be
+  compared against a threshold — which handed the panel to the book almost
+  always, because the second search lands well after the first and until it does
+  there is no cost to compare. The engine's answer was sitting right there,
+  unused. Its move is now the recommendation the moment its own search resolves.
+  The plan's cost is an annotation that fills in a beat later: it names what the
+  setup wanted and how far off it was, so staying inside the repertoire is a
+  choice he makes with a number in front of him — `1...e5` over `1...d6` is 30cp
+  and also his worst-scoring move in his own 94-game sample, and that is his
+  call to make, not the page's
+- **The explanation described a different move than the one on screen.** Found
+  by driving the actual page: it said "jugá d4" and, underneath, "ésta lo para
+  y es la que menos material entrega" — which was about `Cg4`, the move the book
+  wanted. Right move, wrong reason under it, which is worse than no reason.
+  New `explainMove` derives a short reason for *whatever* move is being shown,
+  from the position and nothing else: what it takes, what mate it stops, what it
+  threatens, what it saves, whether it develops or castles. Capped at two
+  clauses. It returns nothing rather than inventing strategy — Stockfish gives a
+  number and no words, and a made-up plan is the failure being fixed
+- A related contradiction went with it: `c3` is a step of the Italian and can
+  come up long before its turn, so "y es la que pedía el esquema" printed
+  directly above "el esquema pedía d3". It now says the honest version — in the
+  setup, but further down the order
+- Once the setup is finished, its closing paragraph moved out of the per-move
+  explanation and under the plan, where it belongs. It was reprinting the same
+  eight lines on every move of the middlegame
+- **Correct/incorrect is gone.** Nothing is blocked and nothing is called wrong
+  on the spot; the move he plays is graded a beat later by the engine in
+  win-probability terms (`moveQuality`, already used for the badge next to the
+  board). A binary right/wrong against a 3000-elo search marks almost everything
+  wrong, which is both false and useless as coaching
+- The "Mostrarme la jugada" reveal is gone with it. The recommendation and its
+  squares are always visible: this is a coach you consult before playing, not a
+  quiz — the fair test is the real game, with the page closed
+- `useEngine` takes a list of positions instead of one, which is what makes the
+  above possible. It lost its `current` accessor: reading `.current` off a
+  memoised object made the React Compiler treat it as a ref and skip optimising
+  the whole component, so every caller now uses `get(fen)`
+- The tactic branch stopped claiming "material gratis … sin compensación". SEE
+  guarantees the capture holds *on that square* and nothing else, and stating it
+  with more certainty than that is exactly the error behind `3.Nxe5`
+- `useEngine` takes a list of positions instead of one, which is what makes the
+  above possible. It lost its `current` accessor: reading `.current` off a
+  memoised object made the React Compiler treat it as a ref and skip optimising
+  the whole component, so every caller now uses `get(fen)`
+- The tactic branch stopped claiming "material gratis … sin compensación". SEE
+  guarantees the capture holds *on that square* and nothing else, and stating it
+  with more certainty than that is exactly the error behind `3.Nxe5`
+
+### Added
+- `scripts/chess/verify-no-forced-mate.ts` — the book is a deterministic
+  policy, so "can anyone force mate against someone who follows it?" needs no
+  engine and no sampling: try every opponent move, let the book answer, recurse.
+  This is the script that found the mate above
+- **The audit was grading a move the book never recommended.** `audit-book.ts`
+  replayed a `tactic` answer as "the least valuable attacker on that square",
+  a proxy from before the answer carried its own `from`/`to`. On the position
+  `r1bqk2r/ppp3pp/7n/3QnP2/8/P4N2/P1P2PPP/RNB1KB1R w` the book says `Qxe5+`,
+  which hangs nothing; the audit played `Nxe5`, which hangs 600, and then scored
+  the book -1148cp for it — the worst finding of the previous run, and not a
+  finding at all. It replays `bookMoveOf` now
+- `scripts/chess/verify-no-hanging.ts` — the hanging-material figure is the one
+  that matters on any book change, and it is a static-exchange number, not an
+  engine one. Same playouts the audit uses, seconds instead of an hour, no
+  Stockfish binary needed. This is what turned the fix above into a number
+- Three mate cases in `verify-book-safety.ts`, including the original line
+
+### Notes
+- Full Stockfish audit re-run on the fixed book — 2268 recommendations, 1934 in
+  still-open positions, depth 16: median cost **14cp** (was 16), inaccuracy
+  **6.2%** (6.5), blunder **1.0%** (1.4), allows mate **0%**, misses a mate
+  **0**, leaves material hanging **0.0%** (0.9). Note the old column came from
+  the audit *before* the replay bug above was fixed, so the blunder comparison
+  is indicative rather than exact; the hanging figure is the solid one, measured
+  twice by independent means (0.0% here, 0 of 2268 under `verify-no-hanging.ts`,
+  which uses no engine at all)
+- The worst survivors are all one of two shapes: a fallback developing move
+  (`c3`, `Bd3`, `Bf4`) that misses a pawn break or an `Ng5` shot, or the new
+  mate-parry picking the least material-losing defence where Stockfish had a
+  much better one. Both are SEE's structural blind spot, both are now caught by
+  the engine layer before he sees them, and neither is worth growing the book
+  into a variation tree over
+
 ## [0.4.1.0] - 2026-08-26
 
 ### Fixed
