@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Check, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const EMAIL = "joan@heyflare.app";
 
+// The one action the page asks for, as an amber pill. Copies on click and says
+// so for two seconds; without a clipboard it opens a mail link instead.
 export function CopyEmailButton() {
   const [copied, setCopied] = useState(false);
 
@@ -24,20 +28,14 @@ export function CopyEmailButton() {
   }, [copied]);
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="text-muted-foreground hover:text-foreground transition-colors relative"
+      size="lg"
+      className="h-11 rounded-full px-5 text-[14px] active:scale-[0.98]"
       aria-label={copied ? "Email copied!" : "Copy email"}
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="20" height="16" x="2" y="4" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-      {copied && (
-        <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[11px] text-primary whitespace-nowrap">
-          Copied!
-        </span>
-      )}
-    </button>
+      {copied ? <Check /> : <Mail />}
+      {copied ? "Copied!" : "Copy email"}
+    </Button>
   );
 }

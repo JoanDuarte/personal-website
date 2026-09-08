@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "knip": "knip",
+    "design:contrast": "bun run scripts/design/check-contrast.ts",
     "check": "bun run lint && bun run typecheck && bun run knip",
     "chess:verify": "bun run scripts/chess/verify-see.ts && bun run scripts/chess/verify-repertoire.ts && bun run scripts/chess/verify-book-safety.ts",
     "chess:verify:exhaustive": "bun run scripts/chess/verify-no-hanging.ts && bun run scripts/chess/verify-no-forced-mate.ts",

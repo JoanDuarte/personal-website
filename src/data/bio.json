@@ -4,7 +4,7 @@
   "story": [
     "I'm from Rosario, Argentina. I've been obsessed with solving problems since I was a kid. Math olympiads, not because anyone pushed me, but because I loved the challenge. The solution is never the hard part. The approach is everything.",
     "At 21 I dropped out of university to start a Bitcoin mining company. It worked. We scaled fast, and that itch to build never went away. So I taught myself to code because I refused to keep delegating the most important part of building a company.",
-    "Today I'm building Flare, a social brain: one conversation with an agent that keeps you close to your friends instead of a feed that keeps you scrolling. Alongside it, Stevay runs the back office of construction companies with AI agents, and Privé lets creators sell and get paid without ever leaving Telegram. Different problems, same bet: software should act before you ask it to."
+    "Today most of my time goes to Verelyn, a newsroom built around one reader. Flare, my social brain, is live on iOS. Privé lets creators sell and get paid without leaving Telegram. Different problems, same bet: software should act before you ask it to."
   ],
   "chess": {
     "text": "Just getting started on my chess journey. Still blundering queens and hanging pieces, but every loss is a lesson. The beauty of chess is that the board never lies. It rewards patience, pattern recognition, and thinking two moves ahead. I'm hooked.",
@@ -13,9 +13,18 @@
   "reading": {
     "text": "I read a lot. Strategy, psychology, history, fiction. Anything that changes how I think about the world. A few favorites:",
     "favorites": [
-      { "title": "Zero to One", "author": "Peter Thiel" },
-      { "title": "The Art of War", "author": "Sun Tzu" },
-      { "title": "1984", "author": "George Orwell" }
+      {
+        "title": "Zero to One",
+        "author": "Peter Thiel"
+      },
+      {
+        "title": "The Art of War",
+        "author": "Sun Tzu"
+      },
+      {
+        "title": "1984",
+        "author": "George Orwell"
+      }
     ],
     "goodreadsLink": "https://www.goodreads.com/joanduarte"
   }

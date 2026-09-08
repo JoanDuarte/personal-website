@@ -12,9 +12,9 @@
   --color-surface: var(--surface);
   --color-orb-glow: var(--orb-glow);
   --color-orb-glow-active: var(--orb-glow-active);
-  --font-sans: var(--font-space-grotesk);
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-space-grotesk);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-space-grotesk);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -42,31 +42,37 @@
 }
 
 :root {
-  --background: oklch(0.2679 0.0036 106.6427);
-  --foreground: oklch(0.8074 0.0142 93.0137);
-  --text-secondary: oklch(0.7713 0.0169 99.0657);
-  --text-tertiary: oklch(0.55 0.01 100);
-  --border: oklch(0.3618 0.0101 106.8928);
-  --border-hover: oklch(0.4336 0.0113 100.2195);
-  --surface: oklch(0.2213 0.0038 106.7070);
-  --ring: oklch(0.6724 0.1308 38.7559);
-  --orb-glow: oklch(0.837 0.128 66.29 / 0.15);
-  --orb-glow-active: oklch(0.837 0.128 66.29 / 0.35);
-  --input: oklch(0.4336 0.0113 100.2195);
+  /* Neutral near-black base. Chroma is held at or under 0.006 so the greys read
+     as neither blue nor brown; the only warmth on the page is the amber accent,
+     which is unchanged from the previous palette so the orb keeps its glow.
+     Every pair below is measured by scripts/design/check-contrast.ts. */
+  --background: oklch(0.145 0.004 260);
+  --foreground: oklch(0.93 0.004 260);
+  --text-secondary: oklch(0.70 0.006 260);
+  --text-tertiary: oklch(0.60 0.006 260);
+  --border: oklch(0.27 0.004 260);
+  --border-hover: oklch(0.36 0.005 260);
+  --surface: oklch(0.18 0.004 260);
+  --ring: oklch(0.75 0.13 66);
+  --orb-glow: oklch(0.837 0.128 66.29 / 0.12);
+  --orb-glow-active: oklch(0.837 0.128 66.29 / 0.30);
+  --input: oklch(0.36 0.005 260);
   --primary: oklch(0.8370 0.1280 66.2900);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.2213 0.0038 106.7070);
-  --secondary-foreground: oklch(0.8074 0.0142 93.0137);
-  --muted: oklch(0.2213 0.0038 106.7070);
-  --muted-foreground: oklch(0.7713 0.0169 99.0657);
-  --accent: oklch(0.2213 0.0038 106.7070);
-  --accent-foreground: oklch(0.8074 0.0142 93.0137);
+  --primary-foreground: oklch(0.145 0.004 260);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.21 0.004 260);
+  --muted-foreground: oklch(0.70 0.006 260);
+  --accent: var(--surface);
+  --accent-foreground: var(--foreground);
   --destructive: oklch(0.6368 0.2078 25.3313);
-  --popover: oklch(0.2213 0.0038 106.7070);
-  --popover-foreground: oklch(0.8074 0.0142 93.0137);
-  --card: oklch(0.2213 0.0038 106.7070);
-  --card-foreground: oklch(0.8074 0.0142 93.0137);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
   --radius: 0.625rem;
+  /* The spotlight that follows the pointer on a panel: amber, faint. */
+  --spot: oklch(0.837 0.128 66.29 / 0.10);
 
   /* Chess board. Warm woods rather than the usual green/beige, so the board
      reads as part of the page instead of an embedded widget.
@@ -117,20 +123,21 @@ body::before {
   background-size: 256px 256px;
 }
 
-/* Background warm gradient */
+/* A faint amber radial at the top of the page. One of the five places the
+   accent is allowed to appear; it ties the neutral base to the orb. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(ellipse at 30% 0%, oklch(0.35 0.05 60) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 0%, oklch(0.837 0.128 66.29 / 0.10) 0%, transparent 55%);
   animation: gradient-breathe 25s ease-in-out infinite;
 }
 
 @keyframes gradient-breathe {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
 }
 
 /* Orb animations */
@@ -161,6 +168,16 @@ body::after {
   }
 }
 
+/* The stack marquee. One per page; pauses on hover; the reduced-motion block
+   below cuts it to a single frame. */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 42s linear infinite;
+}
+
 /* Plain fade-in. The trainer's closing line uses it; scroll-reveal, which
    this was written for, went with the collapsible layout in #7. */
 @keyframes fade-in {
@@ -171,6 +188,15 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Motion's MotionConfig already collapses these to static; this guarantees
+     it even if the provider is missing. The no-JavaScript case is handled by
+     the <noscript> style in layout.tsx. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 
   *, *::before, *::after {
