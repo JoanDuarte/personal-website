@@ -67,7 +67,7 @@ export default function RootLayout({
             Without JavaScript nothing would ever animate it back, so this rule
             makes every animated wrapper visible for that reader. */}
         <noscript>
-          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important;filter:none!important}`}</style>
         </noscript>
         <MotionProvider>{children}</MotionProvider>
         <Analytics />

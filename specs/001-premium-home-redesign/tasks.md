@@ -129,6 +129,32 @@ Single Next.js project: `src/app/`, `src/components/`, `src/lib/`, `src/data/`, 
 
 ---
 
+## Phase 7: Intensity (after Joan's review of the first preview)
+
+**Purpose**: The page has to be visibly premium, not quietly correct. Dials up: variance 8, motion 7. Every item is in research.md §11 with its reason and its content source.
+
+- [X] T041 Add `images.remotePatterns` for `cdn.simpleicons.org` in `next.config.ts` (SVG logos are rendered `unoptimized`)
+- [X] T042 [P] Create `src/components/motion/aurora.tsx`: `"use client"`, three blurred amber radials (`--primary` at low alpha) drifting on `transform` over 18 to 26s with Motion `animate`, masked to the top 85vh, `pointer-events-none`, `aria-hidden`; static under reduced motion
+- [X] T043 [P] Create `src/components/motion/scroll-progress.tsx`: `"use client"`, fixed 2px bar at the top, `scaleX` from `useScroll().scrollYProgress` through `useSpring`, amber, `origin-left`
+- [X] T044 [P] Create `src/components/motion/kinetic-text.tsx`: `"use client"`, splits a string into words, each `motion.span` from `{ opacity: 0, y: 12, filter: "blur(8px)" }` to sharp, 60ms apart
+- [X] T045 [P] Create `src/components/motion/spotlight-card.tsx`: `"use client"`, wraps a panel; tracks pointer with `useMotionValue`, paints a radial highlight on the border layer via `useMotionTemplate`; falls back to the plain hover under reduced motion or no pointer
+- [X] T046 [P] Create `src/components/motion/count-up.tsx`: `"use client"`, `useInView` once, animates a number from 0 with Motion `animate`, formats with a prefix/suffix; renders the final value immediately under reduced motion and in the server HTML
+- [X] T047 [P] Create `src/components/motion/magnetic.tsx`: `"use client"`, a wrapper that pulls its child toward the pointer within 24px using `useMotionValue` + `useSpring`; inert under reduced motion
+- [X] T048 Rewrite `src/components/sections/hero.tsx`: `Aurora` behind, `KineticText` for the name, `useScroll`-driven scale (1 to 0.94) and opacity (1 to 0) on the content as the hero leaves; orb, name, line unchanged in content
+- [X] T049 Rewrite `src/components/sections/work.tsx` as a bento: `md:grid-cols-2`, Verelyn `md:col-span-2`, Flare, Privé, Inception `md:col-span-2`; each panel in `SpotlightCard`, 48px logo with a soft neutral halo, the panel's sourced figure as a `CountUp` (or a static mono figure for `07:00`) in `font-mono text-[44px] md:text-[56px]`, tagline, description, tags, link; past projects move to the timeline
+- [X] T050 Create `src/components/sections/timeline.tsx` ("How I got here"): server component that sorts all nine projects by start year from `projects.json`, renders year, name, tagline and status; a client leaf `src/components/motion/timeline-line.tsx` draws the vertical line with `scaleY` from `useScroll` on the section; nodes reveal as they enter
+- [X] T051 Create `src/components/sections/stack-marquee.tsx`: one marquee of stack logos from Simple Icons (slugs verified: react, typescript, tailwindcss, nextdotjs, supabase, expo, googlegemini, elevenlabs, vercel, resend, stripe, postgresql, fastify, drizzle, posthog, sentry, telegram), monochrome off-white via the CDN color parameter, name in mono under each, CSS `transform` animation, paused on hover, static under reduced motion; placed above the definition grid in `builds-with.tsx`
+- [X] T052 Rewrite `src/components/sections/beyond-code.tsx` as a visible section: `h2` "Beyond code", the Messi photo in a `md:grid-cols-[1fr_1fr]` split with its paragraph, then Chess and Reading as two `SpotlightCard` panels with their existing text and links
+- [X] T053 Rewrite `src/components/sections/footer.tsx`: the contact line as the section's statement, the email as a magnetic amber pill (`Magnetic` around a shadcn `Button` that copies on click, "Copied!" feedback kept), the three social icons beside it
+- [X] T054 Update `src/app/page.tsx` order: Hero, Story, Work, Timeline, HowIThink, BuildsWith (with the marquee), BeyondCode, Writing, Footer; `ScrollProgress` mounted once
+- [X] T055 Tune `src/components/motion/reveal.tsx` to `y: 16` with `filter: blur(6px)` to sharp so reveals read at motion 7
+- [X] T056 Amend `DESIGN.md`: Motion Budget (each new animation with its reason), the accent rule (one accent, no second hue, replacing "five places"), "What This Site Is NOT" (blobs vs atmosphere, parallax vs transition), Layout (bento, timeline, marquee, Beyond code visible)
+- [X] T057 Run every gate: `bun run check` (zero lint warnings, so no `<img>`), `bun run design:contrast`, `bun run chess:verify`, `bun run build` with `/` still static
+- [X] T058 (each animation proven by eval, not eyeballed: aurora transforms change over 2s; the name's words ship as opacity 0 / blur 10px in the server HTML and end at 1 / none; hero at 500px of scroll is scale 0.96, opacity 0.31; progress bar scaleX 0.08 there; spotlight opacity 1 with the highlight at the pointer under a real hover; figures reach 07:00 / 29 / 23 / 3 / 0% / 500k; timeline line scaleY 0.003 entering, 0.47 midway, 0.80 past; marquee transform changes and pauses on hover; magnetic pill moves 18px on a synthetic pointermove and returns to none on pointerout; reduced motion leaves every word and wrapper visible and cuts the marquee to 1e-05s; 390px has no overflow and one-column grids; 128 unique visible lines, all sourced except the pre-existing page title) Drive the page in the browser: aurora moving, name entering, hero shrinking on scroll, progress bar, spotlight following the pointer, numbers counting, timeline drawing, marquee moving and pausing on hover, Messi photo visible, magnetic pill; then reduced motion emulated (everything static and visible); 390px measured; content audit again (the new figures trace to `projects.json`)
+- [X] T059 Commit and push for a new preview
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

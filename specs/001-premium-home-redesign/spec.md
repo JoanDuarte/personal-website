@@ -10,6 +10,18 @@
 
 ## Clarifications
 
+### Session 2026-09-08 (second, after Joan saw the first preview)
+
+- Joan's review: "es muy simple, es un front muy simple y malo; necesitamos más
+  cosas, más llamativo". The first build read Linear/Vercel as restraint and set
+  motion low; the quality has to be visible, not just correct. → Raise intensity:
+  scroll-linked hero, a kinetic entrance for the name, an animated amber aurora,
+  cursor-tracked spotlight borders on the project panels with one sourced number
+  each, a scroll-drawn timeline of all nine projects, a logo marquee for the stack,
+  the Messi photo visible instead of collapsed, and a magnetic email button. Every
+  addition still uses only existing content; every animation still states its
+  reason. FR-008 amended below.
+
 ### Session 2026-09-08
 
 - Q: Keep the amber accent inside the neutral palette, switch to a cool accent, or
@@ -157,10 +169,15 @@ confirms. Open `/chess`; it is exactly as before.
   those sources conflict, `joan-kb.md` is the source of truth and the other file
   is corrected to match. No claim, number, or date may be introduced that is not
   already in one of them.
-- **FR-008**: Motion MUST be purposeful and budgeted: a staged hero entrance,
-  restrained section reveals on scroll, and hover states on interactive elements.
-  No bounce, no parallax, no decorative motion. All of it MUST respect the
-  visitor's reduced-motion preference.
+- **FR-008**: Motion MUST be purposeful and visible. The page MUST move in ways a
+  visitor notices: a kinetic hero entrance, a hero that responds to scroll, section
+  reveals, cursor-tracked highlights on the project panels, a timeline that draws
+  itself as it is scrolled, a stack marquee, and tactile hover on buttons. Each
+  animation MUST be able to state its reason in one sentence (hierarchy, story,
+  feedback, or state). No bounce, no background parallax, no motion that exists
+  only because it could. All of it MUST respect the visitor's reduced-motion
+  preference and collapse to a static page. *(Amended after Joan's review of the
+  first preview.)*
 - **FR-009**: `DESIGN.md` MUST be amended wherever the new direction contradicts
   its current text — at minimum the aesthetic direction ("Warm, not cold"), the
   palette table, the orb glow, and any rule that names amber — so that the

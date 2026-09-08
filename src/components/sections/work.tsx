@@ -3,169 +3,138 @@
 import { useState } from "react";
 import Image from "next/image";
 import projects from "@/data/projects.json";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SpotlightCard } from "@/components/motion/spotlight-card";
+import { CountUp } from "@/components/motion/count-up";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ProjectLink } from "@/components/project-link";
+import { cn } from "@/lib/utils";
 
 type Project = (typeof projects)[number];
 
-function ProjectLogo({ project, size = 28 }: { project: Project; size?: number }) {
+function ProjectLogo({ project }: { project: Project }) {
   const [failed, setFailed] = useState(false);
-
-  if (failed || !project.logo) {
-    return (
-      <span
-        className="rounded-md bg-muted flex items-center justify-center text-[13px] font-medium text-muted-foreground shrink-0"
-        style={{ width: size, height: size }}
-      >
-        {project.name[0]}
-      </span>
-    );
-  }
-
   return (
-    <Image
-      src={project.logo}
-      alt={`${project.name} logo`}
-      width={size}
-      height={size}
-      className="rounded-md shrink-0"
-      onError={() => setFailed(true)}
-    />
-  );
-}
-
-function Meta({ project }: { project: Project }) {
-  return (
-    <p className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[12px] text-text-tertiary">
-      <span>{project.date}</span>
-      {project.tags.map((tag) => (
-        <span key={tag}>{tag}</span>
-      ))}
-    </p>
-  );
-}
-
-function ProjectLink({ href }: { href: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center text-[14px] text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      View project
-    </a>
-  );
-}
-
-// The four active projects are the point of the page, so they get panels and
-// their full description. Past ones are a compact list that opens on demand.
-function ActiveCard({ project }: { project: Project }) {
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-3">
-          <ProjectLogo project={project} />
-          <CardTitle className="text-[17px]">{project.name}</CardTitle>
-          <Badge variant="active">Active</Badge>
-        </div>
-        <CardDescription className="text-[14px] text-muted-foreground">
-          {project.tagline}
-        </CardDescription>
-        <Meta project={project} />
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3">
-        <p className="text-[14px] leading-[1.65] text-muted-foreground">
-          {project.description}
-        </p>
-        {project.link && (
-          <div className="mt-auto">
-            <ProjectLink href={project.link} />
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function PastRow({ project }: { project: Project }) {
-  return (
-    <AccordionItem value={project.name} className="border-0">
-      <AccordionTrigger className="py-3 text-[15px] text-foreground hover:text-foreground">
-        <span className="flex min-w-0 flex-1 items-center gap-3">
-          <ProjectLogo project={project} size={24} />
-          <span className="font-medium">{project.name}</span>
-          <span className="hidden truncate text-[14px] text-muted-foreground sm:inline">
-            {project.tagline}
-          </span>
-          <span className="ml-auto shrink-0 font-mono text-[12px] text-text-tertiary">
-            {project.date}
-          </span>
+    <span className="relative shrink-0">
+      <span aria-hidden className="absolute inset-0 rounded-xl bg-foreground/10 blur-md" />
+      {failed || !project.logo ? (
+        <span className="relative flex size-11 items-center justify-center rounded-xl bg-muted text-[15px] font-medium text-muted-foreground">
+          {project.name[0]}
         </span>
-      </AccordionTrigger>
-      <AccordionContent className="pl-9 pb-5">
-        <p className="text-[14px] leading-[1.65] text-muted-foreground sm:hidden mb-2">
-          {project.tagline}
-        </p>
-        <p className="text-[15px] leading-[1.65] text-muted-foreground mb-2">
-          {project.description}
-        </p>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
-          {project.link && <ProjectLink href={project.link} />}
-          <Meta project={project} />
-        </div>
-      </AccordionContent>
-    </AccordionItem>
+      ) : (
+        <Image
+          src={project.logo}
+          alt={`${project.name} logo`}
+          width={44}
+          height={44}
+          className="relative rounded-xl"
+          onError={() => setFailed(true)}
+        />
+      )}
+    </span>
   );
 }
 
+// Each active project's own description carries one figure worth making large.
+// These are those figures, taken verbatim from projects.json; the labels are the
+// words around them there. Nothing is added.
+function Figure({ name }: { name: string }) {
+  const big = "font-mono text-[44px] md:text-[56px] leading-none tracking-[-0.03em] text-primary";
+  const small = "mt-2 font-mono text-[12px] text-text-tertiary";
+  switch (name) {
+    case "Verelyn":
+      return (
+        <div>
+          <div className={big}>07:00</div>
+          <p className={small}>one briefing, every morning</p>
+        </div>
+      );
+    case "Flare":
+      return (
+        <div className="flex gap-6">
+          {[
+            [29, "database tables"],
+            [23, "Edge Functions"],
+            [3, "AI agents"],
+          ].map(([n, label]) => (
+            <div key={label}>
+              <CountUp to={n as number} className={cn(big, "text-[36px] md:text-[44px]")} />
+              <p className={small}>{label}</p>
+            </div>
+          ))}
+        </div>
+      );
+    case "Privé":
+      return (
+        <div>
+          <div className={big}>0%</div>
+          <p className={small}>on every plan and every method</p>
+        </div>
+      );
+    case "Inception":
+      return (
+        <div>
+          <CountUp to={500} suffix="k" className={big} />
+          <p className={small}>in ASICs</p>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+function Panel({ project, wide }: { project: Project; wide?: boolean }) {
+  return (
+    <SpotlightCard className={cn("h-full", wide && "md:col-span-2")}>
+      <div className={cn("flex flex-col gap-6", wide && "md:flex-row md:items-start md:justify-between md:gap-10")}>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-3">
+            <ProjectLogo project={project} />
+            <h3 className="text-[20px] font-medium tracking-[-0.01em]">{project.name}</h3>
+            <Badge variant="active">Active</Badge>
+          </div>
+          <p className="mt-4 text-[15px] text-foreground/90">{project.tagline}</p>
+          <p className="mt-3 text-[14px] leading-[1.65] text-muted-foreground">
+            {project.description}
+          </p>
+          <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[12px] text-text-tertiary">
+            <span>{project.date}</span>
+            {project.tags.map((tag) => (
+              <span key={tag}>{tag}</span>
+            ))}
+          </p>
+          {project.link && (
+            <div className="mt-2">
+              <ProjectLink href={project.link} />
+            </div>
+          )}
+        </div>
+        <div className={cn("shrink-0", wide && "md:pt-1 md:text-right")}>
+          <Figure name={project.name} />
+        </div>
+      </div>
+    </SpotlightCard>
+  );
+}
+
+// Flagship wide, two products, then the engine that funds them, wide. The past
+// projects live in the timeline below.
 export function Work() {
   const active = projects.filter((p) => p.status === "active");
-  const past = projects.filter((p) => p.status !== "active");
+  const wide = new Set(["Verelyn", "Inception"]);
 
   return (
     <section className="py-20 md:py-28 px-4 md:px-0">
       <div className="max-w-[640px] mx-auto">
-        <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-2">
+        <h2 className="text-[24px] md:text-[28px] font-medium tracking-[-0.02em] mb-8">
           Work
         </h2>
-        <h3 className="text-[13px] font-medium text-text-tertiary mb-5">
-          Active
-        </h3>
       </div>
-
-      {/* The grid breaks out to 960px, centered, so it is wider than the prose
-          column by the same amount on both sides. */}
       <div className="max-w-[960px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
         {active.map((project) => (
-          <ActiveCard key={project.name} project={project} />
+          <Panel key={project.name} project={project} wide={wide.has(project.name)} />
         ))}
-      </div>
-
-      <div className="max-w-[640px] mx-auto">
-        <Separator className="my-12" />
-        <h3 className="text-[13px] font-medium text-text-tertiary mb-2">
-          Past
-        </h3>
-        <Accordion>
-          {past.map((project) => (
-            <PastRow key={project.name} project={project} />
-          ))}
-        </Accordion>
       </div>
     </section>
   );
 }
+

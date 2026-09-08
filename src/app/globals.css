@@ -71,6 +71,8 @@
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --radius: 0.625rem;
+  /* The spotlight that follows the pointer on a panel: amber, faint. */
+  --spot: oklch(0.837 0.128 66.29 / 0.10);
 
   /* Chess board. Warm woods rather than the usual green/beige, so the board
      reads as part of the page instead of an embedded widget.
@@ -166,6 +168,16 @@ body::after {
   }
 }
 
+/* The stack marquee. One per page; pauses on hover; the reduced-motion block
+   below cuts it to a single frame. */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 42s linear infinite;
+}
+
 /* Plain fade-in. The trainer's closing line uses it; scroll-reveal, which
    this was written for, went with the collapsible layout in #7. */
 @keyframes fade-in {
@@ -184,6 +196,7 @@ body::after {
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
   }
 
   *, *::before, *::after {

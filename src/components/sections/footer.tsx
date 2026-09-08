@@ -1,4 +1,6 @@
 import { CopyEmailButton } from "@/components/copy-email-button";
+import { Magnetic } from "@/components/motion/magnetic";
+import { Separator } from "@/components/ui/separator";
 
 const links = [
   {
@@ -32,29 +34,37 @@ const links = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border mt-8 px-4 md:px-0">
-      <div className="max-w-[640px] mx-auto py-10 text-center">
-        <p className="text-[14px] text-muted-foreground mb-5">
-          Open to conversations with accelerators and investors. Also always down to chat about products, ideas, or chess.
-        </p>
-        <div className="flex items-center justify-center gap-1 mb-8">
-          {links.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label={link.label}
-            >
-              {link.icon}
-            </a>
-          ))}
-          <CopyEmailButton />
+    <footer className="px-4 md:px-0">
+      <div className="max-w-[640px] mx-auto">
+        <Separator />
+        <div className="py-20 text-center">
+          <p className="text-[22px] md:text-[26px] font-medium tracking-[-0.02em] text-balance">
+            Open to conversations with accelerators and investors.
+          </p>
+          <p className="mt-3 text-[16px] text-muted-foreground text-balance">
+            Also always down to chat about products, ideas, or chess.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            <Magnetic>
+              <CopyEmailButton />
+            </Magnetic>
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex size-11 items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={link.label}
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
+          <p className="mt-12 text-[12px] text-text-tertiary">
+            &copy; {new Date().getFullYear()} Joan Mateo Duarte Politi
+          </p>
         </div>
-        <p className="text-[12px] text-text-tertiary">
-          &copy; {new Date().getFullYear()} Joan Mateo Duarte Politi
-        </p>
       </div>
     </footer>
   );

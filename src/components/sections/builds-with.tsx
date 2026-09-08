@@ -1,4 +1,5 @@
 import { getKbSections } from "@/lib/kb";
+import { StackMarquee } from "@/components/sections/stack-marquee";
 
 export function BuildsWith() {
   const { buildsWithIntro, buildsWith } = getKbSections();
@@ -11,6 +12,11 @@ export function BuildsWith() {
         <p className="text-[16px] md:text-[17px] leading-[1.7] text-muted-foreground mb-10">
           {buildsWithIntro}
         </p>
+      </div>
+      <div className="max-w-[960px] mx-auto mb-12">
+        <StackMarquee />
+      </div>
+      <div className="max-w-[640px] mx-auto">
         <dl className="grid grid-cols-1 md:grid-cols-[136px_1fr] gap-x-6 gap-y-5">
           {buildsWith.map(({ label, value }) => (
             <div key={label} className="contents">

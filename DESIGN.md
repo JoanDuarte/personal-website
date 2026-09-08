@@ -38,15 +38,18 @@ is why its lightness is 0.60 and should not go lower.
 | `--primary` | `oklch(0.8370 0.1280 66.2900)` | Golden amber accent, unchanged |
 | `--primary-foreground` | `oklch(0.145 0.004 260)` | Near-black on amber |
 | `--ring` | `oklch(0.75 0.13 66)` | Amber focus ring |
+| `--spot` | `oklch(0.837 0.128 66.29 / 0.10)` | The pointer-following highlight on panels |
 | `--destructive` | `oklch(0.6368 0.2078 25.3313)` | Warm red |
 
 **Rule:** No hardcoded `rgba(255,255,255,...)` anywhere. Use tokens.
 **Rule:** Borders are opaque oklch, not semi-transparent rgba. By design.
-**Rule:** The accent has a budget. Amber appears in exactly five places, each with
-a job: the orb's glow, the "Active" badge (real state, not decoration), link and
-button hover, the focus ring, and the faint radial at the top of the page.
-Headings, labels, body text, borders and the footer stay neutral. A sixth use is a
-defect.
+**Rule:** One accent, no second hue. Amber is the only chromatic color on the page
+and it may appear where it has a job: the aurora behind the hero, the scroll
+progress bar, the orb's glow and pill, the "Active" badge and the timeline's active
+dots (real state), the spotlight that follows the pointer on a panel, the large
+figures on the project panels, link and button hover, the focus ring, and the email
+pill. Headings, labels, body text, borders and metadata stay neutral. Any other hue
+is a defect.
 
 ### Chess Board Tokens
 
@@ -121,16 +124,29 @@ its heading are enough.
 
 ## Layout
 
-- **Hero:** `min-h-[70dvh]`, centered, `pt-24` at most. Three things: the orb, the
-  name, the positioning line. Nothing else.
-- **Order:** Hero, Story, Work, How I think, What I build with, Beyond code,
-  Writing, Footer. "How I think" and "What I build with" are read from
-  `joan-kb.md` at build time (see `src/lib/kb.ts`), not copied.
-- **Work:** Active projects as a 2x2 panel grid (`Card`), each with its full
-  description; past projects as a compact list with an accordion for detail.
-- **What I build with:** definition grid, `md:grid-cols-[136px_1fr]`, label in
-  mono, value in Geist; single column under 768px.
-- **Footer:** Single line, `text-[14px]`, icon row, copyright in `--text-tertiary`.
+- **Hero:** `min-h-[88dvh]`, centered, `pt-24` at most, the aurora behind it. Three
+  things: the orb, the name (`text-[40px] md:text-[60px]`), the positioning line.
+  Nothing else.
+- **Order:** Hero, Story, Work, How I got here, How I think, What I build with,
+  Beyond code, Writing, Footer. "How I think" and "What I build with" are read
+  from `joan-kb.md` at build time (see `src/lib/kb.ts`), not copied.
+- **Work:** the four active projects as a bento at 960px: Verelyn wide, Flare and
+  Privé, Inception wide. Flagship, two products, the engine that funds them. Each
+  panel is a `SpotlightCard` (a shadcn `Card` with the pointer highlight), a 44px
+  logo with a soft halo, the full description, and one large mono figure taken
+  from that description (`07:00`, `29 / 23 / 3`, `0%`, `500k`), counting up on
+  first view where counting makes sense.
+- **How I got here:** all nine projects in start order from `projects.json`, a
+  vertical line that draws as the section is scrolled, amber dots for active,
+  each row an accordion item with the description and link inside.
+- **What I build with:** one marquee of stack logos (Simple Icons, monochrome in
+  the foreground color, names in mono underneath) at 960px, then the definition
+  grid, `md:grid-cols-[136px_1fr]`, single column under 768px. One marquee per
+  page, and this is it.
+- **Beyond code:** visible. The Messi photo in a two-column split with its
+  paragraph, then Chess and Reading as two spotlight panels.
+- **Footer:** the contact line as a statement, the email as a magnetic amber pill,
+  the three social icons beside it, copyright in `--text-tertiary`.
 
 ## Voice Orb (Signature Element)
 
@@ -145,31 +161,48 @@ its heading are enough.
 
 ## Motion Budget
 
-Intentional, minimal. Every animation earns its place and can say what it is for.
+Intentional and visible. Every animation earns its place and can say what it is
+for. The dials, in the taste-skill's terms: variance 8, motion 7, density 4.
 
-- **Hero entrance:** Motion `staggerChildren: 0.08`; each child rises 8px and
-  fades in over 0.5s with `ease: [0.16, 1, 0.3, 1]`. Reason: hierarchy. Orb, then
-  name, then line.
-- **Section reveal:** Motion `whileInView`, once, opacity and an 8px rise, same
-  duration and ease, triggered by a `-64px` viewport margin rather than a fraction
-  of the element (a section taller than the viewport can never show 20% of itself).
-  Reason: sequence. Every animated wrapper carries `data-reveal`. An earlier
-  IntersectionObserver version of this was deleted as dead code; this one is used
-  by every section.
-- **Panel hover:** border to `--border-hover` and `-translate-y-px`, 200ms,
-  `transition-[border-color,transform]`. No amber glow on hover; the accent budget
-  does not include it.
-- **Links:** `underline underline-offset-4`, hover to amber.
-- **Background gradient:** opacity between 0.4 and 0.7 over 25s. GPU-friendly.
-- **No bounce animations.** No parallax. No decorative motion. No scroll cues.
+- **Aurora:** three blurred amber radials behind the hero drifting on `transform`
+  over 18 to 26 seconds. Atmosphere; it ties the base to the orb.
+- **Scroll progress:** a 2px amber line at the top, `scaleX` from scroll progress
+  through a spring. Orientation.
+- **Name:** enters word by word, 70ms apart, from `blur(10px)` and 14px below to
+  sharp. Hierarchy.
+- **Hero on scroll:** the block scales to 0.94, drops 48px and fades as it leaves
+  (`useScroll` + `useTransform`). Transition to the story. This is not parallax:
+  nothing moves at a different speed than the page.
+- **Hero entrance:** Motion `staggerChildren: 0.08` for the orb and the line.
+- **Section reveal:** `whileInView`, once, opacity, a 16px rise and `blur(6px)` to
+  sharp, triggered by a `-64px` viewport margin rather than a fraction of the
+  element (a section taller than the viewport can never show 20% of itself).
+  Sequence. Every animated wrapper carries `data-reveal`.
+- **Spotlight panels:** a 260px amber radial follows the pointer over a panel
+  (`useMotionValue` + `useMotionTemplate`), plus border to `--border-hover` and a
+  1px rise, `transition-[border-color,transform]`. Feedback.
+- **Figures:** count from 0 to their value over 1.4s the first time they are
+  seen. Emphasis. The server HTML carries the final value.
+- **Timeline:** the line's `scaleY` follows scroll progress through a spring;
+  rows reveal as they enter. Story.
+- **Marquee:** CSS `transform` over 42s, pauses on hover. Breadth at a glance.
+- **Magnetic pill:** the email button follows the pointer up to 18px on a spring
+  and snaps back. Feedback on the one action the page asks for.
+- **Links:** `underline underline-offset-4`, hover to amber. Buttons scale to
+  0.98 on press.
+- **No bounce.** No background parallax. No motion that exists only because it
+  could. No scroll cues.
 
 ### Reduced Motion
 
 - `<MotionConfig reducedMotion="user">` wraps the page, so every Motion animation
   collapses to its final state.
-- CSS backs it up: `[data-reveal] { opacity: 1 !important; transform: none !important; }`
+- CSS backs it up: `[data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }`
   under `prefers-reduced-motion: reduce`, plus `scroll-behavior: auto` and every
-  keyframe cut to 0.01ms.
+  keyframe cut to 0.01ms, which also freezes the marquee and the aurora.
+- The pointer-driven pieces (spotlight, magnetic pill) do not attach their
+  listeners at all under reduced motion; the scroll-linked ones are neutralized
+  by the CSS rule above.
 
 ### No JavaScript
 
@@ -180,7 +213,7 @@ without JavaScript sees the whole page.
 ## Background
 
 - **Grain texture:** CSS pseudo-element with base64 SVG noise at 4% opacity. `position: fixed`, `pointer-events: none`.
-- **Radial:** faint amber (`oklch(0.837 0.128 66.29 / 0.10)`) at `50% 0%`, transparent by 55%, breathing as above. One of the five accent uses.
+- **Radial:** faint amber (`oklch(0.837 0.128 66.29 / 0.10)`) at `50% 0%`, transparent by 55%, breathing as above. The aurora sits on top of it inside the hero.
 - **Stacking:** `bg-background` on `<html>` (not `<body>`). Pseudo-elements on body with negative z-index.
 
 ## Interactive States
@@ -210,8 +243,11 @@ library dependency for these four; they are brand marks, not icons.
 - Not a SaaS template with card grids
 - Not centered-everything layout
 - Not purple/blue gradient territory
-- Not decorated with blobs, circles, or wavy dividers
+- Not decorated with blobs, circles, or wavy dividers drawn as shapes. An
+  atmospheric glow behind the hero is not a shape
 - Not generic hero copy ("Welcome to..." / "Your all-in-one...")
 - Not an uppercase eyebrow above every section
 - Not em-dashes as design elements (labels, separators, captions); quoted text keeps its own punctuation
 - Not a warm-charcoal page anymore. The warmth is the accent, not the base
+- Not quiet. Correct and silent was tried on 2026-09-08 and rejected the same day;
+  the quality has to be visible

@@ -212,3 +212,45 @@ not as the gate).
 | Background | Warm radial at 30% 0% | Faint amber radial at 50% 0%, roughly a third of today's strength; grain unchanged | One of the five accent uses |
 | What This Site Is NOT | existing list | add: not an uppercase eyebrow above every section; not em-dashes as design elements | New rules worth writing down |
 | Chess Board Tokens | unchanged | unchanged, with a note that the board now sits on a neutral base | §8 |
+
+## 11. Second pass: intensity, after Joan saw the first preview
+
+**What happened**: the first build was correct and quiet. Joan's words were "es muy
+simple, es un front muy simple y malo; necesitamos más cosas, más llamativo". The
+misread was mine: "Linear and Vercel" was taken as restraint (motion 4, variance 6)
+when the brief's first sentence was "que se note la calidad, que se note muchísimo".
+
+**Decision**: dials go to `DESIGN_VARIANCE 8`, `MOTION_INTENSITY 7`, `VISUAL_DENSITY 4`,
+and the page gets things a visitor can see move or notice, each with a reason:
+
+| Addition | Reason (taste-skill's test) | Content source |
+|---|---|---|
+| Amber aurora behind the hero, three blurred radials drifting on `transform` | atmosphere that ties the base to the orb; replaces the static radial | none needed |
+| Name enters word by word, blur to sharp, 60ms apart | hierarchy: the name is the first thing | `bio.json` |
+| Hero scales to 0.94 and fades as it scrolls out (`useScroll` + `useTransform`) | transition: hands off to the story | none |
+| Scroll progress bar, 2px amber, top of page | orientation on a long page | none |
+| Work as a bento: Verelyn wide, Flare and Privé, Inception wide | hierarchy: flagship, two products, the engine that funds them | `projects.json` |
+| Spotlight border that follows the cursor on each panel (`useMotionValue`) | feedback: the panel under the pointer is the live one | none |
+| One large mono number per panel, counting up on first view | emphasis; each number is in the panel's own description | `07:00`, `29 / 23 / 3`, `0%`, `500k`, all from `projects.json` |
+| "How I got here": vertical timeline of all nine projects, line drawn by scroll progress | story: the order matters and the scroll is the reader's pace | `projects.json` dates and taglines |
+| Stack marquee of real logos (Simple Icons, monochrome off-white), one per page | breadth at a glance; the definition grid below keeps the detail | names from `joan-kb.md` "Technical Identity" |
+| Beyond code visible, Messi photo large in a split | the site's one real photograph was hidden in an accordion | existing content |
+| Magnetic "Copy email" pill in the footer (`useMotionValue` + spring) | feedback on the one action the page asks for | existing |
+
+**What does not change**: dark only, tokens only, one accent, sourced content,
+reduced motion collapses everything to static, no JavaScript still shows the whole
+page, `/chess` untouched, the orb untouched.
+
+**Accent rule, revised**: "five places" was a budget for a quiet page. The rule now is
+one chromatic accent and no second hue: amber may appear in the aurora, the progress
+bar, the badges, the spotlight highlight, the large numbers, hover and focus, and the
+email pill. Everything else stays neutral. DESIGN.md is amended to say this.
+
+**DESIGN.md "What This Site Is NOT", revised**: "no blobs" stays for shapes drawn as
+decoration; an atmospheric glow is not a blob. "No parallax" stays for background
+layers moving at different speeds; a hero that scales as it leaves is a transition.
+
+**Alternatives considered**: GSAP sticky-stack for the four projects (heavy for a
+personal site, and pinning fights the reader on mobile); a 3D tilt on the panels
+(cheap trick, and it breaks text legibility while moving); custom cursor (banned);
+product screenshots in the bento (none exist; div-based fakes are the worst tell).
