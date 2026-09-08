@@ -104,12 +104,3 @@ export function Piece({
     </svg>
   );
 }
-
-export const PIECE_LETTER_ES: Record<PieceSymbol, string> = {
-  p: "",
-  n: "C",
-  b: "A",
-  r: "T",
-  q: "D",
-  k: "R",
-};

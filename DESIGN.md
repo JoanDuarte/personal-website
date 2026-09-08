@@ -100,7 +100,9 @@ square while the inside is uneven.
 Intentional, minimal. Every animation earns its place.
 
 - **Hero entrance:** Staggered fade-in-up on individual children (0ms, 100ms, 200ms, 300ms delay). Applied to wrapper divs, not components directly.
-- **Scroll-reveal:** Opacity-only fade (`opacity 0.6s ease-out`). No translateY.
+- **No scroll-reveal.** Sections render visible. There was an IntersectionObserver
+  fade on every section until the collapsible layout (#7) made it pointless; the
+  wrapper stayed in the tree unused for months. Do not reintroduce it by reflex.
 - **Project hover:** `translateY(-2px)` + amber box-shadow glow, 200ms ease-out.
 - **Background gradient:** Opacity animation over 20-30s. GPU-friendly.
 - **Scroll-down chevron:** Static, fades out on scroll.
@@ -109,7 +111,6 @@ Intentional, minimal. Every animation earns its place.
 ### Reduced Motion
 
 All animations respect `prefers-reduced-motion: reduce`:
-- Scroll-reveal sections always visible (`opacity: 1 !important`)
 - Smooth scroll disabled (`scroll-behavior: auto`)
 - Stagger animations still play (opacity-only, fast enough to not trigger vestibular issues)
 

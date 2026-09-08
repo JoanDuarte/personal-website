@@ -41,11 +41,6 @@ export function winPercent(cp: number): number {
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 }
 
-export function accuracy(cpBefore: number, cpAfter: number): number {
-  const drop = winPercent(cpBefore) - winPercent(cpAfter);
-  return 103.1668 * Math.exp(-0.04354 * drop) - 3.1669;
-}
-
 export type MoveQuality =
   | "excelente"
   | "buena"
