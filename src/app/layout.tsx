@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import bio from "@/data/bio.json";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { MotionProvider } from "@/components/motion/motion-provider";
@@ -28,23 +29,20 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ??
-      "https://joanduarte.vercel.app"
+      "https://joanduarte.com"
   ),
-  title: "Joan Mateo Duarte Politi — Full-Stack Builder",
-  description:
-    "I build products where AI, systems, and interface design meet. Currently building Verelyn, Flare and Privé.",
+  title: "Joan Mateo Duarte Politi — Co-founder of Catherby",
+  description: bio.positioning,
   openGraph: {
     title: "Joan Mateo Duarte Politi",
-    description:
-      "I build products where AI, systems, and interface design meet.",
+    description: bio.positioning,
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Joan Mateo Duarte Politi",
-    description:
-      "I build products where AI, systems, and interface design meet.",
+    description: bio.positioning,
   },
   robots: {
     index: true,

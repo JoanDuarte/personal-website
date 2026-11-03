@@ -132,15 +132,14 @@ its heading are enough.
 - **Order:** Hero, Story, Work, How I got here, How I think, What I build with,
   Beyond code, Writing, Footer. "How I think" and "What I build with" are read
   from `joan-kb.md` at build time (see `src/lib/kb.ts`), not copied.
-- **Work:** the four active projects as a bento at 960px: Verelyn wide, Flare and
-  Privé, Inception wide. Flagship, two products, the engine that funds them. Each
-  panel is a `SpotlightCard` (a shadcn `Card` with the pointer highlight), a 44px
-  logo with a soft halo, the full description, and one large mono figure taken
-  from that description (`07:00`, `29 / 23 / 3`, `0%`, `500k`), counting up on
-  first view where counting makes sense.
-- **How I got here:** all nine projects in start order from `projects.json`, a
+- **Work:** Catherby is the full-width current focus at 960px, followed by the
+  other live products, Verelyn and Privé. Each panel reuses `SpotlightCard`, a
+  44px logo, the full description and the project link. Figures (`07:00`, `0%`)
+  appear only where the project description gives one.
+- **How I got here:** all projects grouped by start year from `projects.json`, a
   vertical line that draws as the section is scrolled, amber dots for active,
-  each row an accordion item with the description and link inside.
+  each row an accordion item with the description and link inside. Flare and
+  Inception Crypto are past work.
 - **What I build with:** one marquee of stack logos (Simple Icons, monochrome in
   the foreground color, names in mono underneath) at 960px, then the definition
   grid, `md:grid-cols-[136px_1fr]`, single column under 768px. One marquee per

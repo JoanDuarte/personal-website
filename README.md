@@ -2,7 +2,7 @@
 
 Personal website for Joan Mateo Duarte Politi. Built with Next.js 16, Tailwind CSS v4, and an oklch warm amber color system.
 
-Production: <https://joanduarte.vercel.app>. There is no `jmduarte.com` on the Vercel account yet; if that domain gets attached, update `NEXT_PUBLIC_SITE_URL` (see [Voice and metadata setup](#voice-and-metadata-setup)) along with the references here.
+Production: <https://joanduarte.com>. `NEXT_PUBLIC_SITE_URL` supplies the public URL for link previews (see [Voice and metadata setup](#voice-and-metadata-setup)).
 
 ## Getting Started
 
@@ -286,7 +286,7 @@ Both variables are already set in all three Vercel environments. Pull them with
 
 ```bash
 NEXT_PUBLIC_ELEVENLABS_AGENT_ID=your_public_agent_id
-NEXT_PUBLIC_SITE_URL=https://joanduarte.vercel.app
+NEXT_PUBLIC_SITE_URL=https://joanduarte.com
 ```
 
 `NEXT_PUBLIC_SITE_URL` is the `metadataBase` for every generated link preview. If
@@ -301,7 +301,7 @@ The orb uses the public agent path over WebRTC, so the agent must allow unauthen
 ## Knowledge base
 
 The orb answers from two markdown files in the repo root: `joan-kb.md` (who Joan is)
-and `flare-product-kb.md` (what Flare is). One document per subject, on purpose —
+and `flare-product-kb.md` (the earlier Flare project, paused in July 2026). Catherby's current story is in `joan-kb.md`. One document per subject, on purpose —
 the earlier split into `joan-founder-kb.md` and `joan-context-v1.md` told the same
 story twice and drifted apart.
 
