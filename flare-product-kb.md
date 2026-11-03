@@ -1,5 +1,7 @@
 # Flare — The Social Network You Listen To
 
+Status: development paused in July 2026. Flare had users but no revenue, and the mining income supporting it was declining. Joan and Franco moved to client software work and later co-founded Catherby, their current focus. The product concepts and technical details below describe Flare and the direction explored before it was paused, not a current development roadmap.
+
 Flare is your social brain: an agent that keeps you close to your friends. It tells you what they are up to in near-real-time, and telling it about your life is the same act that feeds theirs. Voice-first, proactive, never performative.
 
 The thesis starts from what is broken. Every social app today is reactive. You open it, you scroll, you process, you perform. Social apps merged into content apps along the way — Instagram became Reels, TikTok is content-first, Snapchat chases famous people's stories — and connection got lost. AI changes the equation because an agent can be proactive: it can observe your patterns, understand your life, and surface what matters before you ask.
@@ -62,13 +64,13 @@ People 18 to 30, college through early career, in the US and Latin America. The 
 
 Creators, influencers and reach-optimizers are explicitly not the target. The product is hostile to them by design.
 
-## Where It Is Today
+## Where We Left It
 
-Flare is live on iOS with real users. What runs in production is the V2 pipeline: a capture flow plus pre-generated briefings, routed through a seven-flow cascade that decides what the Orb opens with.
+We launched Flare on iOS and had real users. The shipped version used the V2 pipeline: a capture flow plus pre-generated briefings, routed through a seven-flow cascade that decides what the Orb opens with.
 
-The V3 rebuild — the conversation-first home, the live canvas, the check-in written straight from speech — is built and on main, but it ships dark behind feature flags. That is a deploy decision, not a code one.
+The V3 rebuild — the conversation-first home, the live canvas, the check-in written straight from speech — was built on main behind feature flags. Development is paused; this is not an upcoming launch.
 
-The hard problems are memory and output quality, because if the AI gets it wrong nothing else matters, and connection speed. Time-to-first-word, meaning tap until the Orb starts talking, is a hard product requirement with a target of one to two seconds.
+The hard problems we were working on were memory and output quality, because if the AI gets it wrong nothing else matters, and connection speed. Time-to-first-word, meaning tap until the Orb starts talking, is a hard product requirement with a target of one to two seconds.
 
 ## Technical Foundation
 

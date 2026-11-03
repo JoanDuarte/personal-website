@@ -12,7 +12,7 @@ import {
 
 const startYear = (date: string) => parseInt(date.slice(0, 4), 10);
 
-// All nine projects in the order they started, from projects.json. The sort is
+// Projects grouped by the year they started, from projects.json. The sort is
 // stable, so two projects from the same year keep their file order.
 const items = [...projects].sort((a, b) => startYear(a.date) - startYear(b.date));
 

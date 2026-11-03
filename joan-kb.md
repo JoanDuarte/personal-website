@@ -4,7 +4,8 @@ The single source of truth about Joan for the voice agent. This replaced two
 overlapping documents (`joan-context-v1.md` and `joan-founder-kb.md`) that told
 the same founder story twice and drifted apart on the details.
 
-For Flare specifically, see `flare-product-kb.md`.
+Current focus: Catherby, co-founded with Franco Quattroqui in October 2026.
+For the earlier Flare project, see `flare-product-kb.md`.
 
 ## Who I Am
 
@@ -14,7 +15,7 @@ I don't remember exactly when I found startups. It might have been The Social Ne
 
 ## My Journey
 
-At 21 I dropped out of university to build a crypto mining company. Two friends had bought graphics cards and started mining Ethereum, and I saw something there. It wasn't a startup in the traditional sense, but it was a new sector, it was futuristic, and we were making money. We scaled fast: new clients every week, new warehouses, hosting mining rigs, expanding into Bitcoin and other parts of the space. We were all in, 24/7. That company is Inception, and it's still running today. We automated it, and it funds whatever I build next.
+At 21 I dropped out of university to build a crypto mining company. Two friends had bought graphics cards and started mining Ethereum, and I saw something there. It wasn't a startup in the traditional sense, but it was a new sector, it was futuristic, and we were making money. We scaled fast: new clients every week, new warehouses, hosting mining rigs, expanding into Bitcoin and other parts of the space. We were all in, 24/7. That company was Inception Crypto. We ran it from September 2020 to July 2026, and its income supported us while we worked on our later software projects.
 
 But the itch to build a real startup never went away. While running the mining company we created DL3ARN, a SaaS platform that put blockchain traceability on educational credentials. We believed the biggest problem in education was the lack of diploma traceability, and we built a product to fix it. We got deep into the startup world here — VCs, pitch practice, understanding the stages, how to move forward. Then the crypto world collapsed. The Ethereum merge killed mining, the war started, the bear market hit, and too many scams had poisoned the space. The timing made it nearly impossible to get anyone to pay, even with a strong team and real leads from universities. That was my second startup failure, and my most valuable one.
 
@@ -24,17 +25,25 @@ After DL3ARN I confronted something that had bothered me since day one. I wasn't
 
 ## What I'm Building Now
 
-**Verelyn** is where most of my time goes. It's a personal newsroom built around one reader. The newsletters you pay for are good, but they were written for thousands of people at once, so they can't know what you have riding on this week. Verelyn's journalist agents read your sources every morning, fold four reports of the same thing into one event with its sources attached, weigh each one against your world, and send a single briefing at 07:00. Every item is signed by the agent who wrote it and carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. I started it in August 2026 and had the first paying reader twelve days later.
+**Catherby** is an agentic operating system for a farm's back office. I co-founded it with Franco Quattroqui in October 2026. I build and maintain the web app, backend and AI agents; Franco works with farmers and handles onboarding. We're starting with crop farms in Argentina. The site is https://catherby.app/en.
 
-**Flare** is live on iOS. It's your social brain: an agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. Voice-first, proactive, never performative. The whole product is one conversation with an agent that connects you to humans, and nobody has built that for close friendships. It has real users. I designed and built the entire system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer data pipeline. Full detail lives in `flare-product-kb.md`.
+We weren't planning another startup. After pausing Flare, we started building software for clients to support ourselves. Through that work, we met a farmer who wanted more time in the field and less time in the office. His records were spread across spreadsheets, paper and WhatsApp, and the software he'd tried didn't fit the way he worked. We thought agents could take care of the administration using the documents and messages he already had, without giving him another system to learn. He committed to paying before we wrote any code, and we built the first version in three or four days.
 
-**Privé** is a Telegram-native storefront for creators. They sell digital content, video calls, services and VIP group access without leaving Telegram, and get paid through Mercado Pago, crypto or bank transfer, straight into their own account. Privé takes 0% on every plan and every method — it earns from the creator's Premium subscription, not from a cut of each sale. I built the bot, the mini app, the payment rails and the fee engine.
+Farmers send invoices, documents, photos and voice notes through WhatsApp, email or the web. Catherby's agents record purchases, track costs and stock, check grain settlements against delivery records and prepare claims for discrepancies. They follow up on unfinished work and ask for the owner's approval before sending anything out. The goal is for farmers to spend more time in the field and less time in the office, without having to manage every step.
+
+Franco and I also work together on freelance software projects, with Franco taking the lead on finishing them. We share the income, which lets me focus on building Catherby.
 
 ## My Other Projects
 
+**Verelyn** is a personal newsroom built around one reader. Its journalist agents read sources, combine reports of the same event, weigh each one against what matters to the reader, and send a briefing at 07:00. Every item carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. I built it in August 2026 and brought on paying readers. It remains a published product; Catherby is my current focus.
+
+**Flare** was a voice-based social app I built and launched on iOS. Friends shared moments, and AI turned those moments into conversations and briefings to help them keep up with each other. We worked on it from January to July 2026, then paused development: it had users but no revenue, and our mining income was no longer enough to keep funding it. That is why, with Catherby, we wanted a commitment to pay before we built. The historical product details live in `flare-product-kb.md`.
+
+**Privé** is a Telegram-native storefront for creators. They sell digital content, video calls, services and VIP group access without leaving Telegram, and get paid through Mercado Pago, crypto or bank transfer, straight into their own account. Privé takes 0% on every plan and every method; it earns from the creator's Premium subscription, not from a cut of each sale. I built the bot, the mini app, the payment rails and the fee engine. I stopped actively developing it in September 2026, but it continues to bring in new paying subscribers.
+
 **Stevay** — AI agents inside the back office of construction companies. 75+ agents across finances, documentation, purchasing, progress, certification, management and communication, sitting on top of the ERPs, spreadsheets and WhatsApp the company already uses. I co-founded it with Franco Quattroqui and owned tech and product. We shipped it, then stopped taking it forward.
 
-**Inception** — The Bitcoin mining company. Started at 21, still running, automated, generating revenue that funds new ventures. Taught me how to scale operations, manage clients, and think about real business economics.
+**Inception Crypto** — We built and hosted cryptocurrency mining farms for customers from September 2020 to July 2026, first Ethereum rigs and later Bitcoin equipment. We grew to around 150 ASIC miners. I handled sales, customer relationships and finances; Franco led the technical setup and operations. The income helped support our later software projects.
 
 **DL3ARN** — Blockchain credential traceability for education. Great team, real leads, killed by the crypto bear market. Taught me the full startup lifecycle: pitching VCs, understanding product stages, knowing when the market is against you.
 
@@ -58,12 +67,12 @@ I'm self-taught. I learned to code because I refused to keep delegating the most
 
 - **Mobile**: Expo and React Native, iOS-focused, shipping to the App Store with OTA updates via EAS
 - **Frontend**: React, TypeScript, Tailwind, Next.js for web
-- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions, Storage) for Flare and Verelyn; Next.js 16 and React 19 on Vercel for Verelyn's site and product; Fastify with grammY and Drizzle on Postgres for Privé
-- **AI**: Google Gemini for Flare's agent system, ElevenLabs for voice, the Vercel AI Gateway for Verelyn so each task goes to the model that fits it — cheap ones to rank in bulk, better ones to explain
-- **Ingestion and delivery**: Firecrawl to read the web for Verelyn, Resend for the 07:00 email, Stripe for billing
+- **Backend**: Next.js on Vercel and Supabase (Postgres, Auth, Storage) for Catherby; Supabase also supported Flare and Verelyn. Fastify with grammY and Drizzle on Postgres for Privé
+- **AI**: eve and the Vercel AI SDK for Catherby, with Claude through AI Gateway and GPT-4o Transcribe for voice notes. Gemini for Flare, ElevenLabs for voice, and AI Gateway for Verelyn
+- **Ingestion and delivery**: Meta's WhatsApp Cloud API and Resend for Catherby, Stripe for billing. Firecrawl reads the web for Verelyn, and Resend delivers its morning briefing
 - **Design**: Custom design systems with design tokens, Skia shaders for the Aura Orb, component libraries
 - **State**: Zustand for client state, React Query for server state
-- **Observability**: PostHog for product analytics and session replay, Sentry for errors
+- **Observability**: Mixpanel and Sentry for Catherby; PostHog for analytics and session replay in earlier products
 
 ## What I'm Reading and Why
 

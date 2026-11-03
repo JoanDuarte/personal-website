@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.3.0] - 2026-11-02
+
+### Changed
+- Put Catherby first in the introduction, work and link previews, with its real
+  logo and the story of meeting a farmer through client software work.
+- Moved Flare and Inception Crypto to past work. The page had still described
+  both as active, and mining as the source of funding for current projects.
+  Verelyn and Privé remain visible as live products; Catherby is the current focus.
+- Updated the voice knowledge and agent prompt to the same account. The prompt
+  had still identified Flare as the current company even when its knowledge
+  documents said otherwise. Kept the existing voice and conversation settings.
+- Corrected the LinkedIn link and set the metadata URL fallback to joanduarte.com.
+
 ## [0.4.2.0] - 2026-09-03
 
 ### Fixed

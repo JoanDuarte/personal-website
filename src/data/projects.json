@@ -1,43 +1,75 @@
 [
   {
+    "name": "Catherby",
+    "tagline": "An agentic operating system for a farm's back office",
+    "description": "Franco and I weren't planning another startup. We were building software for clients when we met a farmer who wanted more time in the field and less time in the office. His records were spread across spreadsheets, paper and WhatsApp. We thought agents could work with the documents he already had, without giving him another system to learn. That became Catherby. Farmers send invoices, photos and voice notes; the agents record purchases, track costs and stock, check grain settlements and prepare what needs to go out for the owner's approval. I build the web app, backend and agents. We're starting with crop farms in Argentina.",
+    "status": "active",
+    "date": "2026–present",
+    "logo": "/logos/catherby.png",
+    "link": "https://catherby.app/en",
+    "tags": [
+      "AI Agents",
+      "Agriculture",
+      "TypeScript",
+      "Supabase"
+    ]
+  },
+  {
     "name": "Verelyn",
     "tagline": "Journalist agents that write your morning briefing",
-    "description": "The newsletters you pay for are good, and they were written for thousands of people at once, which is why most of them sit unopened. Verelyn is a newsroom built around one reader. Its journalist agents read your sources every morning, fold four reports of the same thing into a single event with its sources attached, weigh each one against what you actually have riding on this week, and send one briefing at 07:00. Every item is signed by the agent who wrote it and carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. Live since August 2026, and the first reader paid twelve days after the first commit.",
+    "description": "The newsletters you pay for are good, and they were written for thousands of people at once, which is why most of them sit unopened. Verelyn is a newsroom built around one reader. Its journalist agents read your sources every morning, fold four reports of the same thing into a single event with its sources attached, weigh each one against what you actually have riding on this week, and send one briefing at 07:00. Every item is signed by the agent who wrote it and carries its sources, including where they disagree. Most events get dropped and the reason is recorded, so a miss can be answered for. Hayes covers the first beat, startups and AI. I built it in August 2026 and brought on paying readers.",
     "status": "active",
     "date": "2026–present",
     "logo": "/logos/verelyn.png",
     "link": "https://verelyn.com",
-    "tags": ["AI Agents", "Newsroom", "SaaS"]
+    "tags": [
+      "AI Agents",
+      "Newsroom",
+      "SaaS"
+    ]
   },
   {
     "name": "Flare",
     "tagline": "Your social brain, voice-first",
-    "description": "An agent that keeps you close to your friends. It tells you what they're up to in near-real-time, and telling it about your life is the same act that feeds theirs. The whole product is one conversation: you open it and the Orb is already talking, your answer is your check-in, and it closes by pointing you at a real human. No likes, no comments, no feed of strangers. Live on iOS. I designed and built the system: 29 database tables with row-level security, 23 Edge Functions, three AI agents on a two-layer pipeline.",
-    "status": "active",
-    "date": "2026–present",
+    "description": "A voice-based social app I built and launched on iOS. Friends shared moments from their lives, and AI turned those moments into conversations and briefings to help them keep up with each other. I built the app and backend with Expo, React Native and Supabase. We paused development in July 2026: it had users but no revenue, and our mining income was no longer enough to keep funding it. That experience changed how we approached Catherby. We asked for a customer's commitment to pay before writing any code.",
+    "status": "inactive",
+    "date": "2026",
     "logo": "/logos/flare.png",
     "link": "https://heyflare.app",
-    "tags": ["AI", "React Native", "Supabase", "Voice"]
+    "tags": [
+      "AI",
+      "React Native",
+      "Supabase",
+      "Voice"
+    ]
   },
   {
     "name": "Privé",
     "tagline": "Telegram-native storefront for creators",
-    "description": "Creators sell digital content, video calls and VIP group access without leaving Telegram. They get paid through Mercado Pago, crypto or bank transfer, and the money lands in their account, never mine. Privé charges 0% on every plan and every method, and makes its money on the Premium subscription instead of a cut of each sale. Bot, mini app, payment rails and the fee engine are all mine.",
+    "description": "Creators sell digital content, video calls and VIP group access without leaving Telegram. They get paid through Mercado Pago, crypto or bank transfer, and the money lands in their account, never mine. Privé charges 0% on every plan and every method, and makes its money on the Premium subscription instead of a cut of each sale. Bot, mini app, payment rails and the fee engine are all mine. I stopped actively developing it in September 2026, but it continues to bring in new paying subscribers.",
     "status": "active",
     "date": "2026–present",
     "logo": "/logos/prive.png",
     "link": "https://heyprive.com",
-    "tags": ["Telegram", "Payments", "SaaS"]
+    "tags": [
+      "Telegram",
+      "Payments",
+      "SaaS"
+    ]
   },
   {
-    "name": "Inception",
-    "tagline": "Bitcoin mining farm with over 500k in ASICs",
-    "description": "Started this at 21. We host and operate our own mining rigs, built the infrastructure, automated the operations, and scaled it into a real business. Still running today, still generating revenue, and it funds everything else I build.",
-    "status": "active",
-    "date": "2021\u2013present",
+    "name": "Inception Crypto",
+    "tagline": "Built and hosted cryptocurrency mining farms",
+    "description": "Started this at 21 with friends, first with Ethereum rigs and later Bitcoin equipment. We built and hosted mining farms for customers, growing to around 150 ASIC miners. I handled sales, customer relationships and finances; Franco led the technical setup and operations. Income from the business supported us while we worked on our later software projects. We ran it from September 2020 to July 2026.",
+    "status": "inactive",
+    "date": "2020–2026",
     "logo": "/logos/inception.png",
     "link": "https://drive.google.com/drive/folders/1C9j19EwBmfc_4xsPhYcYeh_1DuVyi2Nm?usp=sharing",
-    "tags": ["Bitcoin", "Operations", "Hardware"]
+    "tags": [
+      "Bitcoin",
+      "Operations",
+      "Hardware"
+    ]
   },
   {
     "name": "Stevay",
@@ -47,27 +79,39 @@
     "date": "2026",
     "logo": "/logos/stevay.png",
     "link": "https://stevay.com",
-    "tags": ["AI Agents", "Construction", "B2B"]
+    "tags": [
+      "AI Agents",
+      "Construction",
+      "B2B"
+    ]
   },
   {
     "name": "DL3ARN",
     "tagline": "Blockchain credential traceability for education",
     "description": "We built a SaaS to make academic credentials verifiable on-chain. Great team, real leads from universities, a product that worked. Then the crypto bear market hit and made fundraising impossible. I learned more from this one than from anything that succeeded.",
     "status": "inactive",
-    "date": "2022\u20132024",
+    "date": "2022–2024",
     "logo": "/logos/dl3arn.png",
     "link": "https://dl3arn.vercel.app/",
-    "tags": ["Blockchain", "SaaS", "Education"]
+    "tags": [
+      "Blockchain",
+      "SaaS",
+      "Education"
+    ]
   },
   {
     "name": "Clikan",
-    "tagline": "Pok\u00e9mon Go for real-world locations",
+    "tagline": "Pokémon Go for real-world locations",
     "description": "A mobile app where you collect and share real-world spots. Taught me everything about social mechanics, location APIs, and thinking mobile-first. The product didn't survive, but the lessons did.",
     "status": "inactive",
     "date": "2025",
     "logo": "/logos/clikan.png",
     "link": "https://apps.apple.com/us/app/clikan-capture-your-real-life/id6754784652",
-    "tags": ["Mobile", "Social", "Location"]
+    "tags": [
+      "Mobile",
+      "Social",
+      "Location"
+    ]
   },
   {
     "name": "Aequsy",
@@ -77,7 +121,11 @@
     "date": "2025",
     "logo": "/logos/aequsy.png",
     "link": null,
-    "tags": ["Payments", "Charity", "Web"]
+    "tags": [
+      "Payments",
+      "Charity",
+      "Web"
+    ]
   },
   {
     "name": "Bloorfy",
@@ -87,6 +135,10 @@
     "date": "2024",
     "logo": "/logos/bloorfy.png",
     "link": null,
-    "tags": ["Marketplace", "Web", "Communities"]
+    "tags": [
+      "Marketplace",
+      "Web",
+      "Communities"
+    ]
   }
 ]
