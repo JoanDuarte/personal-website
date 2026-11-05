@@ -119,8 +119,8 @@ Next.js App Router at repository root: `src/app/`, `src/components/`, `src/data/
 
 ## Phase 8: Polish
 
-- [ ] T032 Run the full `quickstart.md` once more on the final branch; paste the contrast table, the three `scrollHeight` results and the three screenshots into the PR description
-- [ ] T033 Open the PR to `main` titled "Rebuild the home page as one screen" with a body that says what went and why, what was tried in the mockup and rejected (point field, floating glyphs, serif, the pill button under the tagline, the stuttering local-space wave), and the recommendation to merge `joanduarte-com-and-retire-chess` first
+- [X] T032 Run the full `quickstart.md` once more on the final branch; paste the contrast table, the three `scrollHeight` results and the three screenshots into the PR description
+- [X] T033 Open the PR to `main` titled "Rebuild the home page as one screen" with a body that says what went and why, what was tried in the mockup and rejected (point field, floating glyphs, serif, the pill button under the tagline, the stuttering local-space wave), and the recommendation to merge `joanduarte-com-and-retire-chess` first
 
 ---
 
