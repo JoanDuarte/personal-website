@@ -1,6 +1,8 @@
 # Personal website
 
-Personal website for Joan Mateo Duarte Politi. Built with Next.js 16, Tailwind CSS v4, and an oklch warm amber color system.
+Personal website for Joan Mateo Duarte Politi: one screen, no scroll, Geist Mono over a faint
+wireframe grid, with the ElevenLabs voice orb above the name. Built with Next.js 16,
+Tailwind CSS v4, three.js and `motion`.
 
 Production: <https://joanduarte.com>. `NEXT_PUBLIC_SITE_URL` supplies the public URL for link previews (see [Voice and metadata setup](#voice-and-metadata-setup)).
 
@@ -15,21 +17,22 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Architecture
 
-- `src/app/page.tsx` — Single-page layout with section components
-- `src/components/sections/` — One component per section: hero, story, work, how-i-think, builds-with, beyond-code, writing, footer
-- `src/components/motion/` — The only client-side animation code: a `MotionConfig` provider, a once-only scroll reveal, and the hero stagger. Every wrapper carries `data-reveal` so the reduced-motion CSS and the `<noscript>` rule in `layout.tsx` can force it visible
-- `src/lib/kb.ts` — Reads two sections of `joan-kb.md` at build time ("How I Think", "Technical Identity") so the page and the voice agent share one source. A missing heading fails the build with the heading's name; that is on purpose, because `bio.json` once drifted from the KB and nobody noticed
-- `src/components/ui/` — shadcn (base-nova) components, customized through the tokens: button, card, badge, accordion, separator, and the ElevenLabs orb
-- `src/components/voice-orb.tsx` — Official ElevenLabs Orb driven by a live voice session
-- `src/components/copy-email-button.tsx` — Clipboard copy with mailto: fallback
-- `src/app/globals.css` — oklch color tokens, background grain and the faint amber radial, animations
+- `src/app/page.tsx` — Renders `Home`; nothing else
+- `src/components/home.tsx` — The page: owns the orb's session status and an activity ref, mounts the grid and the orb (both client-only, both behind an `ErrorBoundary`), renders the header, the facts and the social links, and runs the staggered entrance with `motion`
+- `src/components/facts.tsx` — The five rows. Project names are looked up in `projects.json` by name, so links and dates come from the data; an unknown name fails the build with the name
+- `src/components/voice-orb.tsx` — The ElevenLabs orb as a 56px button. Reports its status to the page and writes the session's output volume into the activity ref for the grid
+- `src/components/ui/orb.tsx` — The official ElevenLabs orb renderer (react-three-fiber)
+- `src/components/grid-background.tsx` — The wireframe grid, in plain three.js. Why not fiber is explained at the top of the file; what it does is in `DESIGN.md`
+- `src/components/motion/motion-provider.tsx` — `MotionConfig reducedMotion="user"`, the one place for the motion policy
+- `src/components/error-boundary.tsx` — Used around the grid and the orb so neither can take the page down
+- `src/app/globals.css` — oklch tokens, the grain, the vignette behind the text, the reduced-motion fallback
 - `scripts/design/check-contrast.ts` — Measures the WCAG ratio of every text/background token pair (`bun run design:contrast`); the gate for any palette change
-- `src/app/og-card.tsx` — Shared Satori card behind `opengraph-image` and `twitter-image`
+- `src/app/og-card.tsx` — Shared Satori card behind `opengraph-image` and `twitter-image`: name and line in Geist Mono, no photo
 - `src/app/chess/` — Chess training page (see [Chess trainer](#chess-trainer))
 - `src/lib/chess/` — Analysis engine, opening book, chess.com client
 - `src/components/chess/` — Board, piece set, and the three trainer panels
 
-The metadata image routes read their font and photo off disk, so anything they
+The metadata image routes read their font off disk, so anything they
 touch has to be declared in `outputFileTracingIncludes` in `next.config.ts` or it
 gets dropped from the deployed bundle. Satori also has no `inset` shorthand:
 absolutely positioned elements need explicit `top`/`left`/`width`/`height` or
@@ -37,7 +40,7 @@ they silently collapse to zero size.
 
 ## Design System
 
-See [DESIGN.md](./DESIGN.md) for the full design system specification (palette, typography, spacing, motion).
+See [DESIGN.md](./DESIGN.md): palette, typography, the one-screen layout, the orb's states, the grid, motion. The reasoning behind the November 2026 rewrite is in `specs/002-one-screen-home/spec.md`.
 
 ## Chess trainer
 
@@ -279,6 +282,10 @@ are public and take no credentials.
 
 Designed for Vercel. Push to `main` to deploy.
 
+React StrictMode is off in `next.config.ts`, with the reason in a comment: under
+its simulated remount, react-three-fiber 9.5 force-loses the orb's WebGL context
+and the orb renders black in `bun dev`. Production is unaffected.
+
 ## Voice and metadata setup
 
 Both variables are already set in all three Vercel environments. Pull them with
@@ -292,7 +299,7 @@ NEXT_PUBLIC_SITE_URL=https://joanduarte.com
 `NEXT_PUBLIC_SITE_URL` is the `metadataBase` for every generated link preview. If
 it points anywhere that does not serve a 200, crawlers get broken preview URLs.
 
-The site now ships with a bundled default portrait at `/images/joan-avatar.jpg`. Set `NEXT_PUBLIC_ELEVENLABS_AVATAR_IMAGE_URL` only if you want to override it.
+`/images/joan-avatar.jpg` is only used by the apple icon now; the orb no longer shows a portrait.
 
 For local/dev convenience, the voice orb also falls back to the agent ID recorded in `agents.json` if `NEXT_PUBLIC_ELEVENLABS_AGENT_ID` is not set. Use the env var in deployed environments so the frontend always points at the intended public agent.
 

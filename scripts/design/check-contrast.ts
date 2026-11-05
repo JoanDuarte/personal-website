@@ -88,18 +88,16 @@ function contrast(fg: string, bg: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-// The pairs from specs/001-premium-home-redesign/contracts/tokens.md. `min` of 0
+// The pairs from specs/002-one-screen-home/contracts/tokens.md. `min` of 0
 // means "report only": the border is not a text pair and WCAG has no rule for it.
+// The vignette behind the text never darkens below --background, so the page
+// pairs are the worst case; there are no panels any more.
 const pairs: { fg: string; bg: string; min: number; use: string }[] = [
-  { fg: "foreground", bg: "background", min: 4.5, use: "headings, body on page" },
-  { fg: "foreground", bg: "surface", min: 4.5, use: "panel titles" },
-  { fg: "muted-foreground", bg: "background", min: 4.5, use: "body text" },
-  { fg: "muted-foreground", bg: "surface", min: 4.5, use: "panel descriptions" },
-  { fg: "text-tertiary", bg: "background", min: 4.5, use: "metadata" },
-  { fg: "text-tertiary", bg: "surface", min: 4.5, use: "periods, tags on panels" },
-  { fg: "primary", bg: "background", min: 4.5, use: "amber links, Active badge text" },
-  { fg: "primary", bg: "surface", min: 4.5, use: "Active badge on panels" },
-  { fg: "primary-foreground", bg: "primary", min: 4.5, use: "text on amber buttons" },
+  { fg: "foreground", bg: "background", min: 4.5, use: "name, fact text, active project links" },
+  { fg: "text-secondary", bg: "background", min: 4.5, use: "positioning line, past project links, fact prose" },
+  { fg: "text-tertiary", bg: "background", min: 4.5, use: "date column, idle label, social links" },
+  { fg: "primary", bg: "background", min: 4.5, use: "label while a session is open" },
+  { fg: "primary-foreground", bg: "primary", min: 4.5, use: "kept pair: text on amber" },
   { fg: "border", bg: "background", min: 0, use: "hairline visibility (reported only)" },
 ];
 

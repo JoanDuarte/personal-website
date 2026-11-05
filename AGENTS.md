@@ -1,14 +1,16 @@
 # AGENTS.md
 
 This is Joan Mateo Duarte Politi's personal site, live at
-<https://joanduarte.vercel.app>: a single editorial page, and `/chess`, a training
-tool he uses himself. This file is the one set of instructions for every coding
+<https://joanduarte.com>: one screen that fits without scrolling, and `/chess`, a
+training tool he uses himself (leaving in its own pull request). This file is the one set of instructions for every coding
 agent that works here — Codex, Claude Code, anything else that reads `AGENTS.md`.
 `CLAUDE.md` imports it and adds only what is specific to Claude Code.
 
 ## Read these before changing anything
 
 - `README.md` — how the site and the chess trainer actually work, with the reasoning.
+- `specs/002-one-screen-home/` — why the page is one screen, with the mockup and the
+  alternatives that were rejected.
 - `DESIGN.md` — the design system. Binding on new work, not aspirational.
 - `.specify/memory/constitution.md` — five principles and the quality gates. Every
   plan is checked against it.
@@ -42,7 +44,8 @@ Environment variables come from `vercel env pull .env.local`, never typed by han
 
 Next.js 16 App Router on Turbopack, React 19, Tailwind CSS v4, TypeScript strict,
 `bun` for install and scripts. Animation is the `motion` package (the current name
-for Framer Motion), imported from `motion/react` — installed, not yet used anywhere.
+for Framer Motion), imported from `motion/react`, for the entrance; the grid is plain
+three.js and the orb is react-three-fiber.
 The voice orb is `@elevenlabs/client` over WebRTC. The trainer runs `chess.js` plus
 a single-threaded Stockfish (`stockfish-18-lite-single`) in a Web Worker. Vercel
 deploys `main`.
@@ -51,14 +54,16 @@ deploys `main`.
 
 | Path | What it is |
 |---|---|
-| `src/app/page.tsx` | The site. Sections are in `src/components/sections/`. |
+| `src/app/page.tsx` | Renders `src/components/home.tsx`, which is the whole page. |
+| `src/components/home.tsx`, `facts.tsx`, `voice-orb.tsx`, `grid-background.tsx` | The page, the five fact rows, the orb button, the wireframe grid. |
 | `src/app/chess/page.tsx` | The trainer. UI in `src/components/chess/`, engine in `src/lib/chess/`. |
-| `src/app/globals.css` | oklch tokens, background grain and gradient, keyframes. |
+| `src/app/globals.css` | oklch tokens, the grain, the vignette behind the text. |
 | `src/app/og-card.tsx` | The Satori card behind `opengraph-image` and `twitter-image`. |
 | `src/data/` | `bio.json`, `projects.json`. |
 | `scripts/chess/` | Verification scripts. They are `entry` in `knip.jsonc`; nothing imports them. |
 | `public/engine/` | Vendored Stockfish. Ignored by ESLint and knip on purpose. |
 | `agents.json`, `agent_configs/`, `tools.json`, `tests.json` | ElevenLabs agents CLI layout. `voice-orb.tsx` imports `agents.json` as the fallback agent id. Leave them at the root. |
+| `README.md` → Deploy | Why React StrictMode is off in `next.config.ts` (the orb under fiber 9.5). |
 | `.specify/` | spec-kit: templates, scripts, extensions, and the constitution. |
 | `.agents/skills/` | Skills every agent sees: spec-kit's core skills and the taste-skill pack. |
 | `.claude/skills/` | Claude Code's view: spec-kit's Claude copies, plus symlinks into `.agents/skills/`. |
@@ -76,7 +81,7 @@ not missed.
   clipboard: each has a real fallback. Never add COOP/COEP headers; the multi-threaded
   Stockfish needs them and they break the orb.
 - **Tokens only.** No hardcoded `rgba`. Borders are opaque oklch. Contrast is judged at
-  the size the thing renders (~50px board squares), not zoomed. Every animation earns
+  the size the thing renders, not zoomed. Every animation earns
   its place and respects `prefers-reduced-motion`. The "What This Site Is NOT" list in
   `DESIGN.md` is binding.
 - **`/chess` is in Spanish on purpose.** The rest of the site is English. Do not
@@ -133,5 +138,5 @@ to avoid.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/001-premium-home-redesign/plan.md
+at specs/002-one-screen-home/plan.md
 <!-- SPECKIT END -->

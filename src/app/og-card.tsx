@@ -1,128 +1,69 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import bio from "@/data/bio.json";
 
 export const size = { width: 1200, height: 630 };
 
-/**
- * Assets are read from disk rather than fetched.
- *
- * The font used to come from a version-pinned fonts.gstatic.com URL that has
- * since 404'd, and the photo was fetched over HTTP from the site's own origin.
- * Either failure produced a 500: Satori needs at least one font, so the
- * "render without a custom font" fallback could never actually render.
- */
-async function loadAssets() {
-  const [font, photo] = await Promise.all([
-    readFile(join(process.cwd(), "src/app/fonts/SpaceGrotesk-SemiBold.ttf")),
-    readFile(join(process.cwd(), "public/images/messi-og.jpg")),
-  ]);
+// The card is the page: name and line in Geist Mono on the page's black.
+// Satori wants hex, so these are the tokens from globals.css converted once:
+// --background oklch(0.145 0.004 260) ≈ #141416, --foreground oklch(0.93 0.004 260)
+// ≈ #ececef, --text-secondary oklch(0.70 0.006 260) ≈ #a5a5aa. If a token moves,
+// move these with it.
+const BACKGROUND = "#141416";
+const FOREGROUND = "#ececef";
+const SECONDARY = "#a5a5aa";
 
-  return {
-    font,
-    photoDataUri: `data:image/jpeg;base64,${photo.toString("base64")}`,
-  };
-}
-
+// The font is read from disk rather than fetched: a fonts.gstatic.com URL
+// 404'd once and took every link preview down with it. Satori needs at least
+// one font, so there is no "render without it" fallback.
 export async function renderOgCard() {
-  const { font, photoDataUri } = await loadAssets();
+  const font = await readFile(
+    join(process.cwd(), "src/app/fonts/GeistMono-Regular.ttf")
+  );
 
   return new ImageResponse(
     (
       <div
         style={{
-          background:
-            "linear-gradient(135deg, #050505 0%, #141414 50%, #050505 100%)",
+          background: BACKGROUND,
           width: "100%",
           height: "100%",
           display: "flex",
-          alignItems: "stretch",
-          justifyContent: "flex-start",
-          fontFamily: "Space Grotesk",
-          position: "relative",
-          overflow: "hidden",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "0 96px",
+          fontFamily: "Geist Mono",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- Satori renders
-            this tree outside the DOM; next/image does not work in ImageResponse. */}
-        <img
-          src={photoDataUri}
-          alt="With Messi at Casa Amarilla, Rosario"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "flex",
-          }}
-        />
-
         <div
           style={{
-            position: "absolute",
-            // Satori has no `inset` shorthand, so a div relying on it collapses
-            // to zero size. The original overlays did exactly that and never
-            // painted; these need explicit offsets and dimensions.
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            // Heavy at the bottom so the name stays readable over the bright
-            // parts of the photo, while the top of the frame stays untinted.
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.94) 100%)",
-          }}
-        />
-
-        <div
-          style={{
-            position: "absolute",
-            left: 64,
-            right: 64,
-            bottom: 56,
-            maxWidth: 820,
+            fontSize: 56,
+            color: FOREGROUND,
+            letterSpacing: "-0.01em",
             display: "flex",
-            flexDirection: "column",
-            gap: 12,
           }}
         >
-          <div
-            style={{
-              fontSize: 44,
-              fontWeight: 600,
-              color: "#F5F5F5",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.05,
-              display: "flex",
-              textShadow: "0 2px 18px rgba(0,0,0,0.4)",
-            }}
-          >
-            Joan Mateo Duarte Politi
-          </div>
-          <div
-            style={{
-              fontSize: 22,
-              color: "rgba(245,245,245,0.82)",
-              display: "flex",
-              textShadow: "0 2px 12px rgba(0,0,0,0.35)",
-            }}
-          >
-            Rosario, football, and one of my favorite photos.
-          </div>
+          {bio.name}
+        </div>
+        <div
+          style={{
+            marginTop: 20,
+            fontSize: 28,
+            lineHeight: 1.5,
+            color: SECONDARY,
+            maxWidth: 900,
+            display: "flex",
+          }}
+        >
+          {bio.positioning}
         </div>
       </div>
     ),
     {
       ...size,
       fonts: [
-        {
-          name: "Space Grotesk",
-          data: font,
-          style: "normal" as const,
-          weight: 600,
-        },
+        { name: "Geist Mono", data: font, style: "normal" as const, weight: 400 },
       ],
     }
   );

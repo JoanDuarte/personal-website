@@ -2,6 +2,89 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-11-05
+
+The home page is one screen now. Joan looked at the September design two months
+on and said it read like an AI-made portfolio template; he wanted the bareness of
+danielgross.com and ben.bolte.cc/about, and worried that the same bareness with
+his credentials would read to an investor as "this person can't code". The page
+that came out of that conversation keeps three things and nothing else: one
+typographic decision (Geist Mono for everything), facts with nouns and links, and
+one built thing that works, the voice orb, now 56px above the name with a label
+that follows the session. Behind the text, a faint wireframe grid slides and
+undulates, and ripples while the orb talks. The reasoning, the throwaway mockup
+Joan iterated on in a browser, and what was rejected (a point field, floating
+glyphs, a serif, a pill button under the tagline) are in
+`specs/002-one-screen-home/`.
+
+### Removed
+- Every section of the previous page: hero with the 320px orb and the amber
+  aurora, story, the bento of project cards with counting figures, the timeline,
+  "How I think", the stack marquee, "Beyond code" with the Messi photo, writing,
+  footer. `src/components/sections/` is gone, and with it the motion helpers
+  (`aurora`, `kinetic-text`, `magnetic`, `reveal`, `scroll-progress`,
+  `spotlight-card`, `stagger`, `timeline-frame`), `src/lib/kb.ts`, the copy-email
+  button, `project-link.tsx`, the project logos under `public/logos/`, the two
+  Messi images, and the Simple Icons `remotePatterns` entry in `next.config.ts`
+- The shadcn components that lost their last caller (`accordion`, `badge`,
+  `button`, `card`, `separator`), `src/lib/utils.ts`, `components.json`, and seven
+  dependencies knip reported unused: `@base-ui/react`, `class-variance-authority`,
+  `clsx`, `lucide-react`, `shadcn`, `tailwind-merge`, `tw-animate-css`. No knip
+  exception was added
+- Geist Sans and Space Grotesk. `SpaceGrotesk-SemiBold.ttf` is replaced by
+  `GeistMono-Regular.ttf` in `src/app/fonts/`, which the Open Graph card reads
+  off disk
+- The tokens nothing uses any more (`--surface`, `--muted*`, `--spot`,
+  `--orb-glow*`, `--border-hover`, `--input`, the shadcn aliases) and the
+  keyframes that went with the old sections. `--surface`, `--border-hover`,
+  `--muted-foreground`, `--destructive` and the `--chess-*` block stay under a
+  comment because `/chess` still uses them; `/chess` leaves in its own pull
+  request and nothing on the home page may touch them
+- The email address. The orb and the three social links are the contact
+- `bio.json`'s `story`, `chess` and `reading` fields; the file is `name` and
+  `positioning` now. `joan-kb.md` is where that content lives and the orb reads it
+
+### Added
+- `src/components/home.tsx`, `facts.tsx`, `grid-background.tsx`: the page, the
+  five dated rows, the grid. Dates derive from `projects.json` (`2026–present`
+  → `2026–`, `2020–2026` → `2020–26`, a row with several projects spans them)
+- The staggered entrance with `motion`, the package's first use here: opacity
+  and an 8px rise, top to bottom, about a second, instant under
+  `prefers-reduced-motion` and visible without JavaScript
+- `specs/002-one-screen-home/screenshots/` with the three viewports
+
+### Changed
+- `voice-orb.tsx` is a 56px `<button>` that reports its status to the page and
+  feeds the session's output volume to the grid. The pill, the avatar, the helper
+  copy and the shadcn button are gone; the label moved to the page
+- The grid is plain three.js rather than react-three-fiber, and React StrictMode
+  is off in `next.config.ts`. Under StrictMode's simulated remount, fiber 9.5
+  marks the orb's root inactive and force-loses its WebGL context 500ms later
+  while the remount reuses that root, so the orb rendered black in `bun dev`.
+  Production was never affected. The reason is in a comment next to the setting
+- `DESIGN.md` rewritten from scratch; the constitution amended to 1.3.0 (the
+  640px/960px measure, the "Not quiet" and "Not centered-everything" items, and
+  the Space Grotesk and aurora mentions no longer described the page); README and
+  AGENTS updated to the new file layout
+- The Open Graph and Twitter cards are the page: name and line in Geist Mono on
+  the background color, no photo. Title and description come from `bio.json`
+
+### Verified
+- `bun run check` and `bun run build` clean. `bun run design:contrast`: foreground
+  16.11, text-secondary 7.41, text-tertiary 5.02, primary 11.62, all over 4.5
+- No document scroll at 1440×900, 1280×720 and 390×844 in Orca's browser
+  (`scrollHeight <= innerHeight` at each), screenshots in the spec folder
+- With `prefers-reduced-motion`, the grid region of two screenshots one second
+  apart is byte-identical; with motion allowed it is not. With WebGL disabled
+  the page renders the same layout with no canvas and the orb falls back to its
+  disc
+- The orb's label goes idle → "Requesting microphone…" → "Voice unavailable"
+  with "Permission denied" in a browser without a microphone. The listening and
+  talking states need a real microphone and are Joan's check on the preview
+- Links: ten of the eleven return 200 (LinkedIn answers 999 to anything that is
+  not a browser). `dl3arn.vercel.app` answered 200 at first and 500 on the
+  rebuild of the same day; it is linked because the data says so
+
 ## [0.4.3.0] - 2026-11-02
 
 ### Changed
