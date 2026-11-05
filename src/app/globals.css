@@ -1,78 +1,44 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
-  --color-surface: var(--surface);
-  --color-orb-glow: var(--orb-glow);
-  --color-orb-glow-active: var(--orb-glow-active);
-  --font-sans: var(--font-geist);
-  --font-display: var(--font-space-grotesk);
-  --font-mono: var(--font-geist-mono);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
   --color-border: var(--border);
-  --color-border-hover: var(--border-hover);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
+  --font-mono: var(--font-geist-mono);
+
+  /* Used only by /chess, which is leaving in its own pull request. They are
+     not measured by design:contrast and nothing on the home page may use them. */
+  --color-surface: var(--surface);
+  --color-border-hover: var(--border-hover);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
 }
 
 :root {
   /* Neutral near-black base. Chroma is held at or under 0.006 so the greys read
-     as neither blue nor brown; the only warmth on the page is the amber accent,
-     which is unchanged from the previous palette so the orb keeps its glow.
-     Every pair below is measured by scripts/design/check-contrast.ts. */
+     as neither blue nor brown; the only chromatic color is the amber, and it
+     appears on the orb and on the label while a session is open. Every
+     text/background pair below is measured by scripts/design/check-contrast.ts
+     against specs/002-one-screen-home/contracts/tokens.md. */
   --background: oklch(0.145 0.004 260);
   --foreground: oklch(0.93 0.004 260);
   --text-secondary: oklch(0.70 0.006 260);
   --text-tertiary: oklch(0.60 0.006 260);
   --border: oklch(0.27 0.004 260);
-  --border-hover: oklch(0.36 0.005 260);
-  --surface: oklch(0.18 0.004 260);
-  --ring: oklch(0.75 0.13 66);
-  --orb-glow: oklch(0.837 0.128 66.29 / 0.12);
-  --orb-glow-active: oklch(0.837 0.128 66.29 / 0.30);
-  --input: oklch(0.36 0.005 260);
   --primary: oklch(0.8370 0.1280 66.2900);
   --primary-foreground: oklch(0.145 0.004 260);
-  --secondary: var(--surface);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.21 0.004 260);
+  --ring: oklch(0.75 0.13 66);
+
+  /* /chess only. See the note in @theme above. */
+  --surface: oklch(0.18 0.004 260);
+  --border-hover: oklch(0.36 0.005 260);
   --muted-foreground: oklch(0.70 0.006 260);
-  --accent: var(--surface);
-  --accent-foreground: var(--foreground);
   --destructive: oklch(0.6368 0.2078 25.3313);
-  --popover: var(--surface);
-  --popover-foreground: var(--foreground);
-  --card: var(--surface);
-  --card-foreground: var(--foreground);
-  --radius: 0.625rem;
-  /* The spotlight that follows the pointer on a panel: amber, faint. */
-  --spot: oklch(0.837 0.128 66.29 / 0.10);
 
   /* Chess board. Warm woods rather than the usual green/beige, so the board
      reads as part of the page instead of an embedded widget.
@@ -92,21 +58,17 @@
   --chess-danger: oklch(0.6368 0.2078 25.3313 / 0.45);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-mono bg-background;
   }
   body {
     @apply text-foreground;
     position: relative;
     z-index: 0;
-  }
-  html {
-    @apply font-sans bg-background;
   }
 }
 
@@ -123,80 +85,30 @@ body::before {
   background-size: 256px 256px;
 }
 
-/* A faint amber radial at the top of the page. One of the five places the
-   accent is allowed to appear; it ties the neutral base to the orb. */
-body::after {
+/* The soft darkening behind the text block, so the grid never lowers the
+   measured contrast of the text. Relative color syntax keeps it tied to the
+   background token rather than a second literal. */
+.vignette::before {
   content: "";
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  inset: -80px -120px;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(ellipse at 50% 0%, oklch(0.837 0.128 66.29 / 0.10) 0%, transparent 55%);
-  animation: gradient-breathe 25s ease-in-out infinite;
-}
-
-@keyframes gradient-breathe {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
-}
-
-/* Orb animations */
-@keyframes orb-breathe {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.03); opacity: 0.85; }
-}
-
-@keyframes orb-active {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-@keyframes orb-connecting {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-/* Hero entrance animation */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* The stack marquee. One per page; pauses on hover; the reduced-motion block
-   below cuts it to a single frame. */
-@keyframes marquee {
-  to { transform: translateX(-50%); }
-}
-
-.animate-marquee {
-  animation: marquee 42s linear infinite;
-}
-
-/* Plain fade-in. The trainer's closing line uses it; scroll-reveal, which
-   this was written for, went with the collapsible layout in #7. */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  background: radial-gradient(
+    ellipse at center,
+    oklch(from var(--background) l c h / 0.92),
+    oklch(from var(--background) l c h / 0.6) 55%,
+    transparent 75%
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  /* Motion's MotionConfig already collapses these to static; this guarantees
-     it even if the provider is missing. The no-JavaScript case is handled by
-     the <noscript> style in layout.tsx. */
+  /* Motion's MotionConfig already collapses the entrance to its final state;
+     this guarantees it even if the provider is missing. The no-JavaScript case
+     is handled by the <noscript> style in layout.tsx. */
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
-    filter: none !important;
   }
 
   *, *::before, *::after {

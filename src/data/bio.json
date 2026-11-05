@@ -1,31 +1,4 @@
 {
   "name": "Joan Mateo Duarte Politi",
-  "positioning": "Co-founder of Catherby. Building an agentic operating system for a farm's back office.",
-  "story": [
-    "I'm from Rosario, Argentina. I've been obsessed with solving problems since I was a kid. Math olympiads, not because anyone pushed me, but because I loved the challenge. The solution is never the hard part. The approach is everything.",
-    "At 21 I dropped out of university to start a cryptocurrency mining company. It worked. We scaled fast, and that itch to build never went away. So I taught myself to code because I refused to keep delegating the most important part of building a company.",
-    "Today I'm building Catherby with Franco Quattroqui. We started after meeting a farmer through our software work. His paperwork was getting in the way of the part of farming he enjoyed, and the software he'd tried didn't fit how he worked. We thought agents could take care of that work using the documents and messages he already had."
-  ],
-  "chess": {
-    "text": "Just getting started on my chess journey. Still blundering queens and hanging pieces, but every loss is a lesson. The beauty of chess is that the board never lies. It rewards patience, pattern recognition, and thinking two moves ahead. I'm hooked.",
-    "profileLink": "https://www.chess.com/member/joanmduarte"
-  },
-  "reading": {
-    "text": "I read a lot. Strategy, psychology, history, fiction. Anything that changes how I think about the world. A few favorites:",
-    "favorites": [
-      {
-        "title": "Zero to One",
-        "author": "Peter Thiel"
-      },
-      {
-        "title": "The Art of War",
-        "author": "Sun Tzu"
-      },
-      {
-        "title": "1984",
-        "author": "George Orwell"
-      }
-    ],
-    "goodreadsLink": "https://www.goodreads.com/joanduarte"
-  }
+  "positioning": "Co-founder of Catherby. Building an agentic operating system for a farm's back office."
 }

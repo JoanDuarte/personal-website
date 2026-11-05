@@ -1,6 +1,6 @@
 import { renderOgCard, size } from "./og-card";
 
-export const alt = "Joan Mateo Duarte Politi — Full-Stack Builder";
+export const alt = "Joan Mateo Duarte Politi";
 export const contentType = "image/png";
 export { size };
 
