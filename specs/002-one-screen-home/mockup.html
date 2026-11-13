@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Joan Mateo Duarte Politi — mockup</title>
+<style>
+  :root {
+    --bg: oklch(0.13 0.004 260);
+    --fg: oklch(0.92 0.004 260);
+    --fg-2: oklch(0.68 0.006 260);
+    --fg-3: oklch(0.50 0.006 260);
+    --amber: oklch(0.837 0.128 66.29);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-monospace, "SF Mono", Menlo, "Geist Mono", monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+  body.serif {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  canvas#bg { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  main {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    padding: 24px;
+  }
+  .block { width: 100%; max-width: 560px; margin: 0 auto; position: relative; }
+  .block::before { content: ""; position: absolute; inset: -80px -120px; background: radial-gradient(ellipse at center, oklch(0.13 0.004 260 / 0.92), oklch(0.13 0.004 260 / 0.6) 55%, transparent 75%); z-index: -1; }
+  .head { text-align: center; }
+  h1 {
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  body.serif h1 { font-size: 28px; }
+  .orb {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, oklch(0.95 0.08 66), var(--amber) 60%, oklch(0.55 0.12 66));
+    box-shadow: 0 0 0 1px oklch(0.3 0.004 260), 0 0 18px oklch(0.837 0.128 66.29 / 0.35);
+    flex: none;
+    cursor: pointer;
+  }
+  .orb.talking { animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 1px oklch(0.3 0.004 260), 0 0 34px oklch(0.837 0.128 66.29 / 0.6); } }
+  .tag { color: var(--fg-2); margin: 0 auto 36px; max-width: 420px; }
+  .talk { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 10px; margin: 0 0 22px; padding: 0; border: 0; background: none; color: var(--fg-2); font: inherit; cursor: pointer; }
+  .talk:hover .label { color: var(--fg); }
+  .talk.talking .label { color: var(--amber); }
+  ul { list-style: none; padding: 0; margin: 0 0 28px; }
+  li { margin: 0 0 6px; color: var(--fg); }
+  li .when { color: var(--fg-3); display: inline-block; width: 10ch; }
+  li .what { color: var(--fg-2); }
+  a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--fg-3); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--amber); }
+  a.past { color: var(--fg-2); text-decoration-color: oklch(0.32 0.004 260); }
+  .links { color: var(--fg-3); display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+  .links a { color: var(--fg-2); }
+  .hud {
+    position: fixed; left: 0; right: 0; bottom: 12px; z-index: 2;
+    text-align: center; font-size: 12px; color: var(--fg-3);
+    font-family: ui-monospace, Menlo, monospace;
+  }
+  .hud b { color: var(--fg-2); font-weight: 500; }
+  @media (max-width: 480px) { li .when { width: 100%; display: block; } }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<main>
+  <div class="block">
+    <div class="head">
+    <button class="talk" id="orb" aria-label="Talk to Joan"><span class="orb"></span><span class="label">Talk to me</span></button>
+    <h1>Joan Mateo Duarte Politi</h1>
+    <p class="tag">Co-founder of Catherby. Building an agentic operating system for a farm's back office.</p>
+    </div>
+    <ul>
+      <li><span class="when">2026–</span><a href="#">Catherby</a> <span class="what">— with Franco Quattroqui. Agents running a farm's back office.</span></li>
+      <li><span class="when">2026</span><a href="#">Verelyn</a>, <a href="#">Flare</a>, <a href="#">Privé</a> <span class="what">— three products shipped this year. Two still earn.</span></li>
+      <li><span class="when">2020–26</span><a href="#">Inception Crypto</a> <span class="what">— started at 21, dropped out for it. 150 ASICs. It funded everything after.</span></li>
+      <li><span class="when">2022–26</span><span class="what"><a class="past" href="https://stevay.com">Stevay</a>, <a class="past" href="https://dl3arn.vercel.app/">DL3ARN</a>, <a class="past" href="https://apps.apple.com/us/app/clikan-capture-your-real-life/id6754784652">Clikan</a>, Aequsy, Bloorfy. The ones that didn't make it.</span></li>
+      <li><span class="when">Argentine</span><span class="what">Math olympiads as a kid. Chess, still.</span></li>
+    </ul>
+    <p class="links">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">X</a>
+    </p>
+  </div>
+</main>
+
+<div class="hud"><b>1</b> points &nbsp;·&nbsp; <b>2</b> grid &nbsp;·&nbsp; <b>3</b> glyphs &nbsp;·&nbsp; <b>V</b> voice on/off &nbsp;·&nbsp; <b>T</b> mono/serif &nbsp;·&nbsp; <b>H</b> hide this</div>
+
+<script type="module">
+import * as THREE from "https://unpkg.com/three@0.183.2/build/three.module.js";
+
+const canvas = document.getElementById("bg");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 400);
+const fg = new THREE.Color("#d9d9dc");
+const mouse = { x: 0, y: 0 };
+let talking = false, variant = 1, t = 0, amp = 0;
+
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize); resize();
+addEventListener("pointermove", e => { mouse.x = (e.clientX / innerWidth - 0.5) * 2; mouse.y = (e.clientY / innerHeight - 0.5) * 2; });
+
+// --- 1. point field ---------------------------------------------------------
+const N = 2600;
+const base = new Float32Array(N * 3);
+for (let i = 0; i < N; i++) {
+  base[i*3] = (Math.random() - 0.5) * 160;
+  base[i*3+1] = (Math.random() - 0.5) * 90;
+  base[i*3+2] = (Math.random() - 0.5) * 160;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute("position", new THREE.BufferAttribute(base.slice(), 3));
+const dot = (() => { const c = document.createElement("canvas"); c.width = c.height = 32; const g = c.getContext("2d"); const r = g.createRadialGradient(16,16,0,16,16,16); r.addColorStop(0,"rgba(255,255,255,1)"); r.addColorStop(0.5,"rgba(255,255,255,0.6)"); r.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0,0,32,32); return new THREE.CanvasTexture(c); })();
+const pMat = new THREE.PointsMaterial({ color: fg, map: dot, size: 0.9, transparent: true, opacity: 0.35, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const points = new THREE.Points(pGeo, pMat);
+
+// --- 2. grid ---------------------------------------------------------------
+const gGeo = new THREE.PlaneGeometry(400, 400, 80, 80);
+const gMat = new THREE.MeshBasicMaterial({ color: fg, wireframe: true, transparent: true, opacity: 0.12 });
+const grid = new THREE.Mesh(gGeo, gMat);
+grid.rotation.x = -Math.PI / 2;
+grid.position.y = -8;
+const gBase = gGeo.attributes.position.array.slice();
+
+// --- 3. glyphs --------------------------------------------------------------
+const text = "Catherby Franco Rosario Inception Verelyn Flare Prive agents farm paperwork chess olympiad mining 21 dropped out";
+const chars = [...text.replace(/\s/g, "")];
+const texCache = new Map();
+function glyphTex(ch) {
+  if (texCache.has(ch)) return texCache.get(ch);
+  const c = document.createElement("canvas"); c.width = c.height = 64;
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#d9d9dc"; ctx.font = "40px ui-monospace, Menlo, monospace";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(ch, 32, 34);
+  const tex = new THREE.CanvasTexture(c); texCache.set(ch, tex); return tex;
+}
+const glyphs = new THREE.Group();
+for (let i = 0; i < 220; i++) {
+  const ch = chars[Math.floor(Math.random() * chars.length)];
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glyphTex(ch), transparent: true, opacity: 0.22, depthWrite: false }));
+  s.position.set((Math.random() - 0.5) * 140, (Math.random() - 0.5) * 80, -Math.random() * 160);
+  const sc = 1.5 + Math.random() * 2; s.scale.set(sc, sc, 1);
+  s.userData.v = 0.02 + Math.random() * 0.05;
+  glyphs.add(s);
+}
+
+function setVariant(v) {
+  variant = v;
+  scene.clear();
+  scene.fog = null;
+  if (v === 1) { scene.add(points); camera.position.set(0, 0, 60); }
+  if (v === 2) { scene.add(grid); scene.fog = new THREE.Fog(0x161618, 20, 180); camera.position.set(0, 4, 40); }
+  if (v === 3) { scene.add(glyphs); scene.fog = new THREE.Fog(0x161618, 40, 170); camera.position.set(0, 0, 40); }
+}
+setVariant(2);
+
+function tick() {
+  requestAnimationFrame(tick);
+  t += 0.016;
+  amp += ((talking ? 1 : 0) - amp) * 0.05;
+  const voice = talking ? (0.5 + 0.5 * Math.abs(Math.sin(t * 7) * Math.sin(t * 2.3))) : 0;
+
+  camera.rotation.y += (-mouse.x * 0.06 - camera.rotation.y) * 0.04;
+  camera.rotation.x += (-mouse.y * 0.04 - camera.rotation.x) * 0.04;
+
+  if (variant === 1) {
+    const pos = pGeo.attributes.position.array;
+    for (let i = 0; i < N; i++) {
+      const x = base[i*3], y = base[i*3+1], z = base[i*3+2];
+      const d = Math.hypot(x, y, z) * 0.08;
+      const breathe = Math.sin(t * 0.6 + d) * 0.6;
+      const ripple = amp * voice * Math.sin(t * 6 - d * 1.5) * 3;
+      pos[i*3] = x + (x / 60) * ripple;
+      pos[i*3+1] = y + breathe + (y / 40) * ripple;
+      pos[i*3+2] = z + (z / 60) * ripple;
+    }
+    pGeo.attributes.position.needsUpdate = true;
+    pMat.size = 0.9 + amp * voice * 0.8;
+    pMat.opacity = 0.35 + amp * voice * 0.35;
+    points.rotation.y = t * 0.015;
+  }
+  if (variant === 2) {
+    const pos = gGeo.attributes.position.array;
+    const slide = (t * 4) % 5;
+    grid.position.z = slide;
+    for (let i = 0; i < pos.length; i += 3) {
+      const x = gBase[i], yw = gBase[i+1] - slide; // world-space, so the wave stays put while the lines slide
+      pos[i+2] = Math.sin(x * 0.08 + t * 0.4) * 1.2 + Math.cos(yw * 0.1 + t * 0.3) * 1.2 + amp * voice * Math.sin(Math.hypot(x, yw) * 0.3 - t * 5) * 2.5;
+    }
+    gGeo.attributes.position.needsUpdate = true;
+    gMat.opacity = 0.12 + amp * voice * 0.12;
+  }
+  if (variant === 3) {
+    for (const s of glyphs.children) {
+      s.position.z += s.userData.v * (1 + amp * voice * 3);
+      if (s.position.z > 30) s.position.z = -160;
+      s.position.y += Math.sin(t + s.position.x) * 0.004;
+    }
+  }
+  renderer.render(scene, camera);
+}
+tick();
+
+const orb = document.getElementById("orb");
+const label = orb.querySelector(".label");
+let stateTimer = null;
+function setLabel(txt) { label.textContent = txt; }
+function toggleVoice() {
+  talking = !talking;
+  orb.classList.toggle("talking", talking);
+  orb.querySelector(".orb").classList.toggle("talking", talking);
+  clearInterval(stateTimer);
+  if (!talking) { setLabel("Talk to me"); return; }
+  setLabel("Requesting microphone…");
+  const states = ["Listening", "Joan is talking"]; let i = 0;
+  setTimeout(() => { setLabel(states[0]); stateTimer = setInterval(() => { i = (i + 1) % 2; setLabel(states[i]); }, 2500); }, 1200);
+}
+orb.addEventListener("click", toggleVoice);
+addEventListener("keydown", e => {
+  if (e.key === "1" || e.key === "2" || e.key === "3") setVariant(+e.key);
+  if (e.key.toLowerCase() === "v") toggleVoice();
+  if (e.key.toLowerCase() === "t") document.body.classList.toggle("serif");
+  if (e.key.toLowerCase() === "h") document.querySelector(".hud").style.display = "none";
+});
+</script>
+</body>
+</html>

@@ -1,39 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import {
-  Conversation,
-  type VoiceConversation,
-} from "@elevenlabs/client";
-import { Mic, PhoneOff } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Conversation, type VoiceConversation } from "@elevenlabs/client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import agents from "../../agents.json";
 import { Orb, type AgentState } from "@/components/ui/orb";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-type OrbStatus = "idle" | "connecting" | "listening" | "talking" | "error";
+export type OrbStatus = "idle" | "connecting" | "listening" | "talking" | "error";
 
 const fallbackAgentId = agents.agents[0]?.id ?? "";
 const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? fallbackAgentId;
-const defaultAvatarImageUrl = "/images/joan-avatar.jpg";
-const avatarImageUrl =
-  process.env.NEXT_PUBLIC_ELEVENLABS_AVATAR_IMAGE_URL ?? defaultAvatarImageUrl;
 
-function getStatusLabel(status: OrbStatus): string {
-  switch (status) {
-    case "idle":
-      return "";
-    case "connecting":
-      return "Requesting microphone...";
-    case "listening":
-      return "Listening";
-    case "talking":
-      return "Joan is talking";
-    case "error":
-      return "Voice unavailable";
-  }
-}
+// The orb only moves while someone is talking; between words the grid would
+// go flat, so the activity the grid sees never drops under this while a
+// session is open.
+const ACTIVITY_FLOOR = 0.35;
 
 function getAgentState(status: OrbStatus): AgentState {
   switch (status) {
@@ -48,69 +28,48 @@ function getAgentState(status: OrbStatus): AgentState {
   }
 }
 
-function OrbFallback({
-  title,
-  detail,
-}: {
-  title: string;
-  detail: string;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative flex h-[240px] w-[240px] items-center justify-center md:h-[320px] md:w-[320px]">
-        <div
-          className={cn(
-            "h-[180px] w-[180px] rounded-full md:h-[240px] md:w-[240px]",
-            "animate-[orb-breathe_4s_ease-in-out_infinite]"
-          )}
-          style={{
-            background:
-              "radial-gradient(circle, oklch(0.837 0.128 66.29 / 0.18) 0%, oklch(0.837 0.128 66.29 / 0.07) 40%, transparent 72%)",
-            boxShadow: "0 0 80px 24px oklch(0.837 0.128 66.29 / 0.08)",
-          }}
-        />
-      </div>
-      <div className="space-y-2 text-center">
-        <p className="text-[15px] font-medium text-foreground">{title}</p>
-        <p className="max-w-[280px] text-[13px] leading-relaxed text-muted-foreground">
-          {detail}
-        </p>
-      </div>
-    </div>
-  );
+// The disc the page shows while the orb's module loads, if the agent id is
+// missing, or if the orb throws. Same size, same place, so nothing shifts.
+export function OrbSkeleton() {
+  return <div aria-hidden className="h-14 w-14 rounded-full bg-primary/25" />;
 }
 
-export function VoiceOrb() {
+export function VoiceOrb({
+  onStatusChange,
+  activityRef,
+}: {
+  onStatusChange: (status: OrbStatus, detail?: string) => void;
+  activityRef: React.RefObject<number>;
+}) {
   const conversationRef = useRef<VoiceConversation | null>(null);
-  const [status, setStatus] = useState<OrbStatus>("idle");
-  const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [status, setStatusState] = useState<OrbStatus>("idle");
+  const open = status === "listening" || status === "talking";
 
-  const agentState = useMemo(() => getAgentState(status), [status]);
-  const hasConversation =
-    status === "connecting" || status === "listening" || status === "talking";
+  const setStatus = useCallback(
+    (next: OrbStatus, detail?: string) => {
+      setStatusState(next);
+      onStatusChange(next, detail);
+    },
+    [onStatusChange]
+  );
 
   const endConversation = useCallback(async () => {
     const current = conversationRef.current;
     conversationRef.current = null;
-
-    if (!current) {
-      setStatus("idle");
-      return;
-    }
-
     try {
-      await current.endSession();
+      await current?.endSession();
     } catch {
       // The session may already be closed. Keep the UI deterministic.
     } finally {
       setStatus("idle");
     }
-  }, []);
+  }, [setStatus]);
 
   const handleActivate = useCallback(async () => {
-    if (!agentId) {
-      setStatus("error");
-      setErrorDetail("Missing ElevenLabs agent ID.");
+    if (status === "connecting") return;
+
+    if (status === "listening" || status === "talking") {
+      await endConversation();
       return;
     }
 
@@ -118,77 +77,78 @@ export function VoiceOrb() {
       typeof window !== "undefined" &&
       (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia)
     ) {
-      setStatus("error");
-      setErrorDetail(
-        "This browser does not expose microphone access for the voice session. Try the latest version of Safari, Chrome, or Firefox over HTTPS."
+      setStatus(
+        "error",
+        "This browser does not expose microphone access. Try Safari, Chrome or Firefox over HTTPS."
       );
       return;
     }
 
-    if (hasConversation) {
-      await endConversation();
-      return;
-    }
-
-    setErrorDetail(null);
     setStatus("connecting");
 
     try {
       const conversation = await Conversation.startSession({
         agentId,
         connectionType: "webrtc",
-        onConnect: () => {
-          setStatus("listening");
-        },
+        onConnect: () => setStatus("listening"),
         onDisconnect: () => {
           conversationRef.current = null;
           setStatus("idle");
         },
         onError: (message) => {
           conversationRef.current = null;
-          setStatus("error");
-          setErrorDetail(
-            typeof message === "string"
-              ? message
-              : "The voice session could not start."
+          setStatus(
+            "error",
+            typeof message === "string" ? message : "The voice session could not start."
           );
         },
         onModeChange: ({ mode }) => {
-          if (mode === "speaking") {
-            setStatus("talking");
-            return;
-          }
-
-          if (mode === "listening") {
-            setStatus("listening");
-          }
+          if (mode === "speaking") setStatus("talking");
+          else if (mode === "listening") setStatus("listening");
         },
       });
-
       conversationRef.current = conversation as VoiceConversation;
     } catch (error) {
       conversationRef.current = null;
-      setStatus("error");
-      const msg =
-        error instanceof Error ? error.message : "";
+      const msg = error instanceof Error ? error.message : "";
       const isRateLimit =
         msg.includes("limit") ||
         msg.includes("capacity") ||
         msg.includes("concurrent") ||
         msg.includes("429");
-      setErrorDetail(
+      setStatus(
+        "error",
         isRateLimit
           ? "Joan's voice is busy right now. Try again in a moment."
           : msg || "The voice session could not start."
       );
     }
-  }, [endConversation, hasConversation]);
+  }, [status, endConversation, setStatus]);
+
+  // Feed the grid. One requestAnimationFrame loop while a session is open,
+  // nothing otherwise.
+  useEffect(() => {
+    if (!open) {
+      activityRef.current = 0;
+      return;
+    }
+    let frame = 0;
+    const tick = () => {
+      const volume = conversationRef.current?.getOutputVolume() ?? 0;
+      activityRef.current = Math.max(ACTIVITY_FLOOR, volume);
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      activityRef.current = 0;
+    };
+  }, [open, activityRef]);
 
   useEffect(() => {
     return () => {
       const current = conversationRef.current;
       if (!current) return;
-
       conversationRef.current = null;
       void current.endSession().catch(() => {
         // Ignore cleanup errors during unmount.
@@ -196,85 +156,23 @@ export function VoiceOrb() {
     };
   }, []);
 
-  if (!agentId) {
-    return (
-      <OrbFallback
-        title="Voice not configured"
-        detail="Set NEXT_PUBLIC_ELEVENLABS_AGENT_ID to enable the live voice session."
+  if (!agentId) return <OrbSkeleton />;
+
+  return (
+    <button
+      type="button"
+      onClick={() => void handleActivate()}
+      aria-label={open ? "End the conversation" : "Talk to Joan"}
+      aria-pressed={open}
+      className="group h-14 w-14 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+    >
+      <Orb
+        className="h-full w-full"
+        colors={["#a86a37", "#f1d2a4"]}
+        agentState={getAgentState(status)}
+        getInputVolume={() => conversationRef.current?.getInputVolume() ?? 0}
+        getOutputVolume={() => conversationRef.current?.getOutputVolume() ?? 0}
       />
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-5">
-      <div className="relative flex h-[240px] w-[240px] items-center justify-center md:h-[320px] md:w-[320px]">
-        <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,oklch(0.837_0.128_66.29_/_0.12)_0%,transparent_70%)] blur-3xl" />
-        <Orb
-          className="relative h-full w-full"
-          colors={["#a86a37", "#f1d2a4"]}
-          agentState={agentState}
-          getInputVolume={() => conversationRef.current?.getInputVolume() ?? 0}
-          getOutputVolume={() => conversationRef.current?.getOutputVolume() ?? 0}
-        />
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full border border-border/70 bg-background/78 px-3 py-2 shadow-lg backdrop-blur-xl">
-          <Image
-            src={avatarImageUrl}
-            alt="Joan Duarte"
-            width={44}
-            height={44}
-            className="h-11 w-11 rounded-full object-cover"
-            priority
-          />
-          <div className="pr-1 text-left leading-tight">
-            <p className="text-[12px] font-medium text-foreground">Joan</p>
-            <p className="text-[11px] text-muted-foreground">Actual human.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-2 text-center">
-        <Button
-          onClick={() => void handleActivate()}
-          size="lg"
-          className="h-10 min-w-[160px] rounded-full px-5"
-        >
-          {hasConversation ? (
-            <>
-              <PhoneOff />
-              End call
-            </>
-          ) : (
-            <>
-              <Mic />
-              Get to know me
-            </>
-          )}
-        </Button>
-        {status !== "idle" ? (
-          <span className="text-[13px] text-muted-foreground">
-            {getStatusLabel(status)}
-          </span>
-        ) : null}
-        {errorDetail ? (
-          <p className="max-w-[320px] text-[12px] leading-relaxed text-muted-foreground/90">
-            {errorDetail}
-          </p>
-        ) : (
-          <p className="max-w-[320px] text-[12px] leading-relaxed text-muted-foreground/90">
-            Grant microphone access when the browser asks. The orb reacts live
-            to both your voice and Joan&apos;s.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function OrbSkeleton() {
-  return (
-    <OrbFallback
-      title="Loading voice interface..."
-      detail="Preparing the orb and voice session controls."
-    />
+    </button>
   );
 }
